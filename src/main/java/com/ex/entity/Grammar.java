@@ -36,10 +36,10 @@ public class Grammar {
 			Set<String> rules = new HashSet<String>();
 			
 			//Divide a entrada em parte esquerda e direita
-			String[] splittedLine = line.split("->");
+			String[] splitLine = line.split("->");
 			
 			//Divide a parte direita por |
-			String[] rightSide = splittedLine[1].split("\\|");
+			String[] rightSide = splitLine[1].split("\\|");
 
 			//Para cada um da parte direita, adiciona a regra na lista de regras dessa variável.
 			for (int i = 0; i < rightSide.length; i++) {
@@ -59,9 +59,9 @@ public class Grammar {
 				}
 			}
 			
-			this.nonTerminals.add(splittedLine[0].trim());
-			this.leftTerminals.add(splittedLine[0].trim());
-			this.rules.put(splittedLine[0].trim(), rules);
+			this.nonTerminals.add(splitLine[0].trim());
+			this.leftTerminals.add(splitLine[0].trim());
+			this.rules.put(splitLine[0].trim(), rules);
 		} else {
 			throw new InvalidParameterException("O formato da entrada deve ser \"Variavel -> arg1 arg2 | arg3...");
 		}
