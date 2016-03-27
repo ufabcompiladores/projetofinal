@@ -27,21 +27,18 @@ public class Grammar {
 
 	public void addRule(String line) throws InvalidParameterException {
 		//Expressão regular para validar a entrada dos dados
-		String regex = "^[A-Z][a-z]*(\\s|)->(\\s|)(((\\w+)+\\s)+\\|\\s)*(\\w+(\\s|))+";
+		String regexValidRule = "^[A-Z][a-z]*(\\s|)->(\\s|)(((\\w+)+\\s)+\\|\\s)*(\\w+(\\s|))+";
 
-		Pattern pattern = Pattern.compile(regex);
+		Pattern pattern = Pattern.compile(regexValidRule);
 		Matcher matcher = pattern.matcher(line);
 
 		if (matcher.matches()) {
 			Set<String> rules = new HashSet<String>();
 			
-			//Divide a entrada em parte esquerda e direita
 			String[] splitLine = line.split("->");
 			
-			//Divide a parte direita por |
 			String[] rightSide = splitLine[1].split("\\|");
 
-			//Para cada um da parte direita, adiciona a regra na lista de regras dessa variável.
 			for (int i = 0; i < rightSide.length; i++) {
 				rules.add(rightSide[i].trim());
 			}
