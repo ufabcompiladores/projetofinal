@@ -18,8 +18,9 @@ public class Grammar {
 	//Não estão à esquerda
 	private Set<String> leftTerminals;
 	
-	public Grammar () {
+	public Grammar (String rulesText) {
 		this.rules = new HashMap<String, Set<String>>();
+		this.addRules(rulesText);
 		this.terminals = new HashSet<String>();
 		this.nonTerminals = new HashSet<String>();
 		this.leftTerminals = new HashSet<String>();
@@ -83,6 +84,12 @@ public class Grammar {
 	public Set<String> getNonTerminals() {
 		return nonTerminals;
 	}
+	
+	// TODO
+	public void setNonTerminalsTest(Set<String> nonTerminals) {
+		this.nonTerminals = nonTerminals;
+	}
+	
 	
 	public Set<String> getLeftTerminals() {
 		return leftTerminals;

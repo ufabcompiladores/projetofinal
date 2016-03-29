@@ -1,7 +1,6 @@
 package com.ex.service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,88 @@ public class GrammarService {
 			throw new Exception("Gramática inválida");
 		}
 	}
-	
+
+	// TODO: finish function
+	private boolean producesEps(String rule) {
+		return false;
+	}
+
+	// Descrevemos cada conjunto First como a uniao de outros conjuntos First em setsWhoseUnionIsFirstSet.
+	// Por exemplo, se a regra eh A -> BCD | EF | G | a, e se B e C tem 'eps' em suas producoes, mas
+	// E e G nao, entao
+	// setsWhoseUnionIsFirstSet(A) eh {B, C, D, E, G, 'a'}
+	// Em seguida, iteramos ate achar um ponto fixo, adicionando os elementos em firstSets.
+	public Map<String, Set<String>> getAllFirstSets(){
+		Map<String, Set<String>> setsWhoseUnionIsFirstSet = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
+		for (String NonTerminal: grammar.getNonTerminals()){
+			setsWhoseUnionIsFirstSet.put(NonTerminal, Collections.<String> emptySet());
+			firstSets.put(NonTerminal, Collections.<String> emptySet());
+		}
+		for (String NonTerminal: grammar.getNonTerminals()){
+			for (String rule : grammar.getRules().get(NonTerminal)) {
+				int i = 0;
+				String[] arrRule = rule.split("\\s");
+				while(!isTerminal(arrRule[i]) && producesEps(arrRule[i]) && i < arrRule.length){
+					setsWhoseUnionIsFirstSet.get(NonTerminal).add(arrRule[i]);
+					i++;
+				}
+				// se while iterou por todos os simbolos da producao,
+				// entao todos os simbolos produzem eps
+				// TODO: definir como representar eps
+				if(i > arrRule.length){
+					setsWhoseUnionIsFirstSet.get(NonTerminal).add("eps");
+				}
+				else{
+					if (isTerminal(arrRule[i])){
+						setsWhoseUnionIsFirstSet.get(NonTerminal).add(arrRule[i]);
+					}
+					else{
+						setsWhoseUnionIsFirstSet.get(NonTerminal).add(arrRule[i]);
+					}
+				}
+			}
+		}
+
+		boolean changeOccurried = true;
+		while (changeOccurried){
+			changeOccurried = false;
+			// TODO: install apache commons, make newFirstSets get all elements from FirstSets
+			Map<String, Set<String>> newFirstSets = new HashMap<String, Set<String>>();
+
+			for (String NonTerminal: grammar.getNonTerminals()){
+				newFirstSets.put(NonTerminal, Collections.<String> emptySet());
+			}
+			for (String nonTerminal: grammar.getNonTerminals()){
+				int numElementsBefore = firstSets.get(nonTerminal).size();
+				for (String element : setsWhoseUnionIsFirstSet.get(nonTerminal)) {
+					if (isTerminal(element)){
+						newFirstSets.get(nonTerminal).add(element);
+					} else if (element.equals("eps")){
+						newFirstSets.get(nonTerminal).add("eps");
+					} else {
+						boolean setHadEps = newFirstSets.get(nonTerminal).contains("eps");
+						newFirstSets.get(nonTerminal).addAll(firstSets.get(nonTerminal));
+						boolean setHasEps = newFirstSets.get(nonTerminal).contains("eps");
+						if (!setHadEps && setHasEps){
+							newFirstSets.get(nonTerminal).remove("eps");
+						}
+					}
+				}
+				int numElementsAfter = newFirstSets.get(nonTerminal).size();
+				if (numElementsBefore != numElementsAfter){
+					changeOccurried = true;
+				}
+			}
+
+			firstSets = newFirstSets;
+
+
+		}
+		return firstSets;
+	}
+
+
 	/**
 	 * Função utilizada para encontrar o first de um símbolo
 	 * @param arg - Símbolo para aplicar o First
@@ -110,12 +190,18 @@ public class GrammarService {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar();
+		Grammar g = new Grammar("A -> b | B c\nB -> c | d");
 		
-		g.addRules("A -> b | B c\nB -> c | d");
+		// g.addRules("A -> b | B c\nB -> c | d");
+		g.setNonTerminalsTest(new HashSet<String>());
+		g.getNonTerminals().add("A");
+		g.getNonTerminals().add("B");
+		
+		
 		
 		GrammarService service = new GrammarService(g);
 		
-		System.out.println(service.getFirst("A"));
+		service.getAllFirstSets();
+		// System.out.println(service.getFirst("A"));
 	}
 }
