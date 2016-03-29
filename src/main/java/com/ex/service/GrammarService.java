@@ -190,18 +190,19 @@ public class GrammarService {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> b | B c\nB -> c | d");
+		Grammar g = new Grammar("a -> b | B c\nB -> c | d");
 		
 		// g.addRules("A -> b | B c\nB -> c | d");
 		g.setNonTerminalsTest(new HashSet<String>());
-		g.getNonTerminals().add("A");
-		g.getNonTerminals().add("B");
+//		g.setRulesTest
+//		g.getNonTerminals().add("A");
+//		g.getNonTerminals().add("B");
 		
 		
 		
 		GrammarService service = new GrammarService(g);
 		
-		service.getAllFirstSets();
-		// System.out.println(service.getFirst("A"));
+//		service.getAllFirstSets();
+		 System.out.println(service.getFirst("A"));
 	}
 }

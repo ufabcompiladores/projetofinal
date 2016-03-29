@@ -85,10 +85,16 @@ public class Grammar {
 		return nonTerminals;
 	}
 	
-	// TODO
+	// used for testing
 	public void setNonTerminalsTest(Set<String> nonTerminals) {
 		this.nonTerminals = nonTerminals;
 	}
+	
+	// used for testing
+	public void setRulesTest(HashMap<String, Set<String>> mapRules) {
+		this.rules = rules;
+	}
+
 	
 	
 	public Set<String> getLeftTerminals() {
