@@ -14,8 +14,9 @@ public class GrammarService {
 	public GrammarService(Grammar grammar) throws Exception {
 		this.grammar = grammar;
 		
+		// TODO: fix isValidGrammar
 //		if (!isValidGrammar()) {
-//			throw new Exception("Gramática inválida");
+//		throw new Exception("Gramática inválida");
 //		}
 	}
 
@@ -223,5 +224,7 @@ public class GrammarService {
 	
 		GrammarService service = new GrammarService(g);
 		service.getAllFirstSets();
+		g.readAllRules("A -> b | B c | \nB -> A | a | D d e F");
+		System.out.println(g.getNewRules());
 	}
 }

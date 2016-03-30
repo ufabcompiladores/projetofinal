@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public class Grammar {
 
 	private Map<String, Set<String>> rules;
+	private Map<Symbol, Set<Rule>> newRules;
 	private Set<String> terminals;
 	private Set<String> nonTerminals;
 	
@@ -20,10 +21,35 @@ public class Grammar {
 	
 	public Grammar (String rulesText) {
 		this.rules = new HashMap<String, Set<String>>();
+		this.newRules = new HashMap<Symbol, Set<Rule>>();
 //		this.addRules(rulesText);
 		this.terminals = new HashSet<String>();
 		this.nonTerminals = new HashSet<String>();
 		this.leftTerminals = new HashSet<String>();
+	}
+	
+	public void addRuleLine(String rulesText) throws Exception{
+		// TODO: assert that it follows correct format
+		String[] splitLine = rulesText.split("->");
+		String producerText = splitLine[0].trim();
+		Symbol producerSymbol = new Symbol(producerText);
+		String[] rightSideTextProductions = splitLine[1].split("\\|");
+
+		for (int i = 0; i < rightSideTextProductions.length; i++) {
+			System.out.println("producer text: " + producerText);
+			System.out.println("Right side text production" + rightSideTextProductions[i]);
+			if (!newRules.containsKey(producerSymbol)){
+				newRules.put(producerSymbol, new HashSet<Rule>());
+			}
+			newRules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim()));
+		}
+	}
+	public void readAllRules(String rulesText) throws Exception{
+		String[] rules = rulesText.split("\n");
+		for (String rule : rules) {
+			System.out.println("Add rule: " + rule);
+			addRuleLine(rule);
+		}
 	}
 
 	public void addRule(String line) throws InvalidParameterException {
@@ -87,6 +113,10 @@ public class Grammar {
 	
 	public Set<String> getLeftTerminals() {
 		return leftTerminals;
+	}
+	
+	public Map<Symbol, Set<Rule>> getNewRules() {
+		return newRules;
 	}
 	
 	public static void main(String[] args) {
