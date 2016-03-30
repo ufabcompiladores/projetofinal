@@ -14,12 +14,12 @@ public class GrammarService {
 	public GrammarService(Grammar grammar) throws Exception {
 		this.grammar = grammar;
 		
-		if (!isValidGrammar()) {
-			throw new Exception("Gramática inválida");
-		}
+//		if (!isValidGrammar()) {
+//			throw new Exception("Gramática inválida");
+//		}
 	}
 
-	// TODO: finish function
+	// TODO: create function
 	private boolean producesEps(String rule) {
 		return false;
 	}
@@ -33,8 +33,8 @@ public class GrammarService {
 		Map<String, Set<String>> setsWhoseUnionIsFirstSet = new HashMap<String, Set<String>>();
 		Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
 		for (String NonTerminal: grammar.getNonTerminals()){
-			setsWhoseUnionIsFirstSet.put(NonTerminal, Collections.<String> emptySet());
-			firstSets.put(NonTerminal, Collections.<String> emptySet());
+			setsWhoseUnionIsFirstSet.put(NonTerminal, new HashSet<String>());
+			firstSets.put(NonTerminal, new HashSet<String>());
 		}
 		for (String NonTerminal: grammar.getNonTerminals()){
 			for (String rule : grammar.getRules().get(NonTerminal)) {
@@ -47,7 +47,7 @@ public class GrammarService {
 				// se while iterou por todos os simbolos da producao,
 				// entao todos os simbolos produzem eps
 				// TODO: definir como representar eps
-				if(i > arrRule.length){
+				if(i >= arrRule.length){
 					setsWhoseUnionIsFirstSet.get(NonTerminal).add("eps");
 				}
 				else{
@@ -60,29 +60,42 @@ public class GrammarService {
 				}
 			}
 		}
+		System.out.println("Description of first rules: " + setsWhoseUnionIsFirstSet);
 
 		boolean changeOccurried = true;
 		while (changeOccurried){
+			System.out.println("New Iteration \n ------------");
 			changeOccurried = false;
 			// TODO: install apache commons, make newFirstSets get all elements from FirstSets
 			Map<String, Set<String>> newFirstSets = new HashMap<String, Set<String>>();
 
-			for (String NonTerminal: grammar.getNonTerminals()){
-				newFirstSets.put(NonTerminal, Collections.<String> emptySet());
+			for (String nonTerminal: grammar.getNonTerminals()){
+				Set<String> newSet = new HashSet<String>();
+				newSet.addAll(firstSets.get(nonTerminal));
+				newFirstSets.put(nonTerminal, newSet);
 			}
+
+			System.out.println("newFirstSets: " + newFirstSets);
+			System.out.println("FirstSets: " + firstSets);
+
 			for (String nonTerminal: grammar.getNonTerminals()){
 				int numElementsBefore = firstSets.get(nonTerminal).size();
 				for (String element : setsWhoseUnionIsFirstSet.get(nonTerminal)) {
+					System.out.println("Element: " + element);
 					if (isTerminal(element)){
+						System.out.println("element is terminal: adding to set");
 						newFirstSets.get(nonTerminal).add(element);
 					} else if (element.equals("eps")){
+						System.out.println("element is void set");
 						newFirstSets.get(nonTerminal).add("eps");
 					} else {
+						System.out.println("element is non terminal");
 						boolean setHadEps = newFirstSets.get(nonTerminal).contains("eps");
-						newFirstSets.get(nonTerminal).addAll(firstSets.get(nonTerminal));
-						boolean setHasEps = newFirstSets.get(nonTerminal).contains("eps");
+						newFirstSets.get(element).addAll(firstSets.get(nonTerminal));
+						System.out.println("Adding elements: " + firstSets.get(nonTerminal));
+						boolean setHasEps = newFirstSets.get(element).contains("eps");
 						if (!setHadEps && setHasEps){
-							newFirstSets.get(nonTerminal).remove("eps");
+							newFirstSets.get(element).remove("eps");
 						}
 					}
 				}
@@ -92,10 +105,15 @@ public class GrammarService {
 				}
 			}
 
+			System.out.println("Old first sets: "+ firstSets);
+			System.out.println("New first sets: "+ newFirstSets);
 			firstSets = newFirstSets;
 
 
 		}
+		System.out.println("------");
+		System.out.println("Final result: ");
+		System.out.println(firstSets);
 		return firstSets;
 	}
 
@@ -190,19 +208,20 @@ public class GrammarService {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("a -> b | B c\nB -> c | d");
+		Grammar g = new Grammar("A -> b | B c\nB -> A | a");
 		
-		// g.addRules("A -> b | B c\nB -> c | d");
-		g.setNonTerminalsTest(new HashSet<String>());
-//		g.setRulesTest
-//		g.getNonTerminals().add("A");
-//		g.getNonTerminals().add("B");
+		g.getRules().put("A", new HashSet<String>());
+		g.getRules().get("A").add("b");
+		g.getRules().get("A").add("B c");
+
+		g.getRules().put("B", new HashSet<String>());
+		g.getRules().get("B").add("A");
+		g.getRules().get("B").add("a");
 		
-		
-		
+		g.getNonTerminals().add("A");
+		g.getNonTerminals().add("B");
+	
 		GrammarService service = new GrammarService(g);
-		
-//		service.getAllFirstSets();
-		 System.out.println(service.getFirst("A"));
+		service.getAllFirstSets();
 	}
 }
