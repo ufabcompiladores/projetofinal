@@ -10,8 +10,7 @@ import java.util.regex.Pattern;
 
 public class Grammar {
 
-	private Map<String, Set<String>> rules;
-	private Map<Symbol, Set<Rule>> newRules;
+	private Map<Symbol, Set<Rule>> rules;
 	private Set<String> terminals;
 	private Set<Symbol> nonTerminals;
 	
@@ -20,8 +19,7 @@ public class Grammar {
 	private Set<String> leftTerminals;
 	
 	public Grammar (String inputGrammar) throws Exception {
-		this.rules = new HashMap<String, Set<String>>();
-		this.newRules = new HashMap<Symbol, Set<Rule>>();
+		this.rules = new HashMap<Symbol, Set<Rule>>();
 		this.terminals = new HashSet<String>();
 		this.nonTerminals = new HashSet<Symbol>();
 		this.leftTerminals = new HashSet<String>();
@@ -40,10 +38,10 @@ public class Grammar {
 		for (int i = 0; i < rightSideTextProductions.length; i++) {
 			System.out.println("producer text: " + producerText);
 			System.out.println("Right side text production" + rightSideTextProductions[i]);
-			if (!newRules.containsKey(producerSymbol)){
-				newRules.put(producerSymbol, new HashSet<Rule>());
+			if (!rules.containsKey(producerSymbol)){
+				rules.put(producerSymbol, new HashSet<Rule>());
 			}
-			newRules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim()));
+			rules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim()));
 		}
 	}
 	public void readAllRules(String rulesText) throws Exception{
@@ -67,10 +65,6 @@ public class Grammar {
 		return nonTerminals;
 	}
 
-	public Map<String, Set<String>> getRules() {
-		return rules;
-	}
-	
 	public Set<String> getTerminals() {
 		return terminals;
 	}
@@ -79,8 +73,8 @@ public class Grammar {
 		return leftTerminals;
 	}
 	
-	public Map<Symbol, Set<Rule>> getNewRules() {
-		return newRules;
+	public Map<Symbol, Set<Rule>> getRules() {
+		return rules;
 	}
 	
 	public static void main(String[] args) {
