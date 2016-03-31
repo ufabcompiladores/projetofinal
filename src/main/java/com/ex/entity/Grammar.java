@@ -33,6 +33,9 @@ public class Grammar {
 		String[] splitLine = rulesText.split("->");
 		String producerText = splitLine[0].trim();
 		Symbol producerSymbol = new Symbol(producerText);
+		if (producerSymbol.isTerminal()) {
+			throw new Exception("Encontrou símbolo terminal no lado esquerdo da regra: " + producerSymbol.literalRepresentation);
+		}
 		String[] rightSideTextProductions = splitLine[1].split("\\|");
 
 		for (int i = 0; i < rightSideTextProductions.length; i++) {
@@ -51,11 +54,26 @@ public class Grammar {
 			addRuleLine(rule);
 		}
 	}
+	
+	private boolean isValidGrammar(String inputGrammar) throws Exception{
+
+		String[] lines = inputGrammar.split("\n");
+		for (String line : lines) {
+			String[] splitLine = line.split("->");
+			if (line.length() < 2) {
+				throw new Exception("Regra deveria ter ->: " + line);
+			}
+		}
+		return true;
+	}
 
 	private void addNonTerminals(String inputGrammar) throws Exception{
 		String[] lines = inputGrammar.split("\n");
 		for (String line : lines) {
 			String[] splitLine = line.split("->");
+//			if (line.length() < 2) {
+//				throw new Exception("Regra deveria ter ->: " + line);
+//			}
 			String LHS = splitLine[0].trim();
 			this.nonTerminals.add(new Symbol(LHS));
 		}

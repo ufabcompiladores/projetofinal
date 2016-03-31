@@ -35,10 +35,14 @@ public class GrammarService {
 		}
 	}
 	
-	// Descrevemos cada conjunto First como a uniao de outros conjuntos First em setsWhoseUnionIsFirstSet.
-	// Por exemplo, se a regra eh A -> BCD | EF | G | a, e se B e C tem 'eps' em suas producoes, mas
-	// E e G nao, entao
-	// setsWhoseUnionIsFirstSet(A) eh {B, C, D, E, G, 'a'}
+	/**
+	*  Descrevemos cada conjunto First como a uniao de outros conjuntos First.
+	*  Por exemplo, se a regra eh A -> BCD | EF | G | a,
+	*  e se B e C tem cadeia vazia em suas producoes, mas E e G nao, entao
+	*  First(A) eh {B, C, D, E, G, 'a'}, em que cada elemento desse conjunto
+	*  eh um symbol.
+	*  @return Um map de Symbol para o conjunto de Symbols cuja união é o First desse Symbol.
+	*/
 	private Map<Symbol, Set<Symbol>> buildUnionOfSetsThatRepresetFirstSets(){
 		// Initialize set
 		Map<Symbol, Set<Symbol>> setsWhoseUnionIsFirstSet = new HashMap<Symbol, Set<Symbol>>();
@@ -71,7 +75,13 @@ public class GrammarService {
 	}
 	
 
-	// Iteramos ate achar um ponto fixo, adicionando os elementos em firstSets.
+	/**
+	 * Computa o conjunto First de cada não terminal.
+	 * Isto é feito da mesma maneira usual na literatura,
+	 * em que se usa uma tabela que é atualizada até
+	 * encontrar um ponto fixo.
+	 * @return Um Map de Symbol para o first set desse Symbol.
+	 */
 	public Map<Symbol, Set<Symbol>> buildAllFirstSets(){
 		// Initialize set.
 		Map<Symbol, Set<Symbol>> firstSets = new HashMap<Symbol, Set<Symbol>>();
@@ -82,7 +92,7 @@ public class GrammarService {
 		// Get union of sets that represent each first set.
 		Map <Symbol, Set<Symbol>> setsWhoseUnionIsFirstSet = this.buildUnionOfSetsThatRepresetFirstSets();
 
-		// Iterates until fixed point is found
+		// Iterate until fixed point is found
 		boolean someFirstSetHasChanged = true;
 		while (someFirstSetHasChanged){
 			System.out.println("\n New Iteration \n ------------");
@@ -144,6 +154,7 @@ public class GrammarService {
 
 	public static void main(String[] args) throws Exception {
 //		Grammar g = new Grammar("A -> b | B c\nB -> A | a");
+//		Grammar g = new Grammar("A -> B C d \nB -> b | \n C -> a | ");
 		Grammar g = new Grammar("A -> B C d \nB -> b | \n C -> a | ");
 		GrammarService service = new GrammarService(g);
 		System.out.println(g.getNewNonTerminals());
