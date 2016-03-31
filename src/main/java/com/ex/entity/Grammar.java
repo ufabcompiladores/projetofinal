@@ -55,16 +55,31 @@ public class Grammar {
 		}
 	}
 	
-	private boolean isValidGrammar(String inputGrammar) throws Exception{
+	private void isValidGrammar(String inputGrammar) throws Exception{
 
 		String[] lines = inputGrammar.split("\n");
 		for (String line : lines) {
+			// Verifica se ha "->"
 			String[] splitLine = line.split("->");
-			if (line.length() < 2) {
+			if (splitLine.length < 2) {
 				throw new Exception("Regra deveria ter ->: " + line);
 			}
+
+			// Verifica se parte esquerda eh nao terminal
+			String LHS = splitLine[0];
+			Symbol producer = new Symbol(LHS);
+			if (!producer.isNonTerminal()) {
+				throw new Exception("Símbolo do lado esquerdo não é um não terminal: " + LHS);
+			}
+
+			// TODO: Verifica se parte direita representa sequencias de simbolos
+			// (possivelmente dividos por |)
+			String RHS = splitLine[1];
+			
+			// TODO: Verificar se nao terminais que aparecem a direita
+			// também aparecem a esquerda.
+			
 		}
-		return true;
 	}
 
 	private void addNonTerminals(String inputGrammar) throws Exception{
