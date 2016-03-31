@@ -32,7 +32,6 @@ Uma regra de produção deve ser escrita na forma
 `A -> B | C D ...`
 Em que `A` denota um não terminal, e cada símbolo B, C, D, ... pode ser um terminal ou não terminal. Cada símbolo deve ser separado por ao menos um espaço.
 Múltiplas regras podem ser agrupadas através do caracter pipe (`|`).
-Deve haver também ao menos um espaço entre a pipe e os símbolos.
 Uma pipe no final da linha indica que o não terminal A produz a cadeia vazia.
 
 Exemplos:
@@ -47,6 +46,5 @@ B -> b B |
 // *não* é a mesma coisa que "B b b B"
 B -> BbbB 
 
-// não há espaço em branco entre pipe e símbolos
 B -> B|b
 ```
