@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Grammar {
+public final class Grammar {
 
 	private Map<Symbol, Set<Rule>> rules;
 	private Set<String> terminals;
