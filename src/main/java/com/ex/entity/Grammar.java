@@ -25,7 +25,6 @@ public final class Grammar {
 	}
 
 	private void addRuleLine(String rulesText) throws Exception{
-		// TODO: assert that it follows correct format
 		String[] splitLine = rulesText.split("->");
 		String producerText = splitLine[0].trim();
 		Symbol producerSymbol = new Symbol(producerText);
@@ -85,7 +84,9 @@ public final class Grammar {
 			}
 
 			// TODO: Verificar se nao terminais que aparecem a direita
-			// também aparecem a esquerda.
+			// tambem aparecem a esquerda.
+			Set<Symbol> nonTerminalsLHS = new HashSet<Symbol>();
+			Set<Symbol> nonTerminalsRHS = new HashSet<Symbol>();
 
 		}
 	}
