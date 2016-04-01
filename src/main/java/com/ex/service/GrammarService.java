@@ -82,11 +82,11 @@ public class GrammarService {
 	 * encontrar um ponto fixo.
 	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
-	public Map<Symbol, Set<Symbol>> buildAllFirstSets(){
+	private Map<Symbol, Set<Symbol>> buildAllFirstSets(){
 		// Initialize set.
-		Map<Symbol, Set<Symbol>> firstSets = new HashMap<Symbol, Set<Symbol>>();
+		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: grammar.getNewNonTerminals()){
-			firstSets.put(nonTerminal, new HashSet<Symbol>());
+			firstSetsBeforeIteration.put(nonTerminal, new HashSet<Symbol>());
 		}
 		
 		// Get union of sets that represent each first set.
@@ -101,17 +101,17 @@ public class GrammarService {
 
 			for (Symbol nonTerminal: grammar.getNewNonTerminals()){
 				Set<Symbol> newSet = new HashSet<Symbol>();
-				newSet.addAll(firstSets.get(nonTerminal));
+				newSet.addAll(firstSetsBeforeIteration.get(nonTerminal));
 				newFirstSets.put(nonTerminal, newSet);
 			}
 
 			System.out.println("newFirstSets: " + newFirstSets);
-			System.out.println("FirstSets: " + firstSets);
+			System.out.println("FirstSets: " + firstSetsBeforeIteration);
 
 			for (Symbol nonTerminal: grammar.getNewNonTerminals()){
 				System.out.println("---- \nUpdating set " + nonTerminal);
 				System.out.format("Sets whose union is first(%s): %s\n", nonTerminal, setsWhoseUnionIsFirstSet.get(nonTerminal));
-				int numElementsBefore = firstSets.get(nonTerminal).size();
+				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
 				for (Symbol element : setsWhoseUnionIsFirstSet.get(nonTerminal)) {
 					System.out.println("Element: " + element);
 					if (element.isTerminal()){
@@ -122,8 +122,8 @@ public class GrammarService {
 						newFirstSets.get(nonTerminal).add(new Symbol(SymbolType.EMPTYSTRING, ""));
 					} else {
 						System.out.println("element is non terminal");
-						addAllElementsFromSetExceptEmptyString(firstSets.get(element), newFirstSets.get(nonTerminal));
-						System.out.println("Adding elements: " + firstSets.get(element) + " (except eps)");
+						addAllElementsFromSetExceptEmptyString(firstSetsBeforeIteration.get(element), newFirstSets.get(nonTerminal));
+						System.out.println("Adding elements: " + firstSetsBeforeIteration.get(element) + " (except eps)");
 					}
 				}
 				int numElementsAfter = newFirstSets.get(nonTerminal).size();
@@ -131,14 +131,14 @@ public class GrammarService {
 					someFirstSetHasChanged = true;
 				}
 			}
-			System.out.println("Old first sets: "+ firstSets);
+			System.out.println("Old first sets: "+ firstSetsBeforeIteration);
 			System.out.println("New first sets: "+ newFirstSets);
-			firstSets = newFirstSets;
+			firstSetsBeforeIteration = newFirstSets;
 		}
 		System.out.println("------");
 		System.out.println("Final result: ");
-		System.out.println(firstSets);
-		return firstSets;
+		System.out.println(firstSetsBeforeIteration);
+		return firstSetsBeforeIteration;
 	}
 
 

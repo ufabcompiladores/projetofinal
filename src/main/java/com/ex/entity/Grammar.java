@@ -13,22 +13,18 @@ public class Grammar {
 	private Map<Symbol, Set<Rule>> rules;
 	private Set<String> terminals;
 	private Set<Symbol> nonTerminals;
-	
-	//Possui as variáveis colocadas à esquerda, para garantirmos que não existem terminais à direita que 
-	//Não estão à esquerda
-	private Set<String> leftTerminals;
-	
+
 	public Grammar (String inputGrammar) throws Exception {
 		this.rules = new HashMap<Symbol, Set<Rule>>();
 		this.terminals = new HashSet<String>();
 		this.nonTerminals = new HashSet<Symbol>();
-		this.leftTerminals = new HashSet<String>();
-		
+
+		isValidGrammar(inputGrammar);
 		addNonTerminals(inputGrammar);
 		readAllRules(inputGrammar);
 	}
-	
-	public void addRuleLine(String rulesText) throws Exception{
+
+	private void addRuleLine(String rulesText) throws Exception{
 		// TODO: assert that it follows correct format
 		String[] splitLine = rulesText.split("->");
 		String producerText = splitLine[0].trim();
@@ -47,14 +43,14 @@ public class Grammar {
 			rules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim()));
 		}
 	}
-	public void readAllRules(String rulesText) throws Exception{
+	private void readAllRules(String rulesText) throws Exception{
 		String[] rules = rulesText.split("\n");
 		for (String rule : rules) {
 			System.out.println("Add rule: " + rule);
 			addRuleLine(rule);
 		}
 	}
-	
+
 	private void isValidGrammar(String inputGrammar) throws Exception{
 
 		String[] lines = inputGrammar.split("\n");
@@ -66,19 +62,34 @@ public class Grammar {
 			}
 
 			// Verifica se parte esquerda eh nao terminal
-			String LHS = splitLine[0];
-			Symbol producer = new Symbol(LHS);
-			if (!producer.isNonTerminal()) {
+			String LHS = splitLine[0].trim();
+			if (!LHS.matches(Symbol.NONTERMINAL_REGEX)) {
 				throw new Exception("Símbolo do lado esquerdo não é um não terminal: " + LHS);
 			}
 
 			// TODO: Verifica se parte direita representa sequencias de simbolos
 			// (possivelmente dividos por |)
 			String RHS = splitLine[1];
-			
+			String[] productions = RHS.split("\\|");
+			for (int i = 0; i < productions.length; i++) {
+				String [] sequenceOfSymbols = productions[i].split("\\s");
+				for (int j = 0; j < sequenceOfSymbols.length; j++) {
+					String symbolText = sequenceOfSymbols[j].trim();
+					System.out.println("texto: " + symbolText);
+					System.out.println("matches empty?");
+					System.out.println(symbolText.matches(""));
+					if (!symbolText.matches(Symbol.EMPTY_STRING_REGEX) &&
+							!symbolText.matches(Symbol.TERMINAL_REGEX) &&
+							!symbolText.matches(Symbol.NONTERMINAL_REGEX)) {
+						throw new Exception("Símbolo não segue formato válido: " + symbolText);
+
+					}	
+				}
+			}
+
 			// TODO: Verificar se nao terminais que aparecem a direita
 			// também aparecem a esquerda.
-			
+
 		}
 	}
 
@@ -86,14 +97,14 @@ public class Grammar {
 		String[] lines = inputGrammar.split("\n");
 		for (String line : lines) {
 			String[] splitLine = line.split("->");
-//			if (line.length() < 2) {
-//				throw new Exception("Regra deveria ter ->: " + line);
-//			}
+			//			if (line.length() < 2) {
+			//				throw new Exception("Regra deveria ter ->: " + line);
+			//			}
 			String LHS = splitLine[0].trim();
 			this.nonTerminals.add(new Symbol(LHS));
 		}
 	}
-	
+
 	public Set<Symbol> getNewNonTerminals() {
 		return nonTerminals;
 	}
@@ -101,15 +112,11 @@ public class Grammar {
 	public Set<String> getTerminals() {
 		return terminals;
 	}
-	
-	public Set<String> getLeftTerminals() {
-		return leftTerminals;
-	}
-	
+
 	public Map<Symbol, Set<Rule>> getRules() {
 		return rules;
 	}
-	
+
 	public static void main(String[] args) {
 	}
 }
