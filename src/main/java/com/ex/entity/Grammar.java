@@ -94,9 +94,6 @@ public class Grammar {
 		String[] lines = inputGrammar.split("\n");
 		for (String line : lines) {
 			String[] splitLine = line.split("->");
-			//			if (line.length() < 2) {
-			//				throw new Exception("Regra deveria ter ->: " + line);
-			//			}
 			String LHS = splitLine[0].trim();
 			this.nonTerminals.add(new Symbol(LHS));
 		}

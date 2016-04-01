@@ -37,10 +37,11 @@ public class GrammarService {
 	
 	/**
 	*  Descrevemos cada conjunto First como a uniao de outros conjuntos First.
-	*  Por exemplo, se a regra eh A -> BCD | EF | G | a,
-	*  e se B e C tem cadeia vazia em suas producoes, mas E e G nao, entao
-	*  First(A) eh {B, C, D, E, G, 'a'}, em que cada elemento desse conjunto
-	*  eh um symbol.
+	*  Por exemplo, se a regra eh A -> BCD | G | a,
+	*  e se B e C tem cadeia vazia em suas producoes, mas G nao, entao
+	*  First(A) eh {B, C, D, G, a}, em que cada elemento desse conjunto
+	*  eh o first desse symbol. Ou seja,
+	*  First(A) = First(B) ∪ First(C) ∪ First(D) ∪ First(G) ∪ First(a).
 	*  @return Um map de Symbol para o conjunto de Symbols cuja união é o First desse Symbol.
 	*/
 	private Map<Symbol, Set<Symbol>> buildUnionOfSetsThatRepresetFirstSets(){
@@ -153,13 +154,9 @@ public class GrammarService {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		Grammar g = new Grammar("A -> b | B c\nB -> A | a");
-//		Grammar g = new Grammar("A -> B C d \nB -> b | \n C -> a | ");
 		Grammar g = new Grammar("A -> B C d \nB -> b | \n C -> a | ");
 		GrammarService service = new GrammarService(g);
 		System.out.println(g.getNewNonTerminals());
 		service.buildAllFirstSets();
-		//		g.readAllRules("A -> Baaa888f | B c | \nB -> A | a | D d e F \n J->aaa|b");
-		//		System.out.println(g.getNewRules());
 	}
 }
