@@ -75,9 +75,6 @@ public class Grammar {
 				String [] sequenceOfSymbols = productions[i].split("\\s");
 				for (int j = 0; j < sequenceOfSymbols.length; j++) {
 					String symbolText = sequenceOfSymbols[j].trim();
-					System.out.println("texto: " + symbolText);
-					System.out.println("matches empty?");
-					System.out.println(symbolText.matches(""));
 					if (!symbolText.matches(Symbol.EMPTY_STRING_REGEX) &&
 							!symbolText.matches(Symbol.TERMINAL_REGEX) &&
 							!symbolText.matches(Symbol.NONTERMINAL_REGEX)) {
