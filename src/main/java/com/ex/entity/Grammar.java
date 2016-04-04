@@ -68,7 +68,7 @@ public final class Grammar {
 				nonTerminalsLHS.add(new Symbol(SymbolType.NONTERMINAL, LHS));
 			}
 			
-			// Verifica se parte direita representa sequencias de simbolos
+			// 	Verifica se parte direita representa sequencias de simbolos
 			// (possivelmente dividos por |)
 			String RHS = splitLine[1];
 			String[] productions = RHS.split("\\|");
