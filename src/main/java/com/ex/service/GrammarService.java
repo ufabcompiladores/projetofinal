@@ -47,12 +47,12 @@ public class GrammarService {
 	private Map<Symbol, Set<Symbol>> buildUnionOfSetsThatRepresetFirstSets(){
 		// Initialize set
 		Map<Symbol, Set<Symbol>> setsWhoseUnionIsFirstSet = new HashMap<Symbol, Set<Symbol>>();
-		for (Symbol nonTerminal: grammar.getNewNonTerminals()){
+		for (Symbol nonTerminal: grammar.getNonTerminals()){
 			setsWhoseUnionIsFirstSet.put(nonTerminal, new HashSet<Symbol>());
 		}
 		
 		// Build set
-		for (Symbol nonTerminal: grammar.getNewNonTerminals()){
+		for (Symbol nonTerminal: grammar.getNonTerminals()){
 			for (Rule rule : grammar.getRules().get(nonTerminal)) {
 				int i = 0;
 				while(rule.production.get(i).isNonTerminal() && 
@@ -86,7 +86,7 @@ public class GrammarService {
 	private Map<Symbol, Set<Symbol>> buildAllFirstSets(){
 		// Initialize set.
 		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
-		for (Symbol nonTerminal: grammar.getNewNonTerminals()){
+		for (Symbol nonTerminal: grammar.getNonTerminals()){
 			firstSetsBeforeIteration.put(nonTerminal, new HashSet<Symbol>());
 		}
 		
@@ -100,7 +100,7 @@ public class GrammarService {
 			someFirstSetHasChanged = false;
 			Map<Symbol, Set<Symbol>> newFirstSets = new HashMap<Symbol, Set<Symbol>>();
 
-			for (Symbol nonTerminal: grammar.getNewNonTerminals()){
+			for (Symbol nonTerminal: grammar.getNonTerminals()){
 				Set<Symbol> newSet = new HashSet<Symbol>();
 				newSet.addAll(firstSetsBeforeIteration.get(nonTerminal));
 				newFirstSets.put(nonTerminal, newSet);
@@ -109,7 +109,7 @@ public class GrammarService {
 			System.out.println("newFirstSets: " + newFirstSets);
 			System.out.println("FirstSets: " + firstSetsBeforeIteration);
 
-			for (Symbol nonTerminal: grammar.getNewNonTerminals()){
+			for (Symbol nonTerminal: grammar.getNonTerminals()){
 				System.out.println("---- \nUpdating set " + nonTerminal);
 				System.out.format("Sets whose union is first(%s): %s\n", nonTerminal, setsWhoseUnionIsFirstSet.get(nonTerminal));
 				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
@@ -118,7 +118,7 @@ public class GrammarService {
 					if (element.isTerminal()){
 						System.out.println("element is terminal: adding to set");
 						newFirstSets.get(nonTerminal).add(element);
-					} else if (element.type == SymbolType.EMPTYSTRING){
+					} else if (element.isEmptyString()){
 						System.out.println("element is empty string");
 						newFirstSets.get(nonTerminal).add(new Symbol(SymbolType.EMPTYSTRING, ""));
 					} else {
@@ -149,14 +149,14 @@ public class GrammarService {
 	 * @param arg - Símbolo para encontrar o follow
 	 * @return Set<String> Follow de arg
 	 */
-	public Set<String> getFollow (String arg) {
+	public Set<String> buildAllFollowSets (String arg) {
 		return null;
 	}
 
 	public static void main(String[] args) throws Exception {
 		Grammar g = new Grammar("A -> B C d \nB -> b | \n C -> a | ");
 		GrammarService service = new GrammarService(g);
-		System.out.println(g.getNewNonTerminals());
+		System.out.println(g.getNonTerminals());
 		service.buildAllFirstSets();
 	}
 }

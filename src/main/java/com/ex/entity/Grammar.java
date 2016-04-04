@@ -28,9 +28,6 @@ public final class Grammar {
 		String[] splitLine = rulesText.split("->");
 		String producerText = splitLine[0].trim();
 		Symbol producerSymbol = new Symbol(producerText);
-		if (producerSymbol.isTerminal()) {
-			throw new Exception("Encontrou símbolo terminal no lado esquerdo da regra: " + producerSymbol.literalRepresentation);
-		}
 		String[] rightSideTextProductions = splitLine[1].split("\\|");
 
 		for (int i = 0; i < rightSideTextProductions.length; i++) {
@@ -100,7 +97,7 @@ public final class Grammar {
 		}
 	}
 
-	public Set<Symbol> getNewNonTerminals() {
+	public Set<Symbol> getNonTerminals() {
 		return nonTerminals;
 	}
 
