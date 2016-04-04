@@ -1,12 +1,11 @@
 package com.ex.entity;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import com.ex.entity.Symbol.SymbolType;
 
 public final class Grammar {
 
@@ -49,7 +48,11 @@ public final class Grammar {
 
 	private void isValidGrammar(String inputGrammar) throws Exception{
 
+		Set<Symbol> nonTerminalsLHS = new HashSet<Symbol>();
+		Set<Symbol> nonTerminalsRHS = new HashSet<Symbol>();
+		
 		String[] lines = inputGrammar.split("\n");
+		
 		for (String line : lines) {
 			// Verifica se ha "->"
 			String[] splitLine = line.split("->");
@@ -61,9 +64,11 @@ public final class Grammar {
 			String LHS = splitLine[0].trim();
 			if (!LHS.matches(Symbol.NONTERMINAL_REGEX)) {
 				throw new Exception("Símbolo do lado esquerdo não é um não terminal: " + LHS);
+			} else {
+				nonTerminalsLHS.add(new Symbol(SymbolType.NONTERMINAL, LHS));
 			}
-
-			// TODO: Verifica se parte direita representa sequencias de simbolos
+			
+			// Verifica se parte direita representa sequencias de simbolos
 			// (possivelmente dividos por |)
 			String RHS = splitLine[1];
 			String[] productions = RHS.split("\\|");
@@ -75,16 +80,15 @@ public final class Grammar {
 							!symbolText.matches(Symbol.TERMINAL_REGEX) &&
 							!symbolText.matches(Symbol.NONTERMINAL_REGEX)) {
 						throw new Exception("Símbolo não segue formato válido: " + symbolText);
-
-					}	
+					} else if (symbolText.matches(Symbol.NONTERMINAL_REGEX)) {
+						nonTerminalsRHS.add(new Symbol(SymbolType.NONTERMINAL, symbolText));
+					}
 				}
 			}
-
-			// TODO: Verificar se nao terminais que aparecem a direita
-			// tambem aparecem a esquerda.
-			Set<Symbol> nonTerminalsLHS = new HashSet<Symbol>();
-			Set<Symbol> nonTerminalsRHS = new HashSet<Symbol>();
-
+		}
+		
+		if (!nonTerminalsLHS.equals(nonTerminalsRHS)) {
+			throw new Exception ("Quantidade de não-terminais à esquerda diferente da quantidade à direita.");
 		}
 	}
 

@@ -1,14 +1,12 @@
 package com.ex.entity;
 
-import org.hibernate.hql.internal.ast.util.LiteralProcessor;
-
 public final class Symbol {
 	
 	public static final String TERMINAL_REGEX = "^[a-z][A-Za-z0-9]*";
 	public static final String NONTERMINAL_REGEX = "^[A-Z][A-Za-z0-9]*";
 	public static final String EMPTY_STRING_REGEX =  "";
 
-	public enum SymbolType{
+	public enum SymbolType {
 		NONTERMINAL, TERMINAL, EMPTYSTRING,
 	}
 
