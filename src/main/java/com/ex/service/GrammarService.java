@@ -1,10 +1,16 @@
 package com.ex.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.ex.entity.Grammar;
+import com.ex.entity.ParseTable;
 import com.ex.entity.Rule;
 import com.ex.entity.Symbol;
 import com.ex.entity.Symbol.SymbolType;
@@ -55,19 +61,19 @@ public class GrammarService {
 		for (Symbol nonTerminal: grammar.getNonTerminals()){
 			for (Rule rule : grammar.getRules().get(nonTerminal)) {
 				int i = 0;
-				while(rule.production.get(i).isNonTerminal() && 
-						producesEps(rule.production.get(i)) &&
-						i < rule.production.size()){
-					setsWhoseUnionIsFirstSet.get(nonTerminal).add(rule.production.get(i));
+				while(rule.getProduction().get(i).isNonTerminal() && 
+						producesEps(rule.getProduction().get(i)) &&
+						i < rule.getProduction().size()){
+					setsWhoseUnionIsFirstSet.get(nonTerminal).add(rule.getProduction().get(i));
 					i++;
 				}
 				// se while percorreu todos os simbolos da producao,
 				// entao todos os nao terminais iterados produzem cadeia vazia
-				if(i >= rule.production.size()){
+				if(i >= rule.getProduction().size()){
 					setsWhoseUnionIsFirstSet.get(nonTerminal).add(new Symbol(SymbolType.EMPTYSTRING, ""));
 				}
 				else{
-					setsWhoseUnionIsFirstSet.get(nonTerminal).add(rule.production.get(i));
+					setsWhoseUnionIsFirstSet.get(nonTerminal).add(rule.getProduction().get(i));
 				}
 			}
 		}
@@ -142,14 +148,124 @@ public class GrammarService {
 		return firstSetsBeforeIteration;
 	}
 
-
+	public List<Symbol> buildFirstSet (Rule rule) {
+		//TODO
+		return null;
+	}
 
 	/**
 	 * Encontra o follow daquele argumento
 	 * @param arg - Símbolo para encontrar o follow
 	 * @return Set<String> Follow de arg
 	 */
-	public Set<String> buildAllFollowSets (String arg) {
+	public Map<Symbol, Set<Symbol>> buildAllFollowSets() {
+		//TODO
+		return new HashMap<Symbol, Set<Symbol>>();
+	}
+	
+	public ParseTable buildParseTable () throws Exception {
+		ParseTable table = new ParseTable();
+		
+		Map<Symbol, Set<Symbol>> firstSets = buildAllFirstSets();
+		Map<Symbol, Set<Symbol>> followSets = buildAllFollowSets();
+		
+		if (isLL1Grammar()) {
+			
+		} else {
+			throw new Exception ("Gramática não é LL1.");
+		}
+		
+		return table;
+	}
+	
+	/**
+	 * Função checará se a gramática é LL(1)
+	 * @return
+	 */
+	public boolean isLL1Grammar () {
+		
+		Map<Symbol, Boolean> map = new HashMap<Symbol, Boolean>();
+		
+		for (Set<Rule> rules : grammar.getRules().values()) {
+			for (Rule r : rules) {
+				for (Symbol s : r.getProduction()) {
+					if (s.isEmptyString()) {
+						map.put(r.getProducer(), true);
+						break;
+					}
+				}
+				if (!map.isEmpty()) {
+					break;
+				}
+			}
+			if (!map.isEmpty()) {
+				break;
+			}
+		}
+		
+		/*
+		 * Checa: Para qualquer S -> a | b, First(a) intersecção First(b) = null
+		 */
+		for (Set<Rule> rules : grammar.getRules().values()) {
+			List<Symbol> firstList = new ArrayList<Symbol>();
+			
+			for (Rule r : rules) {
+				if (r.getProduction().size() != 1) {
+					List<Symbol> firstSet = buildFirstSet(r);
+					
+					for (Symbol s : firstSet) {
+						if (firstList.contains(s)) {
+							return false;
+						}
+					}
+					
+					firstList.addAll(firstSet);
+				}
+			}
+		}
+		
+		/*
+		 * Confere se, quando existe regra b -> eps, então First(a) intersecção Follow(S) = null
+		 */
+		for (Symbol s : map.keySet()) {
+			if (map.get(s).equals(true)) {
+				List<Symbol> followSet = buildFollowSet(s);
+				
+				for (Rule rule : grammar.getRules().get(s)) {
+					for (Symbol symbol : rule.getProduction()) {
+						if (!symbol.isEmptyString()) {
+							List<Symbol> firstSet = buildFirstSet(symbol);
+							
+							for (Symbol firstResult : firstSet) {
+								if (followSet.contains(firstResult)) {
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Deve construir o First de um símbolo
+	 * @param symbol
+	 * @return
+	 */
+	private List<Symbol> buildFirstSet(Symbol symbol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * Deve calcular o follow para um símbolo não terminal pertencente ao produtor da regra da gramática.
+	 * @param s
+	 */
+	private List<Symbol> buildFollowSet(Symbol s) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

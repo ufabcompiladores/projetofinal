@@ -1,39 +1,39 @@
 package com.ex.entity;
 
 public final class Symbol {
-	
+
 	public static final String TERMINAL_REGEX = "^[a-z][A-Za-z0-9]*";
 	public static final String NONTERMINAL_REGEX = "^[A-Z][A-Za-z0-9]*";
-	public static final String EMPTY_STRING_REGEX =  "";
+	public static final String EMPTY_STRING_REGEX = "";
 
 	public enum SymbolType {
 		NONTERMINAL, TERMINAL, EMPTYSTRING,
 	}
 
-	public SymbolType type;
-	public String literalRepresentation;
-	
+	private SymbolType type;
+	private String literalRepresentation;
+
 	public Symbol(SymbolType type, String literalRepresentation) {
 		super();
 		this.type = type;
 		this.literalRepresentation = literalRepresentation;
 	}
-	
-	public Symbol(String literalRepresentation) throws Exception{
+
+	public Symbol(String literalRepresentation) throws Exception {
 		super();
-		this.literalRepresentation = literalRepresentation;	
+		this.literalRepresentation = literalRepresentation;
 		this.type = getType(literalRepresentation);
 	}
 
 	@Override
 	public String toString() {
-		if (this.type == SymbolType.EMPTYSTRING){
+		if (this.type == SymbolType.EMPTYSTRING) {
 			return "ε";
-		}
-		else {
+		} else {
 			return literalRepresentation;
 		}
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -42,6 +42,7 @@ public final class Symbol {
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -60,36 +61,52 @@ public final class Symbol {
 			return false;
 		return true;
 	}
-	
-	private SymbolType getType(String representation) throws Exception{
-		if(representation.matches(TERMINAL_REGEX)){
+
+	private SymbolType getType(String representation) throws Exception {
+		if (representation.matches(TERMINAL_REGEX)) {
 			return SymbolType.TERMINAL;
 		}
 
 		// TODO: add special characters
-		else if(representation.matches(NONTERMINAL_REGEX)){
+		else if (representation.matches(NONTERMINAL_REGEX)) {
 			return SymbolType.NONTERMINAL;
-		} 
-		else if (representation.equals(EMPTY_STRING_REGEX)){
+		} else if (representation.equals(EMPTY_STRING_REGEX)) {
 			return SymbolType.EMPTYSTRING;
-		}
-			else throw new Exception("Not a valid format for a symbol: " + representation);
+		} else
+			throw new Exception("Not a valid format for a symbol: " + representation);
 	}
-	
-	public boolean isTerminal(){
+
+	public boolean isTerminal() {
 		return this.type == SymbolType.TERMINAL;
 	}
-	
-	public boolean isNonTerminal(){
+
+	public boolean isNonTerminal() {
 		return this.type == SymbolType.NONTERMINAL;
 	}
-	
-	public boolean isEmptyString(){
+
+	public boolean isEmptyString() {
 		return this.type == SymbolType.EMPTYSTRING;
 	}
-	
-	public boolean isLastSymbolOfProduction(Rule rule){
-		int lastIndex = rule.production.size() - 1;
-		return rule.production.get(lastIndex).equals(this);
+
+	public boolean isLastSymbolOfProduction(Rule rule) {
+		int lastIndex = rule.getProduction().size() - 1;
+		return rule.getProduction().get(lastIndex).equals(this);
 	}
+
+	public SymbolType getType() {
+		return type;
+	}
+
+	public void setType(SymbolType type) {
+		this.type = type;
+	}
+
+	public String getLiteralRepresentation() {
+		return literalRepresentation;
+	}
+
+	public void setLiteralRepresentation(String literalRepresentation) {
+		this.literalRepresentation = literalRepresentation;
+	}
+
 }
