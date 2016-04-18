@@ -14,6 +14,7 @@ import com.ex.entity.ParseTable;
 import com.ex.entity.Rule;
 import com.ex.entity.Symbol;
 import com.ex.entity.Symbol.SymbolType;
+import com.ex.entity.Tuple;
 
 @Service
 public class GrammarService {
@@ -170,7 +171,24 @@ public class GrammarService {
 		Map<Symbol, Set<Symbol>> followSets = buildAllFollowSets();
 		
 		if (isLL1Grammar()) {
+			HashSet<Tuple> set = new HashSet<Tuple>();
+			for (Symbol n : grammar.getNonTerminals()) {
+				for (Symbol t : grammar.getTerminals()) {
+					set.add(new Tuple(n, t));
+				}
+			}
 			
+			for (Symbol n : grammar.getNonTerminals()) {
+				for (Symbol t : grammar.getTerminals()) {
+					//Se não contém vazio, coloca as regras que estão no first.
+					if (firstSets.get(n).contains(t)) {
+						//TODO a função first/follow neste caso deve retornar a regra a ser colocada na tabela.
+						table.addRule(n, t, first(n, t));
+					} else if (firstSets.get(n).contains(Symbol.EMPTY_STRING_REGEX)) {
+						table.addRule(n, t, follow(n, t));
+					}
+				}
+			}
 		} else {
 			throw new Exception ("Gramática não é LL1.");
 		}

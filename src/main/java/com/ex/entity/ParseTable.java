@@ -5,11 +5,11 @@ import java.util.Set;
 
 public class ParseTable {
 
-	private Set<Tuple<Symbol, Symbol>> cells;
-	private Map<Tuple<Symbol, Symbol>, Set<Rule>> table;
+	private Set<Tuple> cells;
+	private Map<Tuple, Set<Rule>> table;
 
 	public boolean isAmbiguous () {
-		for (Tuple<Symbol, Symbol> cell : cells) {
+		for (Tuple cell : cells) {
 			if (table.get(cell).size() > 1) {
 				return true;
 			}
@@ -17,20 +17,24 @@ public class ParseTable {
 		
 		return false;
 	}
+	
+	public void addRule(Symbol nt, Symbol t, Rule r) {
+		table.get(new Tuple(nt, t)).add(r);
+	}
 
-	public Set<Tuple<Symbol, Symbol>> getCells() {
+	public Set<Tuple> getCells() {
 		return cells;
 	}
 
-	public void setCells(Set<Tuple<Symbol, Symbol>> cells) {
+	public void setCells(Set<Tuple> cells) {
 		this.cells = cells;
 	}
 
-	public Map<Tuple<Symbol, Symbol>, Set<Rule>> getTable() {
+	public Map<Tuple, Set<Rule>> getTable() {
 		return table;
 	}
 
-	public void setTable(Map<Tuple<Symbol, Symbol>, Set<Rule>> table) {
+	public void setTable(Map<Tuple, Set<Rule>> table) {
 		this.table = table;
 	}
 

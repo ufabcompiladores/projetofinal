@@ -10,12 +10,12 @@ import com.ex.entity.Symbol.SymbolType;
 public final class Grammar {
 
 	private Map<Symbol, Set<Rule>> rules;
-	private Set<String> terminals;
+	private Set<Symbol> terminals;
 	private Set<Symbol> nonTerminals;
 
 	public Grammar (String inputGrammar) throws Exception {
 		this.rules = new HashMap<Symbol, Set<Rule>>();
-		this.terminals = new HashSet<String>();
+		this.terminals = new HashSet<Symbol>();
 		this.nonTerminals = new HashSet<Symbol>();
 
 		isValidGrammar(inputGrammar);
@@ -105,7 +105,7 @@ public final class Grammar {
 		return nonTerminals;
 	}
 
-	public Set<String> getTerminals() {
+	public Set<Symbol> getTerminals() {
 		return terminals;
 	}
 
