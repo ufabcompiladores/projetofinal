@@ -8,8 +8,6 @@ public class Follow {
 	private Set<Symbol> followSets;
 	private Set<Symbol> terminals;
 	private boolean hasEOF;
-	private Set<Symbol> elements;
-
 
 
 	public Follow() {
@@ -18,7 +16,6 @@ public class Follow {
 		this.firstSetsWithoutEps = new HashSet<Symbol>();
 		this.followSets = new HashSet<Symbol>();
 		this.terminals = new HashSet<Symbol>();
-		this.elements = new HashSet<Symbol>();
 		this.hasEOF = false;
 	}
 
@@ -43,10 +40,6 @@ public class Follow {
 		if (hasEOF){
 			string.append("{$}");
 		}
-		for (Symbol sym : elements){
-			string.append(String.format(" %s ", sym));
-		}
-
 		string.append(" }");
 		return string.toString();
 	}
@@ -77,10 +70,36 @@ public class Follow {
 	}
 
 
-	public Set<Symbol> getElements() {
+	
+	public Set<Symbol> update(Grammar grammar){
+		Set<Symbol> elements = new HashSet<Symbol>();	
+		StringBuilder stringb = new StringBuilder();
+		stringb.append(String.format("Follow set description: %s \n", this));
+
+		for (Symbol sym : firstSets){
+			stringb.append(String.format("First(%s) = %s \n", sym, grammar.first(sym)));
+			elements.addAll(grammar.first(sym));
+		}
+		for (Symbol sym : firstSetsWithoutEps){
+			stringb.append(String.format("First(%s) - {ε} = %s - {ε}\n", sym, grammar.first(sym)));
+			grammar.addAllElementsFromSetExceptEmptyString(grammar.first(sym), elements);
+		}
+		for (Symbol sym : followSets){
+			stringb.append(String.format("Follow(%s)  = %s\n", sym, grammar.follow(sym)));
+			elements.addAll(grammar.follow(sym));
+		}
+		for (Symbol sym : terminals){
+			stringb.append(String.format("Adding {%s} \n", sym));
+			elements.add(sym);
+		}
+		// TODO: handle this case
+		if (hasEOF){
+			stringb.append("{$}");
+		}
+		stringb.append(String.format("\n Elements: %s \n", elements));
+		System.out.println(stringb.toString());
 		return elements;
 	}
-	
 	
 
 }
