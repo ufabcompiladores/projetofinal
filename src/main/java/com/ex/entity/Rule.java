@@ -3,8 +3,6 @@ package com.ex.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ex.entity.Symbol.SymbolType;
-
 public final class Rule {
 
 	private Symbol producer;
@@ -36,7 +34,7 @@ public final class Rule {
 	}
 
 	public boolean producesEmptyString() {
-		return this.production.get(0).getType() == SymbolType.EMPTYSTRING;
+		return this.production.get(0).isEmptyString();
 	}
 
 	public Symbol getProducer() {

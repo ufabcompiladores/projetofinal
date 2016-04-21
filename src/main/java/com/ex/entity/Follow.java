@@ -24,7 +24,7 @@ public class Follow {
 						Symbol symbolOnRightSide = rule.getProduction().get(indexRightSideOfSym);
 						// caso: simbolo seguinte eh nao terminal que gera ε
 						while(symbolOnRightSide.isNonTerminal() && 
-								grammar.firstSetFromSymbol(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
+								grammar.first(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
 								indexRightSideOfSym < rule.getProduction().size()){
 							firstSetsWithoutEps.add(symbolOnRightSide);
 							indexRightSideOfSym++;

@@ -40,11 +40,11 @@ public class LLService {
 			table.setCells(set);
 
 			for (Symbol nonTerminal : grammar.getNonTerminals()) {
-				Set<Rule> rules = grammar.getRulesByNonTerminal(nonTerminal);
+				Set<Rule> rules = grammar.getRulesBySymbol(nonTerminal);
 				//Se não contiver palavra vazia procura firsts, se tiver, follows.
 				if (!rules.contains(Symbol.DefaultSymbols.EMPTY.geSymbol())) {
 					for (Rule r : rules) {
-						Set<Symbol> firsts = grammar.getFirstByRule(r);
+						Set<Symbol> firsts = grammar.first(r);
 						
 						for (Symbol terminalInFirst : firsts) {
 							table.addRule(nonTerminal, terminalInFirst, r);
@@ -52,7 +52,7 @@ public class LLService {
 					}
 				} else {
 					for (Rule r : rules) {
-						Set<Symbol> follows = grammar.getFollowByRule(r);
+						Set<Symbol> follows = grammar.follow(r);
 						
 						for (Symbol terminalInFollow : follows) {
 							table.addRule(nonTerminal, terminalInFollow, r);
@@ -97,7 +97,7 @@ public class LLService {
 
 			for (Rule r : rules) {
 				if (r.getProduction().size() != 1) {
-					Set<Symbol> firstSet = grammar.getFirstByRule(r);
+					Set<Symbol> firstSet = grammar.first(r);
 
 					for (Symbol s : firstSet) {
 						if (firstList.contains(s)) {
@@ -121,7 +121,7 @@ public class LLService {
 				for (Rule rule : grammar.getRules().get(s)) {
 					for (Symbol symbol : rule.getProduction()) {
 						if (!symbol.isEmptyString()) {
-							Set<Symbol> firstSet = grammar.getFirstSets().get(symbol);
+							Set<Symbol> firstSet = grammar.first(symbol);
 
 							for (Symbol firstResult : firstSet) {
 								if (followSet.contains(firstResult)) {
