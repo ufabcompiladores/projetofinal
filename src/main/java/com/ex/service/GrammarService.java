@@ -1,6 +1,5 @@
 package com.ex.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -147,7 +146,7 @@ public class GrammarService {
 		return firstSetsBeforeIteration;
 	}
 
-	public List<Symbol> buildFirstSet (Rule rule) {
+	public Set<Symbol> buildFirstSet (Rule rule) {
 		//TODO
 		return null;
 	}
@@ -229,7 +228,7 @@ public class GrammarService {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> B e C d \nB -> b | \n C -> C a | f");
+		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B |");
 		GrammarService service = new GrammarService(g);
 		System.out.println(g.getNonTerminals());
 		service.buildAllFirstSets();

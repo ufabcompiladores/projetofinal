@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ex.entity.Grammar;
@@ -19,9 +18,6 @@ import com.ex.entity.Tuple;
 @Service("LL")
 public class LLService {
 	
-	@Autowired
-	GrammarService grammarSerice;
-	
 	private final Grammar grammar;
 	
 	public LLService(Grammar grammar) {
@@ -31,25 +27,36 @@ public class LLService {
 	public ParseTable buildParseTable() throws Exception {
 		ParseTable table = new ParseTable();
 
-		Map<Symbol, Set<Symbol>> firstSets = grammar.getFirstSets();
-
 		if (isLL1Grammar()) {
 			HashSet<Tuple> set = new HashSet<Tuple>();
 			for (Symbol n : grammar.getNonTerminals()) {
 				for (Symbol t : grammar.getTerminals()) {
 					set.add(new Tuple(n, t));
 				}
+				set.add(new Tuple(n, Symbol.DefaultSymbols.EMPTY.geSymbol()));
 			}
+			
+			//Adiciona as linhas e colunas vazias à tabela.
+			table.setCells(set);
 
-			for (Symbol n : grammar.getNonTerminals()) {
-				for (Symbol t : grammar.getTerminals()) {
-					// Se não contém vazio, coloca as regras que estão no first.
-					if (firstSets.get(n).contains(t)) {
-						// TODO a função first/follow neste caso deve retornar a
-						// regra a ser colocada na tabela.
-//						table.addRule(n, t, grammar.ruleFirst(n, t));
-					} else if (firstSets.get(n).contains(Symbol.EMPTY_STRING_REGEX)) {
-//						table.addRule(n, t, grammar.ruleFollow(n, t));
+			for (Symbol nonTerminal : grammar.getNonTerminals()) {
+				Set<Rule> rules = grammar.getRulesByNonTerminal(nonTerminal);
+				//Se não contiver palavra vazia procura firsts, se tiver, follows.
+				if (!rules.contains(Symbol.DefaultSymbols.EMPTY.geSymbol())) {
+					for (Rule r : rules) {
+						Set<Symbol> firsts = grammar.getFirstByRule(r);
+						
+						for (Symbol terminalInFirst : firsts) {
+							table.addRule(nonTerminal, terminalInFirst, r);
+						}
+					}
+				} else {
+					for (Rule r : rules) {
+						Set<Symbol> follows = grammar.getFollowByRule(r);
+						
+						for (Symbol terminalInFollow : follows) {
+							table.addRule(nonTerminal, terminalInFollow, r);
+						}
 					}
 				}
 			}

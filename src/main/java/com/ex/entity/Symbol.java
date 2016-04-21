@@ -5,9 +5,32 @@ public final class Symbol {
 	public static final String TERMINAL_REGEX = "^[a-z][A-Za-z0-9]*";
 	public static final String NONTERMINAL_REGEX = "^[A-Z][A-Za-z0-9]*";
 	public static final String EMPTY_STRING_REGEX = "";
+	public static final String EOF_STRING_REGEX = "$";
 
 	public enum SymbolType {
 		NONTERMINAL, TERMINAL, EMPTYSTRING, EOF,
+	}
+	
+	
+	/**
+	 * Default symbols
+	 * @author giulio
+	 *
+	 */
+	public enum DefaultSymbols {
+		EMPTY(new Symbol(SymbolType.EMPTYSTRING, EMPTY_STRING_REGEX)),
+		FINAL(new Symbol(SymbolType.EOF, EOF_STRING_REGEX));
+		
+		private final Symbol symbol;
+		
+		DefaultSymbols (Symbol symbol) {
+			this.symbol = symbol;
+		}
+		
+		public Symbol geSymbol() {
+			return symbol;
+		}
+		
 	}
 
 	private SymbolType type;

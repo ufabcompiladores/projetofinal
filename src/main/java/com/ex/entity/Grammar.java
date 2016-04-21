@@ -172,4 +172,13 @@ public final class Grammar {
 		this.followSets = followSets;
 	}
 
+	public Set<Rule> getRulesByNonTerminal(Symbol symbol) {
+		return this.rules.get(symbol);
+	}
+
+	public Set<Symbol> getFollowByRule(Rule r) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
