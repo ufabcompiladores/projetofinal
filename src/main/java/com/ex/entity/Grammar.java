@@ -2,6 +2,7 @@ package com.ex.entity;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -24,8 +25,8 @@ public final class Grammar {
 		isValidGrammar(inputGrammar);
 		addNonTerminals(inputGrammar);
 		readAllRules(inputGrammar);
-		
-		
+
+
 		this.firstSets = buildAllFirstSets();
 	}
 
@@ -119,7 +120,7 @@ public final class Grammar {
 			this.nonTerminals.add(new Symbol(LHS));
 		}
 	}
-	
+
 	/**
 	 * Deve retornar o first de uma única regra.
 	 * Função vai ser usada para conferir se a gramática é LL.1
@@ -133,9 +134,14 @@ public final class Grammar {
 			return firstFromRule;
 		}
 
-		// 👀
 		int indexSymbol = 0;
 		Symbol sym = rule.getProduction().get(indexSymbol);
+
+		if (sym.isTerminal()){
+			firstFromRule.add(sym);
+			return firstFromRule;
+		}
+
 		while(sym.isNonTerminal() && 
 				this.first(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
 				indexSymbol < rule.getProduction().size()){
@@ -144,23 +150,23 @@ public final class Grammar {
 			indexSymbol++;
 			sym = rule.getProduction().get(indexSymbol);
 		}
-		
+
 		// se chegou ate o final, todos produzem ε, assim first produz ε
 		if (indexSymbol == rule.getProduction().size() - 1){
 			firstFromRule.add(new Symbol(SymbolType.EMPTYSTRING, ""));
 			return firstFromRule;
 		}
-		
+
 		if (sym.isTerminal()){
 			firstFromRule.add(sym);
 			return firstFromRule;
 		}
-		
-/*		se nao eh terminal
- *      nem ε 
- *      nem nao terminal que produz ε,
+
+		/*		se nao eh terminal
+		 *      nem ε 
+		 *      nem nao terminal que produz ε,
 		so pode ser nao terminal que nao produz ε.
-*/
+		 */
 		firstFromRule.addAll(first(sym));
 		return firstFromRule;
 	}
@@ -180,8 +186,8 @@ public final class Grammar {
 	public Set<Symbol> first(Symbol sym){
 		return this.firstSets.get(sym);
 	}
-	
-		/**
+
+	/**
 	 * Computa o conjunto First de cada não terminal.
 	 * Isto é feito da mesma maneira usual na literatura,
 	 * em que se usa uma tabela que é atualizada até
@@ -194,7 +200,7 @@ public final class Grammar {
 		for (Symbol nonTerminal: nonTerminals){
 			firstSetsBeforeIteration.put(nonTerminal, new HashSet<Symbol>());
 		}
-		
+
 		// Get union of sets that represent each first set.
 		Map <Symbol, Set<Symbol>> setsWhoseUnionIsFirstSet = this.buildUnionOfSetsThatRepresetFirstSets();
 
@@ -246,23 +252,23 @@ public final class Grammar {
 		System.out.println(firstSetsBeforeIteration);
 		return firstSetsBeforeIteration;
 	}
-	
-		/**
-	*  Descrevemos cada conjunto First como a uniao de outros conjuntos First.
-	*  Por exemplo, se a regra eh A -> BCD | G | a,
-	*  e se B e C tem cadeia vazia em suas producoes, mas G nao, entao
-	*  First(A) eh {B, C, D, G, a}, em que cada elemento desse conjunto
-	*  eh o first desse symbol. Ou seja,
-	*  First(A) = First(B) ∪ First(C) ∪ First(D) ∪ First(G) ∪ First(a).
-	*  @return Um map de Symbol para o conjunto de Symbols cuja união é o First desse Symbol.
-	*/
+
+	/**
+	 *  Descrevemos cada conjunto First como a uniao de outros conjuntos First.
+	 *  Por exemplo, se a regra eh A -> BCD | G | a,
+	 *  e se B e C tem cadeia vazia em suas producoes, mas G nao, entao
+	 *  First(A) eh {B, C, D, G, a}, em que cada elemento desse conjunto
+	 *  eh o first desse symbol. Ou seja,
+	 *  First(A) = First(B) ∪ First(C) ∪ First(D) ∪ First(G) ∪ First(a).
+	 *  @return Um map de Symbol para o conjunto de Symbols cuja união é o First desse Symbol.
+	 */
 	private Map<Symbol, Set<Symbol>> buildUnionOfSetsThatRepresetFirstSets(){
 		// Initialize set
 		Map<Symbol, Set<Symbol>> setsWhoseUnionIsFirstSet = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
 			setsWhoseUnionIsFirstSet.put(nonTerminal, new HashSet<Symbol>());
 		}
-		
+
 		// Build set
 		for (Symbol nonTerminal: nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)) {
@@ -289,7 +295,67 @@ public final class Grammar {
 		System.out.println("Description of first rules: " + setsWhoseUnionIsFirstSet);
 		return setsWhoseUnionIsFirstSet;
 	}
-	
+
+	public void buildAllFollowSetDescriptions(){
+		// Initialize set.
+		Map<Symbol, Follow> followSetsDescriptions = new HashMap<Symbol, Follow>();
+		for (Symbol nonTerminal: nonTerminals){
+			Follow follow = buildFollowDescription(nonTerminal);
+			followSetsDescriptions.put(nonTerminal, follow);
+			//			System.out.println(followSetsDescriptions.get(nonTerminal));
+			System.out.println(follow);
+		}
+	}
+
+	public Follow buildFollowDescription(Symbol sym){
+		Follow followSet = new Follow();
+
+		System.out.format("Follow set for %s \n", sym);
+
+		// TODO: add {$} to first symbol
+		for (Symbol nonTerminal : nonTerminals){
+			for (Rule rule : rules.get(nonTerminal)){
+				int i = 0;
+				while (i < rule.getProduction().size()) {
+					// achou sym no RHS da producao
+					if (rule.getProduction().get(i).equals(sym)) {
+						int indexRightSideOfSym = i + 1;
+						// se nao eh ultimo simbolo da producao
+						if (indexRightSideOfSym < rule.getProduction().size()) {
+							Symbol symbolOnRightSide = rule.getProduction().get(indexRightSideOfSym);
+							// caso: simbolo seguinte eh nao terminal que gera ε
+							while(indexRightSideOfSym < rule.getProduction().size() &&
+									symbolOnRightSide.isNonTerminal() && 
+									first(symbolOnRightSide).contains(new Symbol(SymbolType.EMPTYSTRING, ""))){
+								followSet.getFirstSetsWithoutEps().add(symbolOnRightSide);
+								indexRightSideOfSym++;
+								symbolOnRightSide = rule.getProduction().get(indexRightSideOfSym);
+							}
+							// caso: eh o ultimo simbolo da producao
+							if (indexRightSideOfSym == rule.getProduction().size()) {
+								followSet.getFollowSets().add(rule.getProducer());
+							}
+							// caso: simbolo seguinte eh terminal
+							if (symbolOnRightSide.isTerminal()) {
+								followSet.getTerminals().add(symbolOnRightSide);
+							}
+							// caso: simbolo seguinte eh nao terminal nao que gera ε
+							if (symbolOnRightSide.isNonTerminal()) {
+								followSet.getFirstSets().add(symbolOnRightSide);
+							}
+						}
+						// se eh ultimo simbolo da producao
+						else {
+							followSet.getFollowSets().add(rule.getProducer());
+						}
+					}
+					i++;	
+				}
+			}
+		}
+		return followSet;
+	}
+
 	private boolean producesEps(Symbol symbol) {
 		for (Rule rule : this.getRules().get(symbol)){
 			if (rule.producesEmptyString()) {
@@ -321,11 +387,23 @@ public final class Grammar {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> B e C d \nB -> b | \n C -> C a | f");
-//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
+		Grammar g = new Grammar("A -> B e C B B B d \nB -> b | \n C -> C a | f");
+		//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
 		System.out.println(g.getNonTerminals());
-//		service.buildAllFirstSets();
 		System.out.println(g);
+
+		//		System.out.println("---------");
+		//		System.out.println("First de cada regra: \n");
+		//		for (Symbol nonTerminal : g.getNonTerminals()){
+		//			for (Rule rule : g.getRules().get(nonTerminal)){
+		//				System.out.println("Regra: " + rule);
+		//				System.out.println("First" + g.first(rule) + "\n"); 
+		//			}
+		//		}
+		//		System.out.println("---------");
+
+		g.buildAllFollowSetDescriptions();
+
 	}
 	
 }
