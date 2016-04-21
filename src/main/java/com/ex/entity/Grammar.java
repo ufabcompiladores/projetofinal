@@ -2,6 +2,7 @@ package com.ex.entity;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -132,9 +133,14 @@ public final class Grammar {
 			return firstFromRule;
 		}
 
-		// 👀
 		int indexSymbol = 0;
 		Symbol sym = rule.getProduction().get(indexSymbol);
+		
+		if (sym.isTerminal()){
+			firstFromRule.add(sym);
+			return firstFromRule;
+		}
+
 		while(sym.isNonTerminal() && 
 				this.first(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
 				indexSymbol < rule.getProduction().size()){
@@ -331,6 +337,12 @@ public final class Grammar {
 		System.out.println(g.getNonTerminals());
 //		service.buildAllFirstSets();
 		System.out.println(g);
+		for (Symbol nonTerminal : g.getNonTerminals()){
+			for (Rule rule : g.getRules().get(nonTerminal)){
+				System.out.println("Regra: " + rule);
+				System.out.println("First" + g.first(rule) + "\n"); 
+			}
+		}
 	}
 
 }
