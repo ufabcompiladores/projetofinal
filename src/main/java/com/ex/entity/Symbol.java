@@ -66,7 +66,6 @@ public final class Symbol {
 		if (representation.matches(TERMINAL_REGEX)) {
 			return SymbolType.TERMINAL;
 		}
-
 		// TODO: add special characters
 		else if (representation.matches(NONTERMINAL_REGEX)) {
 			return SymbolType.NONTERMINAL;
@@ -91,10 +90,6 @@ public final class Symbol {
 	public boolean isLastSymbolOfProduction(Rule rule) {
 		int lastIndex = rule.getProduction().size() - 1;
 		return rule.getProduction().get(lastIndex).equals(this);
-	}
-
-	public SymbolType getType() {
-		return type;
 	}
 
 	public String getLiteralRepresentation() {
