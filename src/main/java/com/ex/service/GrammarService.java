@@ -161,14 +161,6 @@ public class GrammarService {
 		//TODO
 		return new HashMap<Symbol, Set<Symbol>>();
 	}
-	
-	/**
-	 * TODO Criar lista canônica para a tabela SLR
-	 * @return Set<Rule>
-	 */
-	public Set<Rule> buildSLRCanonical () {
-		return null;
-	}
 
 	// TODO: criado para evitar erro no projeto
 	public Rule ruleFollow(Symbol n, Symbol t) {

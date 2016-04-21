@@ -18,16 +18,22 @@ import com.ex.entity.Tuple;
 
 @Service("LL")
 public class LLService {
-
+	
 	@Autowired
-	GrammarService grammarService;
+	GrammarService grammarSerice;
+	
+	private final Grammar grammar;
+	
+	public LLService(Grammar grammar) {
+		this.grammar = grammar;
+	}
 
-	public ParseTable buildParseTable(Grammar grammar) throws Exception {
+	public ParseTable buildParseTable() throws Exception {
 		ParseTable table = new ParseTable();
 
-		Map<Symbol, Set<Symbol>> firstSets = grammarService.buildAllFirstSets();
+		Map<Symbol, Set<Symbol>> firstSets = grammar.getFirstSets();
 
-		if (isLL1Grammar(grammar)) {
+		if (isLL1Grammar()) {
 			HashSet<Tuple> set = new HashSet<Tuple>();
 			for (Symbol n : grammar.getNonTerminals()) {
 				for (Symbol t : grammar.getTerminals()) {
@@ -41,9 +47,9 @@ public class LLService {
 					if (firstSets.get(n).contains(t)) {
 						// TODO a função first/follow neste caso deve retornar a
 						// regra a ser colocada na tabela.
-						table.addRule(n, t, grammarService.ruleFirst(n, t));
+//						table.addRule(n, t, grammar.ruleFirst(n, t));
 					} else if (firstSets.get(n).contains(Symbol.EMPTY_STRING_REGEX)) {
-						table.addRule(n, t, grammarService.ruleFollow(n, t));
+//						table.addRule(n, t, grammar.ruleFollow(n, t));
 					}
 				}
 			}
@@ -54,7 +60,7 @@ public class LLService {
 		return table;
 	}
 
-	private boolean isLL1Grammar(Grammar grammar) {
+	private boolean isLL1Grammar() {
 
 		Map<Symbol, Boolean> map = new HashMap<Symbol, Boolean>();
 
@@ -74,7 +80,8 @@ public class LLService {
 				break;
 			}
 		}
-
+		
+ 
 		/*
 		 * Checa: Para qualquer S -> a | b, First(a) intersecção First(b) = null
 		 */
@@ -83,7 +90,7 @@ public class LLService {
 
 			for (Rule r : rules) {
 				if (r.getProduction().size() != 1) {
-					List<Symbol> firstSet = grammarService.buildFirstSet(r);
+					Set<Symbol> firstSet = grammar.getFirstByRule(r);
 
 					for (Symbol s : firstSet) {
 						if (firstList.contains(s)) {
@@ -102,12 +109,12 @@ public class LLService {
 		 */
 		for (Symbol s : map.keySet()) {
 			if (map.get(s).equals(true)) {
-				List<Symbol> followSet = grammarService.buildFollowSet(s);
+				Set<Symbol> followSet = grammar.getFollowSets().get(s);
 
 				for (Rule rule : grammar.getRules().get(s)) {
 					for (Symbol symbol : rule.getProduction()) {
 						if (!symbol.isEmptyString()) {
-							Set<Symbol> firstSet = grammarService.firstSetFromSymbol(symbol);
+							Set<Symbol> firstSet = grammar.getFirstSets().get(symbol);
 
 							for (Symbol firstResult : firstSet) {
 								if (followSet.contains(firstResult)) {
