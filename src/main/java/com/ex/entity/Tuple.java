@@ -32,5 +32,13 @@ public class Tuple {
 		
 		return t.leftSymbol.equals(this.leftSymbol) && t.upSymbol.equals(this.upSymbol);
 	}
+	
+	@Override
+	public String toString() {
+		return  String.format("Tupla: [%s, %s]", this.leftSymbol, this.upSymbol);
+	}
 
+	public static void main(String[] args) {
+		System.out.println(new Tuple(Symbol.DefaultSymbols.EMPTY.getSymbol(), Symbol.DefaultSymbols.FINAL.getSymbol()));
+	}
 }

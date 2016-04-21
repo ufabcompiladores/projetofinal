@@ -85,7 +85,7 @@ public final class Symbol {
 		return true;
 	}
 
-	private SymbolType getType(String representation) throws Exception {
+	public static SymbolType getType(String representation) throws Exception {
 		if (representation.matches(TERMINAL_REGEX)) {
 			return SymbolType.TERMINAL;
 		}

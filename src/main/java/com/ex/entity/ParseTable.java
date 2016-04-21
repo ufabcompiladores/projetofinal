@@ -1,26 +1,28 @@
 package com.ex.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class ParseTable {
-
-	private Set<Tuple> cells;
 	private Map<Tuple, Set<Rule>> table;
 	private Set<Symbol> terminals;
 
-	public ParseTable(HashSet<Tuple> set, Set<Symbol> terminals) {
-		this.cells = set;
+	public ParseTable(Set<Tuple> tuples, Set<Symbol> terminals) {
+		this.table = new HashMap<Tuple, Set<Rule>>();
+		
+		
+		for (Tuple t : tuples) {
+			this.table.put(t, new HashSet<Rule>());
+		}
+		
 		terminals.remove(Symbol.DefaultSymbols.EMPTY.getSymbol());
 		this.terminals = terminals;
-		this.table = new HashMap<Tuple, Set<Rule>>();
 	}
 
 	public boolean isAmbiguous () {
-		for (Tuple cell : cells) {
+		for (Tuple cell : table.keySet()) {
 			if (table.get(cell).size() > 1) {
 				return true;
 			}
@@ -29,20 +31,16 @@ public class ParseTable {
 		return false;
 	}
 	
-	public void addRule(Symbol nt, Symbol t, Rule r) {
-		table.get(new Tuple(nt, t)).add(r);
-	}
-	
 	public void addRule(Tuple t, Rule r) {
-		table.get(t).add(r);
-	}
-
-	public Set<Tuple> getCells() {
-		return cells;
-	}
-
-	public void setCells(Set<Tuple> cells) {
-		this.cells = cells;
+		Set<Rule> rules = table.get(t);
+		
+		if (rules == null) {
+			rules = new HashSet<Rule>();
+		}
+		
+		rules.add(r);
+		table.put(t, rules);
+		
 	}
 
 	public Map<Tuple, Set<Rule>> getTable() {
@@ -151,9 +149,9 @@ public class ParseTable {
 	 */
 
 	public static void main(String[] args) {
-		HashSet<Tuple> tuples = new HashSet<Tuple>() {private static final long serialVersionUID = 1L; {
-			add(new Tuple(Symbol.DefaultSymbols.EMPTY.getSymbol(), Symbol.DefaultSymbols.FINAL.getSymbol()));
-			add(new Tuple(Symbol.DefaultSymbols.FINAL.getSymbol(), Symbol.DefaultSymbols.EMPTY.getSymbol()));
+		HashSet<Symbol> tuples = new HashSet<Symbol>() {private static final long serialVersionUID = 1L; {
+			add(Symbol.DefaultSymbols.EMPTY.getSymbol());
+			add(Symbol.DefaultSymbols.FINAL.getSymbol());
 		}};
 		
 		HashSet<Symbol> terminals = new HashSet<Symbol>() {private static final long serialVersionUID = 1L; {
@@ -161,14 +159,14 @@ public class ParseTable {
 			add(Symbol.DefaultSymbols.FINAL.getSymbol());
 		}};
 		
-		ParseTable parseTable = new ParseTable(tuples, terminals);
+//		ParseTable parseTable = new ParseTable(tuples, terminals);
 		
-		parseTable.table.put(new Tuple(Symbol.DefaultSymbols.EMPTY.getSymbol(), Symbol.DefaultSymbols.FINAL.getSymbol()),
-				new HashSet<Rule>(){private static final long serialVersionUID = 1L; {add(Rule.ERROR);}});
-		parseTable.table.put(new Tuple(Symbol.DefaultSymbols.FINAL.getSymbol(), Symbol.DefaultSymbols.EMPTY.getSymbol()), 
-				new HashSet<Rule>(){private static final long serialVersionUID = 1L; {add(new Rule(Symbol.DefaultSymbols.FINAL.getSymbol(),
-						new ArrayList<Symbol>() {private static final long serialVersionUID = 1L; {add(Symbol.DefaultSymbols.FINAL.getSymbol());}}));}});
-		
-		System.out.println(parseTable);
+//		parseTable.table.put(new Tuple(Symbol.DefaultSymbols.EMPTY.getSymbol(), Symbol.DefaultSymbols.FINAL.getSymbol()),
+//				new HashSet<Rule>(){private static final long serialVersionUID = 1L; {add(Rule.ERROR);}});
+//		parseTable.table.put(new Tuple(Symbol.DefaultSymbols.FINAL.getSymbol(), Symbol.DefaultSymbols.EMPTY.getSymbol()), 
+//				new HashSet<Rule>(){private static final long serialVersionUID = 1L; {add(new Rule(Symbol.DefaultSymbols.FINAL.getSymbol(),
+//						new ArrayList<Symbol>() {private static final long serialVersionUID = 1L; {add(Symbol.DefaultSymbols.FINAL.getSymbol());}}));}});
+//		
+//		System.out.println(parseTable);
 	}	
 }

@@ -22,11 +22,33 @@ public final class Grammar {
 
 		isValidGrammar(inputGrammar);
 		addNonTerminals(inputGrammar);
+		addTerminals(inputGrammar);
 		readAllRules(inputGrammar);
 
 
 		this.firstSets = buildAllFirstSets();
 		buildAllFollowSets();
+	}
+
+	private void addTerminals(String inputGrammar) throws Exception {
+		String[] lines = inputGrammar.split("\n");
+		for (String line : lines) {
+			String[] splitLine = line.split("->");
+			String RHS = splitLine[1];
+			String[] rules = RHS.split("\\|");
+			
+			for (String rule : rules) {
+				String[] symbols = rule.split("\\s");
+				
+				for (String symbol : symbols) {
+					if (symbol.trim().matches(Symbol.EMPTY_STRING_REGEX) || symbol.trim().matches(Symbol.TERMINAL_REGEX)) {
+						this.terminals.add(new Symbol(symbol.trim()));
+					}
+				}
+			}
+			
+			
+		}
 	}
 
 	@Override
