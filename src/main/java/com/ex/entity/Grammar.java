@@ -182,8 +182,6 @@ public final class Grammar {
 		return rules;
 	}
 
-	///
-	
 	public Set<Symbol> first(Symbol sym){
 		return this.firstSets.get(sym);
 	}
@@ -297,7 +295,6 @@ public final class Grammar {
 		return setsWhoseUnionIsFirstSet;
 	}
 	
-	
 	private boolean producesEps(Symbol symbol) {
 		for (Rule rule : this.getRules().get(symbol)){
 			if (rule.producesEmptyString()) {
@@ -306,10 +303,6 @@ public final class Grammar {
 		}
 		return false;
 	}
-	
-	
-		
-	
 
 	private void addAllElementsFromSetExceptEmptyString(Set<Symbol> setFrom, Set<Symbol> setTo){
 		for (Symbol symbol : setFrom) {
@@ -318,19 +311,20 @@ public final class Grammar {
 			}
 		}
 	}
-	
-	// TODO
-	/**
-	 * Encontra o follow daquele argumento
-	 * @param arg - Símbolo para encontrar o follow
-	 * @return Set<String> Follow de arg
-	 */
-	public Map<Symbol, Set<Symbol>> buildAllFollowSets() {
-		//TODO
-		return new HashMap<Symbol, Set<Symbol>>();
+
+	public Set<Rule> getRulesBySymbol(Symbol symbol) {
+		return this.rules.get(symbol);
 	}
-	
-	
+
+	public Set<Symbol> follow(Rule r) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<Symbol, Set<Symbol>> getFollowSets() {
+		return followSets;
+	}
+
 	public static void main(String[] args) throws Exception {
 		Grammar g = new Grammar("A -> B e C d \nB -> b | \n C -> C a | f");
 //		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
@@ -344,5 +338,4 @@ public final class Grammar {
 			}
 		}
 	}
-
 }

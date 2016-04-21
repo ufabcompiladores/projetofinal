@@ -3,8 +3,6 @@ package com.ex.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ex.entity.Symbol.SymbolType;
-
 public final class Rule {
 
 	private Symbol producer;
