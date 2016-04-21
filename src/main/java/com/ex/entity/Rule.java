@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Rule {
+	
+	public static final Rule ERROR = new Rule(new Symbol(Symbol.SymbolType.TERMINAL, "ERROR"), new ArrayList<Symbol>());
 
 	private Symbol producer;
 	private List<Symbol> production;
@@ -43,5 +45,9 @@ public final class Rule {
 
 	public List<Symbol> getProduction() {
 		return production;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new Rule (new Symbol(Symbol.SymbolType.NONTERMINAL, "A"), new ArrayList<Symbol>(){{add(new Symbol(Symbol.SymbolType.TERMINAL, "a"));}}));
 	}
 }

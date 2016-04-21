@@ -27,7 +27,7 @@ public final class Symbol {
 			this.symbol = symbol;
 		}
 		
-		public Symbol geSymbol() {
+		public Symbol getSymbol() {
 			return symbol;
 		}
 		
