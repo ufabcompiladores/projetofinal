@@ -25,24 +25,25 @@ public class LLService {
 	}
 
 	public ParseTable buildParseTable() throws Exception {
-		ParseTable table = new ParseTable();
-
+		ParseTable table;
+		
 		if (isLL1Grammar()) {
 			HashSet<Tuple> set = new HashSet<Tuple>();
 			for (Symbol n : grammar.getNonTerminals()) {
 				for (Symbol t : grammar.getTerminals()) {
 					set.add(new Tuple(n, t));
 				}
-				set.add(new Tuple(n, Symbol.DefaultSymbols.EMPTY.geSymbol()));
+				set.add(new Tuple(n, Symbol.DefaultSymbols.EMPTY.getSymbol()));
 			}
 			
-			//Adiciona as linhas e colunas vazias à tabela.
-			table.setCells(set);
+			table = new ParseTable(set, grammar.getTerminals());
+			
+			
 
 			for (Symbol nonTerminal : grammar.getNonTerminals()) {
 				Set<Rule> rules = grammar.getRulesBySymbol(nonTerminal);
 				//Se não contiver palavra vazia procura firsts, se tiver, follows.
-				if (!rules.contains(Symbol.DefaultSymbols.EMPTY.geSymbol())) {
+				if (!rules.contains(Symbol.DefaultSymbols.EMPTY.getSymbol())) {
 					for (Rule r : rules) {
 						Set<Symbol> firsts = grammar.first(r);
 						
@@ -58,6 +59,12 @@ public class LLService {
 							table.addRule(nonTerminal, terminalInFollow, r);
 						}
 					}
+				}
+			}
+			
+			for (Tuple t : table.getTable().keySet()) {
+				if (table.getTable().get(t) == null) {
+					table.addRule(t, Rule.ERROR);
 				}
 			}
 		} else {
