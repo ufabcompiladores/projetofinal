@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.ex.entity.Follow;
 import com.ex.entity.Grammar;
 import com.ex.entity.ParseTable;
 import com.ex.entity.Rule;
@@ -184,9 +183,9 @@ public class GrammarService {
 					//Se não contém vazio, coloca as regras que estão no first.
 					if (firstSets.get(n).contains(t)) {
 						//TODO a função first/follow neste caso deve retornar a regra a ser colocada na tabela.
-						table.addRule(n, t, first(n, t));
+						table.addRule(n, t, ruleFirst(n, t));
 					} else if (firstSets.get(n).contains(Symbol.EMPTY_STRING_REGEX)) {
-						table.addRule(n, t, follow(n, t));
+						table.addRule(n, t, ruleFollow(n, t));
 					}
 				}
 			}
@@ -198,13 +197,13 @@ public class GrammarService {
 	}
 	
 	// TODO: criado para evitar erro no projeto
-	private Rule follow(Symbol n, Symbol t) {
+	private Rule ruleFollow(Symbol n, Symbol t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	// TODO: criado para evitar erro no projeto
-	private Rule first(Symbol n, Symbol t) {
+	private Rule ruleFirst(Symbol n, Symbol t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
