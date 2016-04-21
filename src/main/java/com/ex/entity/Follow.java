@@ -1,4 +1,7 @@
 package com.ex.entity;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.ex.entity.Symbol.SymbolType;
@@ -12,46 +15,22 @@ public class Follow {
 	private Set<Symbol> elements;
 
 
-	public void buildFollowDescriptions(Symbol sym, Grammar grammar){
-		// TODO: add {$} to first symbol
-		for (Symbol nonTerminal : grammar.getNonTerminals()){
-			for (Rule rule : grammar.getRules().get(nonTerminal)){
-				int i = 0;
-				while (i < rule.getProduction().size()) {
-					// achou sym no RHS da producao
-					if (rule.getProduction().get(i).equals(sym)) {
-						int indexRightSideOfSym = i;
-						Symbol symbolOnRightSide = rule.getProduction().get(indexRightSideOfSym);
-						// caso: simbolo seguinte eh nao terminal que gera ε
-						while(symbolOnRightSide.isNonTerminal() && 
-								grammar.first(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
-								indexRightSideOfSym < rule.getProduction().size()){
-							firstSetsWithoutEps.add(symbolOnRightSide);
-							indexRightSideOfSym++;
-							symbolOnRightSide = rule.getProduction().get(indexRightSideOfSym);
-						}
-						// caso: eh o ultimo simbolo da producao
-						if (indexRightSideOfSym == rule.getProduction().size() - 1) {
-							followSets.add(rule.getProducer());
-						}
-						// caso: simbolo seguinte eh terminal
-						if (symbolOnRightSide.isTerminal()) {
-							terminals.add(symbolOnRightSide);
-						}
-						// caso: simbolo seguinte eh nao terminal nao que gera ε
-						if (symbolOnRightSide.isNonTerminal()) {
-							firstSets.add(symbolOnRightSide);
-						}
-					}
-					i++;	
-				}
-			}
-		}
+
+	public Follow() {
+		super();
+		this.firstSets = new HashSet<Symbol>();
+		this.firstSetsWithoutEps = new HashSet<Symbol>();
+		this.followSets = new HashSet<Symbol>();
+		this.terminals = new HashSet<Symbol>();
+		this.elements = new HashSet<Symbol>();
+		this.hasEOF = false;
 	}
+
 
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
+		string.append(" = {");
 		// TODO: nao printar ultimo ∪
 		for (Symbol sym : firstSets){
 			string.append(String.format("First(%s) ∪ ", sym));
@@ -68,11 +47,44 @@ public class Follow {
 		if (hasEOF){
 			string.append("{$}");
 		}
-		string.append(" = {");
 		for (Symbol sym : elements){
 			string.append(String.format(" %s ", sym));
 		}
+
+		string.append(" }");
 		return string.toString();
 	}
+
+
+	public Set<Symbol> getFirstSets() {
+		return firstSets;
+	}
+
+
+	public Set<Symbol> getFirstSetsWithoutEps() {
+		return firstSetsWithoutEps;
+	}
+
+
+	public Set<Symbol> getFollowSets() {
+		return followSets;
+	}
+
+
+	public Set<Symbol> getTerminals() {
+		return terminals;
+	}
+
+
+	public boolean isHasEOF() {
+		return hasEOF;
+	}
+
+
+	public Set<Symbol> getElements() {
+		return elements;
+	}
+	
+	
 
 }
