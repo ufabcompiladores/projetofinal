@@ -9,9 +9,11 @@ import com.ex.entity.Symbol.SymbolType;
 
 public final class Grammar {
 
+
 	private Map<Symbol, Set<Rule>> rules;
 	private Set<Symbol> terminals;
 	private Set<Symbol> nonTerminals;
+	private Map<Symbol, Set<Symbol>> firstSets;
 
 	public Grammar (String inputGrammar) throws Exception {
 		this.rules = new HashMap<Symbol, Set<Rule>>();
@@ -21,6 +23,18 @@ public final class Grammar {
 		isValidGrammar(inputGrammar);
 		addNonTerminals(inputGrammar);
 		readAllRules(inputGrammar);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder();
+		string.append("Grammar rules: \n");
+		for (Symbol nonTerminal : nonTerminals){
+			for (Rule rule : rules.get(nonTerminal)){
+				string.append(String.format("%s \n", rule));
+			}
+		}
+		return string.toString();
 	}
 
 	private void addRuleLine(String rulesText) throws Exception{
@@ -87,9 +101,9 @@ public final class Grammar {
 			}
 		}
 		
-		if (!nonTerminalsLHS.equals(nonTerminalsRHS)) {
-			throw new Exception ("Quantidade de não-terminais à esquerda diferente da quantidade à direita.");
-		}
+//		if (!nonTerminalsLHS.equals(nonTerminalsRHS)) {
+//			throw new Exception ("Quantidade de não-terminais à esquerda diferente da quantidade à direita.");
+//		}
 	}
 
 	private void addNonTerminals(String inputGrammar) throws Exception{
@@ -99,6 +113,10 @@ public final class Grammar {
 			String LHS = splitLine[0].trim();
 			this.nonTerminals.add(new Symbol(LHS));
 		}
+	}
+	
+	public Set<Symbol> firstSetFromSymbol(Symbol sym){
+		return firstSets.get(sym);
 	}
 
 	public Set<Symbol> getNonTerminals() {

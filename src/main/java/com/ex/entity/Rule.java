@@ -27,7 +27,12 @@ public final class Rule {
 
 	@Override
 	public String toString() {
-		return producer + " -> " + production;
+		StringBuilder string = new StringBuilder();
+		string.append(String.format("%s -> ", producer));
+		for (Symbol sym : production){
+			string.append(String.format(" %s ", sym));
+		}
+		return string.toString();
 	}
 
 	public boolean producesEmptyString() {
@@ -38,16 +43,7 @@ public final class Rule {
 		return producer;
 	}
 
-	public void setProducer(Symbol producer) {
-		this.producer = producer;
-	}
-
 	public List<Symbol> getProduction() {
 		return production;
 	}
-
-	public void setProduction(List<Symbol> production) {
-		this.production = production;
-	}
-
 }

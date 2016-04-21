@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.ex.entity.Follow;
 import com.ex.entity.Grammar;
 import com.ex.entity.ParseTable;
 import com.ex.entity.Rule;
@@ -196,6 +197,18 @@ public class GrammarService {
 		return table;
 	}
 	
+	// TODO: criado para evitar erro no projeto
+	private Rule follow(Symbol n, Symbol t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// TODO: criado para evitar erro no projeto
+	private Rule first(Symbol n, Symbol t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * Função checará se a gramática é LL(1)
 	 * @return
@@ -267,6 +280,51 @@ public class GrammarService {
 		
 		return true;
 	}
+	
+	public Set<Symbol> first(Grammar grammar, Rule rule){
+		Set<Symbol> firstFromRule = new HashSet<Symbol>();
+		if(rule.producesEmptyString()){
+			firstFromRule.add(new Symbol(SymbolType.EMPTYSTRING, ""));
+			return firstFromRule;
+		}
+
+		// 👀
+		int indexSymbol = 0;
+		Symbol sym = rule.getProduction().get(indexSymbol);
+		while(sym.isNonTerminal() && 
+				this.firstSetFromSymbol(sym).contains(new Symbol(SymbolType.EMPTYSTRING, "")) &&
+				indexSymbol < rule.getProduction().size()){
+			// todo: excluir eps
+			firstFromRule.addAll(this.firstSetFromSymbol(sym));
+			indexSymbol++;
+			sym = rule.getProduction().get(indexSymbol);
+		}
+		
+		// se chegou ate o final, todos produzem ε, assim first produz ε
+		if (indexSymbol == rule.getProduction().size() - 1){
+			firstFromRule.add(new Symbol(SymbolType.EMPTYSTRING, ""));
+			return firstFromRule;
+		}
+		
+		if (sym.isTerminal()){
+			firstFromRule.add(sym);
+			return firstFromRule;
+		}
+		
+/*		se nao eh terminal
+ *      nem ε 
+ *      nem nao terminal que produz ε,
+		so pode ser nao terminal que nao produz ε.
+*/
+		firstFromRule.addAll(firstSetFromSymbol(sym));
+		return firstFromRule;
+	}	
+
+	// temp para evitar erros - vai ser mudada para grammar (confirmar)
+	private Set<Symbol> firstSetFromSymbol(Symbol sym) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/**
 	 * Deve construir o First de um símbolo
@@ -292,5 +350,6 @@ public class GrammarService {
 		GrammarService service = new GrammarService(g);
 		System.out.println(g.getNonTerminals());
 		service.buildAllFirstSets();
+		System.out.println(g);
 	}
 }

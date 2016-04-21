@@ -7,7 +7,7 @@ public final class Symbol {
 	public static final String EMPTY_STRING_REGEX = "";
 
 	public enum SymbolType {
-		NONTERMINAL, TERMINAL, EMPTYSTRING,
+		NONTERMINAL, TERMINAL, EMPTYSTRING, EOF,
 	}
 
 	private SymbolType type;
@@ -97,16 +97,8 @@ public final class Symbol {
 		return type;
 	}
 
-	public void setType(SymbolType type) {
-		this.type = type;
-	}
-
 	public String getLiteralRepresentation() {
 		return literalRepresentation;
-	}
-
-	public void setLiteralRepresentation(String literalRepresentation) {
-		this.literalRepresentation = literalRepresentation;
 	}
 
 }
