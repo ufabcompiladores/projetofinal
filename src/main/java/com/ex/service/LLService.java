@@ -143,4 +143,13 @@ public class LLService {
 
 		return true;
 	}
+	
+	public static void main(String[] args) throws Exception {
+		Grammar grammar = new Grammar("A -> B e C B B B d \nB -> b | \n C -> C a | f");
+		
+		LLService service = new LLService(grammar);
+		
+		System.out.println(service.isLL1Grammar());
+		
+	}
 }

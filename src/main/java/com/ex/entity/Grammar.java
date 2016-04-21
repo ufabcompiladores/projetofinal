@@ -401,7 +401,6 @@ public final class Grammar {
 		//		System.out.println("---------");
 
 		g.buildAllFollowSetDescriptions();
-
 	}
 	
 }
