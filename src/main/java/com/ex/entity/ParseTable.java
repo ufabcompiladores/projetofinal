@@ -68,8 +68,8 @@ public class ParseTable {
 		for (Set<Rule> sr : table.values()) {
 			for (Rule r : sr) {
 				for (String s : r.toString().split("->")[1].split("\\|")) {
-					if (s.length() + r.getProducer().getLiteralRepresentation().length() + 3 > maxLength) {
-						maxLength = s.length() + r.getProducer().getLiteralRepresentation().length() + 3;
+					if (s.length() + r.getProducer().toString().length() + 3 > maxLength) {
+						maxLength = s.length() + r.getProducer().toString().length() + 3;
 					}
 				}
 			}
@@ -170,5 +170,5 @@ public class ParseTable {
 						new ArrayList<Symbol>() {private static final long serialVersionUID = 1L; {add(Symbol.DefaultSymbols.FINAL.getSymbol());}}));}});
 		
 		System.out.println(parseTable);
-	}
+	}	
 }

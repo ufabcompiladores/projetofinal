@@ -48,6 +48,6 @@ public final class Rule {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(new Rule (new Symbol(Symbol.SymbolType.NONTERMINAL, "A"), new ArrayList<Symbol>(){{add(new Symbol(Symbol.SymbolType.TERMINAL, "a"));}}));
+//		System.out.println(new Rule (new Symbol(Symbol.SymbolType.NONTERMINAL, "A"), new ArrayList<Symbol>(){{add(new Symbol(Symbol.SymbolType.TERMINAL, "a"));}}));
 	}
 }
