@@ -27,6 +27,7 @@ public final class Grammar {
 
 
 		this.firstSets = buildAllFirstSets();
+		buildAllFollowSets();
 	}
 
 	@Override
@@ -210,6 +211,7 @@ public final class Grammar {
 			someFirstSetHasChanged = false;
 			Map<Symbol, Set<Symbol>> newFirstSets = new HashMap<Symbol, Set<Symbol>>();
 
+			// copy elements old first sets to new first sets
 			for (Symbol nonTerminal: nonTerminals){
 				Set<Symbol> newSet = new HashSet<Symbol>();
 				newSet.addAll(firstSetsBeforeIteration.get(nonTerminal));
@@ -295,21 +297,21 @@ public final class Grammar {
 		return setsWhoseUnionIsFirstSet;
 	}
 
-	public void buildAllFollowSetDescriptions(){
+	public Map<Symbol, Follow> buildAllFollowSetDescriptions(){
 		// Initialize set.
 		Map<Symbol, Follow> followSetsDescriptions = new HashMap<Symbol, Follow>();
 		for (Symbol nonTerminal: nonTerminals){
 			Follow follow = buildFollowDescription(nonTerminal);
 			followSetsDescriptions.put(nonTerminal, follow);
-			//			System.out.println(followSetsDescriptions.get(nonTerminal));
 			System.out.println(follow);
 		}
+		return followSetsDescriptions;
 	}
 
 	public Follow buildFollowDescription(Symbol sym){
 		Follow followSet = new Follow();
 
-		System.out.format("Follow set for %s \n", sym);
+		System.out.format("Follow set description for %s \n", sym);
 
 		// TODO: add {$} to first symbol
 		for (Symbol nonTerminal : nonTerminals){
@@ -354,6 +356,68 @@ public final class Grammar {
 		}
 		return followSet;
 	}
+	
+		/**
+	 * Computa o conjunto Follow de cada não terminal.
+	 * Isto é feito da mesma maneira usual na literatura,
+	 * em que se usa uma tabela que é atualizada até
+	 * encontrar um ponto fixo.
+	 * @return Um Map de Symbol para o follow set desse Symbol.
+	 */
+	public void buildAllFollowSets(){
+		// Initialize field
+		Map<Symbol, Set<Symbol>> followSetsField = new HashMap<Symbol, Set<Symbol>>();
+		for (Symbol nonTerminal: nonTerminals){
+			followSetsField.put(nonTerminal, new HashSet<Symbol>());
+		}
+		this.followSets = followSetsField;
+		
+//		// Initialize set.
+//		Map<Symbol, Set<Symbol>> followSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
+//		for (Symbol nonTerminal: nonTerminals){
+//			followSetsBeforeIteration.put(nonTerminal, new HashSet<Symbol>());
+//		}
+
+		// Get description of each follow set
+		Map<Symbol, Follow> followSetDescriptions = buildAllFollowSetDescriptions();
+
+		// Iterate until fixed point is found
+		boolean someFollowSetHasChanged = true;
+		while (someFollowSetHasChanged){
+			System.out.println("\n New Iteration \n ------------");
+			someFollowSetHasChanged = false;
+			Map<Symbol, Set<Symbol>> newFollowSets = new HashMap<Symbol, Set<Symbol>>();
+
+			// copy elements old follow sets to new follow sets
+			for (Symbol nonTerminal: nonTerminals){
+				Set<Symbol> newSet = new HashSet<Symbol>();
+				newSet.addAll(this.follow(nonTerminal));
+				newFollowSets.put(nonTerminal, newSet);
+			}
+
+			System.out.println("newFollowSets: " + newFollowSets);
+			System.out.println("FollowSets: " + followSets);
+			
+			for (Symbol nonTerminal: nonTerminals){
+				System.out.println("---- \nUpdating set " + nonTerminal);
+				Follow followDescription = followSetDescriptions.get(nonTerminal);
+				int numElementsBefore = this.follow(nonTerminal).size();
+				newFollowSets.get(nonTerminal).addAll(followDescription.update(this));
+				int numElementsAfter = newFollowSets.get(nonTerminal).size();
+				if (numElementsBefore != numElementsAfter){
+					someFollowSetHasChanged = true;
+				}
+			}
+			System.out.println("Old follow sets: "+ this.followSets);
+			System.out.println("New follow sets: "+ newFollowSets);
+			// old
+//			followSetsBeforeIteration = newFollowSets;
+			this.followSets = newFollowSets;
+		}
+		System.out.println("------");
+		System.out.println("Final result: ");
+		System.out.println(this.followSets);
+	}
 
 	private boolean producesEps(Symbol symbol) {
 		for (Rule rule : this.getRules().get(symbol)){
@@ -364,7 +428,7 @@ public final class Grammar {
 		return false;
 	}
 
-	private void addAllElementsFromSetExceptEmptyString(Set<Symbol> setFrom, Set<Symbol> setTo){
+	public void addAllElementsFromSetExceptEmptyString(Set<Symbol> setFrom, Set<Symbol> setTo){
 		for (Symbol symbol : setFrom) {
 			if (!symbol.isEmptyString()){
 				setTo.add(symbol);
@@ -376,17 +440,16 @@ public final class Grammar {
 		return this.rules.get(symbol);
 	}
 
-	public Set<Symbol> follow(Rule r) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Symbol> follow(Symbol sym) {
+		return this.followSets.get(sym);
 	}
 
-	public Map<Symbol, Set<Symbol>> getFollowSets() {
-		return followSets;
-	}
+//	public Map<Symbol, Set<Symbol>> getFollowSets() {
+//		return followSets;
+//	}
 
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> B e C B B B d \nB -> b | \n C -> C a | f");
+		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
 		System.out.println(g.getNonTerminals());
 		System.out.println(g);
