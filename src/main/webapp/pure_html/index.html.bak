@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
+    <title>Ex</title>
+  </head>
+  <body> 
+    <h1>Ex - Compiladores de forma fácil!</h1>
+    <h3  id="grammar-text">Adicione aqui a sua gramática em forma de texto:</h3>
+    <form  accept-charset="utf-8"  target="_self"  enctype="text/plain"  autocomplete="off"
+       method="POST"  action="/grammar/create/text"  name="grammar-text"> <textarea
+ autofocus="autofocus"  required="required"  placeholder="Digite aqui regras na forma A -> A b c D | e F G | | Ola ola | ..."
+ form="grammar-text"  rows="20"  cols="100"  name="rules"  wrap="soft"></textarea><br>
+      <button  formtarget="_self"  formenctype="text/plain"  formmethod="post"  type="submit"
+         form="grammar-text"  name="submit-grammar-text">Enviar Regras </button></form>
+    <p><br>
+    </p>
+    <h3  id="grammar">Ou, alternativamente, adicione utilizando este formulário:</h3>
+    <form  accept-charset="utf-8"  target="_self"  enctype="text/plain"  autocomplete="off"
+       method="POST"  action="/grammar/create"  name="grammar">
+      <fieldset  form="grammar"  name="rules">Modelo: Produtor -&gt; Regras | A
+        -&gt; a ab D<br>
+        <input  autocomplete="on"  pattern="^[A-Z][A-Za-z0-9]*"  size="10"  required="required"
+           placeholder="Produtor"  form="grammar"  name="regra"  type="text">
+        -&gt; <input  autocomplete="on"  pattern="^[a-z][A-Za-z0-9]*"  size="10"
+           required="required"  placeholder="Produção"  form="grammar"  name="producao"
+           type="text"> <button  type="button"  form="grammar"  onclick="addProduction(this)"
+           name="add-production">Adicionar Produção</button><br>
+        <button  type="button"  form="grammar"  onclick="addRule(this)"  value="Adicionar Regra"
+           name="add-rule">Adicionar Regra</button><br>
+        <button  formtarget="_self"  formenctype="text/plain"  formmethod="post"
+           type="submit"  form="grammar"  name="submit-rules">Enviar Regras</button>
+        <legend>Regras</legend></fieldset>
+    </form>
+    <script  src="/js/homeScript.js"  type="application/x-javascript"></script>
+  </body>
+</html>
