@@ -9,6 +9,9 @@ import com.ex.entity.Symbol.SymbolType;
 
 public final class Grammar {
 
+	/**
+	 * Conjunto de regras da gramática. O símbolo é o produtor daquele conjunto de regras.
+	 */
 	private Map<Symbol, Set<Rule>> rules;
 	private Set<Symbol> terminals;
 	private Set<Symbol> nonTerminals;

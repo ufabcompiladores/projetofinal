@@ -20,7 +20,12 @@ public class LLService {
 	public LLService(Grammar grammar) {
 		this.grammar = grammar;
 	}
-
+	
+	/**
+	 * Constrói a tabela do parse do grammar do serviço.
+	 * @return ParseTable
+	 * @throws Exception - Caso a gramática não seja LL1.
+	 */
 	public ParseTable buildParseTable() throws Exception {
 		ParseTable table;
 		
@@ -47,31 +52,6 @@ public class LLService {
 				}
 			}
 			
-//			for (Symbol nonTerminal : grammar.getNonTerminals()) {
-//				Set<Rule> rules = grammar.getRulesBySymbol(nonTerminal);
-//				//Se não contiver palavra vazia procura firsts, se tiver, follows.
-//				for (Rule r : rules) {
-//					Set<Symbol> firsts = grammar.first(r);
-//						
-//					if (!r.getProduction().contains(Symbol.DefaultSymbols.EMPTY.getSymbol())) {	
-//						for (Symbol terminalInFirst : firsts) {
-//							table.addRule(new Tuple(nonTerminal, terminalInFirst), r);
-//						}
-//					} else {
-//						Set<Symbol> follows = grammar.follow(nonTerminal);
-//						
-//						for (Symbol terminalInFollow : follows) {
-//							table.addRule(new Tuple(nonTerminal, terminalInFollow), r);
-//						}
-//					}
-//				}
-//			}
-			
-//			for (Tuple t : table.getTable().keySet()) {
-//				if (table.getTable().get(t) == null) {
-//					table.addRule(t, Rule.ERROR);
-//				}
-//			}
 		} else {
 			throw new Exception("Gramática não é LL1.");
 		}

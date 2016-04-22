@@ -14,6 +14,11 @@ public class ParseTable {
 	 */
 	private Map<Symbol, Map<Symbol, Set<Rule>>> table;
 
+	/**
+	 * Constrói uma nova tabela do parse com os valores das regras zeradas.
+	 * @param terminals
+	 * @param producers
+	 */
 	public ParseTable(Set<Symbol> terminals, Set<Symbol> producers) {
 		terminals.remove(Symbol.DefaultSymbols.EMPTY.getSymbol());
 		terminals.add(Symbol.DefaultSymbols.FINAL.getSymbol());
@@ -43,9 +48,14 @@ public class ParseTable {
 		return false;
 	}
 	
+	/**
+	 * Adiciona regra a partir de uma tupla (Conjunto do produtor e o terminal [que está no first])
+	 * @param t - Tupla com o valor do produtor e terminal que entrará aquela regra.
+	 * @param r - Regra a ser inserida.
+	 */
 	public void addRule(Tuple t, Rule r) {
 		if (!t.getUpSymbol().equals(Symbol.DefaultSymbols.EMPTY.getSymbol()))
-		table.get(t.getLeftSymbol()).get(t.getUpSymbol()).add(r);
+			table.get(t.getLeftSymbol()).get(t.getUpSymbol()).add(r);
 	}
 
 	public Map<Symbol, Map<Symbol, Set<Rule>>> getTable() {
@@ -162,5 +172,10 @@ public class ParseTable {
 //				new HashSet<Rule>(){private static final long serialVersionUID = 1L; {add(Rule.ERROR);}});
 //		
 //		System.out.println(parseTable);
-//	}	
+//	}
+	
+	@Override
+	public String toString() {
+		return table.toString();
+	}
 }
