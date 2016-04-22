@@ -60,4 +60,11 @@ public final class Rule {
 		return production;
 	}
 	
+	public int getNumber() {
+		return this.number;
+	}
+	
+	public static void main(String[] args) {
+//		System.out.println(new Rule (new Symbol(Symbol.SymbolType.NONTERMINAL, "A"), new ArrayList<Symbol>(){{add(new Symbol(Symbol.SymbolType.TERMINAL, "a"));}}));
+	}
 }
