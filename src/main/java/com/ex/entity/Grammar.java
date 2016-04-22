@@ -465,25 +465,26 @@ public final class Grammar {
 		return this.followSets.get(sym);
 	}
 
-//	public Map<Symbol, Set<Symbol>> getFollowSets() {
-//		return followSets;
-//	}
-
 	public static void main(String[] args) throws Exception {
 		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
 		System.out.println(g.getNonTerminals());
 		System.out.println(g);
 
-		//		System.out.println("---------");
-		//		System.out.println("First de cada regra: \n");
-		//		for (Symbol nonTerminal : g.getNonTerminals()){
-		//			for (Rule rule : g.getRules().get(nonTerminal)){
-		//				System.out.println("Regra: " + rule);
-		//				System.out.println("First" + g.first(rule) + "\n"); 
-		//			}
-		//		}
-		//		System.out.println("---------");
+		// tests
+//		Set<RuleWithDot> s1 = new HashSet<RuleWithDot>();
+//		System.out.println("---------");
+//		System.out.println("Rule with dot de cada regra: \n");
+//		for (Symbol nonTerminal : g.getNonTerminals()){
+//			for (Rule rule : g.getRules().get(nonTerminal)){
+//				s1.add(new RuleWithDot(rule));
+//			}
+//		}
+//		System.out.println("---------");
+		
+		SLR slr = new SLR(g);
+		slr.testGotos();
+		// end tests
 
 		g.buildAllFollowSetDescriptions();
 	}
