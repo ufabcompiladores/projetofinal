@@ -7,16 +7,18 @@ public final class Rule {
 	
 	private Symbol producer;
 	private List<Symbol> production;
+	private int number;
 
 	/**
 	 * Cria a regra a partir do seu produtor, e a lista de símbolos, que serão a produção daquela regra.
 	 * @param producer
 	 * @param production
 	 */
-	public Rule(Symbol producer, ArrayList<Symbol> production) {
+	public Rule(Symbol producer, ArrayList<Symbol> production, int number) {
 		super();
 		this.producer = producer;
 		this.production = production;
+		this.number = number;
 	}
 
 	/**
@@ -26,9 +28,10 @@ public final class Rule {
 	 * @param rightHandSide
 	 * @throws Exception
 	 */
-	public Rule(String producer, String rightHandSide) throws Exception {
+	public Rule(String producer, String rightHandSide, int number) throws Exception {
 		this.production = new ArrayList<Symbol>();
 		this.producer = new Symbol(producer);
+		this.number = number;
 		String[] symbols = rightHandSide.split("\\s");
 		for (int i = 0; i < symbols.length; i++) {
 			production.add(new Symbol(symbols[i]));
@@ -38,7 +41,7 @@ public final class Rule {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		string.append(String.format("%s -> ", producer));
+		string.append(String.format("(%s) %s -> ", number, producer));
 		for (Symbol sym : production){
 			string.append(String.format(" %s ", sym));
 		}
