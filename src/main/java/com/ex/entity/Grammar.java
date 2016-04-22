@@ -14,8 +14,10 @@ public final class Grammar {
 	private Set<Symbol> nonTerminals;
 	private Map<Symbol, Set<Symbol>> firstSets;
 	private Map<Symbol, Set<Symbol>> followSets;
+	private int numberOfRules;
 
 	public Grammar(String inputGrammar) throws Exception {
+		this.numberOfRules = 0;
 		this.rules = new HashMap<Symbol, Set<Rule>>();
 		this.terminals = new HashSet<Symbol>();
 		this.nonTerminals = new HashSet<Symbol>();
@@ -24,7 +26,6 @@ public final class Grammar {
 		addNonTerminals(inputGrammar);
 		addTerminals(inputGrammar);
 		readAllRules(inputGrammar);
-
 
 		this.firstSets = buildAllFirstSets();
 		buildAllFollowSets();
@@ -75,7 +76,8 @@ public final class Grammar {
 			if (!rules.containsKey(producerSymbol)) {
 				rules.put(producerSymbol, new HashSet<Rule>());
 			}
-			rules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim()));
+			rules.get(producerSymbol).add(new Rule(producerText, rightSideTextProductions[i].trim(), this.numberOfRules));
+			numberOfRules++;
 		}
 	}
 
@@ -296,8 +298,6 @@ public final class Grammar {
 			for (Rule rule : rules.get(nonTerminal)) {
 				int i = 0;
 				System.out.println(rule);
-				System.out.println("i: " + i);
-				System.out.println("rule:::: " + rule.getProduction().get(i));
 				while(rule.getProduction().get(i).isNonTerminal() && 
 						producesEps(rule.getProduction().get(i)) &&
 						i < rule.getProduction().size() - 1){
