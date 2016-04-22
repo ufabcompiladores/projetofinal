@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 public class SLR {
 
 	private Grammar grammar;
-	private List<Set<DottedSymbolSequence>> gotoSets;
+	private List<Set<RuleWithDot>> gotoSets;
 
 	public SLR(Grammar grammar) {
 		super();
