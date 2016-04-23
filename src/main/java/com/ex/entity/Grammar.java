@@ -500,17 +500,6 @@ public final class Grammar {
 		System.out.println(g.getNonTerminals());
 		System.out.println(g);
 
-		// tests
-//		Set<RuleWithDot> s1 = new HashSet<RuleWithDot>();
-//		System.out.println("---------");
-//		System.out.println("Rule with dot de cada regra: \n");
-//		for (Symbol nonTerminal : g.getNonTerminals()){
-//			for (Rule rule : g.getRules().get(nonTerminal)){
-//				s1.add(new RuleWithDot(rule));
-//			}
-//		}
-//		System.out.println("---------");
-		
 		SLR slr = new SLR(g);
 //		slr.testBuildAllItemSets();
 //		slr.testGotos();

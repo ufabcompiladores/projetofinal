@@ -26,30 +26,16 @@ public class SLR {
 		this.grammarWithDots = buildGrammarWithDots(grammar);
 		
 		// TODO: get first rule properly
+//		firstClosureParam.add(testGetFirstRule());
 		this.itemSets = new ArrayList<Set<RuleWithDot>>();
 		Set<RuleWithDot> firstClosureParam = new HashSet<RuleWithDot>();
-		firstClosureParam.add(testGetFirstRule());
 
 		Set<RuleWithDot> firstItemSet = new HashSet<RuleWithDot>();
-		firstItemSet = closure(firstClosureParam);
-
-		itemSets.add(firstItemSet);
+//		firstItemSet = closure(firstClosureParam);
+//		itemSets.add(firstItemSet);
 	}
 	
 	
-	// TODO: delete this
-	private RuleWithDot testGetFirstRule() {
-		for (Symbol nonTerminal : grammar.getNonTerminals()) {
-			for (RuleWithDot rule : this.grammarWithDots.get(nonTerminal)) {
-				if (rule.getNumber() == 0) {
-					return rule;
-				}
-			}
-		} 
-		return null;
-	}
-
-
 	public Set<Symbol> follow(Symbol sym) {
 		return grammar.follow(sym);
 	}
