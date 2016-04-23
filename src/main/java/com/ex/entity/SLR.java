@@ -19,20 +19,14 @@ public class SLR {
 	//	private table<Map<Pair<Integer, Symbol>, Set<Rule>>> slrTable;
 	private Map<Symbol, Set<RuleWithDot>> grammarWithDots;
 
-	public SLR(Grammar grammar) {
+	public SLR(Grammar grammar) throws Exception {
 		super();
-		this.grammar = grammar;
-		this.itemSets = new ArrayList<>();
-		this.grammarWithDots = buildGrammarWithDots(grammar);
-		
-		// TODO: get first rule properly
-//		firstClosureParam.add(testGetFirstRule());
+		Grammar grammarWithExtraStartSymbol = grammar.grammarWithExtraStartSymbol();
+		this.grammar = grammarWithExtraStartSymbol;
+		this.grammarWithDots = buildGrammarWithDots(grammarWithExtraStartSymbol);
 		this.itemSets = new ArrayList<Set<RuleWithDot>>();
-		Set<RuleWithDot> firstClosureParam = new HashSet<RuleWithDot>();
-
-		Set<RuleWithDot> firstItemSet = new HashSet<RuleWithDot>();
-//		firstItemSet = closure(firstClosureParam);
-//		itemSets.add(firstItemSet);
+		
+		buildAllItemSets();
 	}
 	
 	
@@ -40,47 +34,51 @@ public class SLR {
 		return grammar.follow(sym);
 	}
 	
-	public void testBuildAllItemSets() {
-		this.buildAllItemSets();
-	}
-
 	private List<Set<RuleWithDot>> buildAllItemSets() {
 		System.out.println("==============================");
-		System.out.println("Building all item sets");
-		List<Set<RuleWithDot>> itemSetsBeforeIteration = new ArrayList<Set<RuleWithDot>>();
-		itemSetsBeforeIteration.addAll(itemSets);
+		System.out.println("Building all state sets");
+		
+		// adding q0 (first state)
+		List<Set<RuleWithDot>> allStatesBeforeIteration = new ArrayList<Set<RuleWithDot>>();
+		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+		Set<RuleWithDot> firstState = new HashSet<RuleWithDot>();
+		firstState = closure(firstRuleSet);
+		allStatesBeforeIteration.add(firstState);
+		
 		ActionFactory actionFactory = new ActionFactory();
 
+		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
 		boolean itemSetsHasChanged = true;
 		while (itemSetsHasChanged) {
 			System.out.println("^^^^^^^^^^^^^^^^^^");
-			System.out.println("New Iteration (building all item sets)");
+			System.out.println("New Iteration (building all state sets)");
 			itemSetsHasChanged = false;
-			List<Set<RuleWithDot>> itemSetsAfterIteration = new ArrayList<Set<RuleWithDot>>();
-			itemSetsAfterIteration.addAll(itemSetsBeforeIteration);
+			List<Set<RuleWithDot>> allStatesAfterIteration = new ArrayList<Set<RuleWithDot>>();
+			allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
-			// TODO: for de ultimo analisado + 1 ate tamanho do states
-			for (Set<RuleWithDot> state : itemSetsBeforeIteration) {
-				System.out.format("Analysing state: %s\n", state);
+			for (int i = indexOfLastStateInWhichAllRulesWereAnalysed + 1; i < allStatesBeforeIteration.size(); i++) {
+				Set<RuleWithDot> state = allStatesAfterIteration.get(i);
+				System.out.format("Analysing state %s: %s\n", i, state);
 				for (RuleWithDot ruleWithDot : state) {
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
-					Action act = actionFactory.getAction(itemSetsBeforeIteration.size(), state, ruleWithDot, itemSetsAfterIteration, this);
-					System.out.format("Creating action: %s", act);
-					itemSetsAfterIteration = act.getNextItemSets();
+					Action act = actionFactory.getAction(i, state, ruleWithDot, allStatesAfterIteration, this);
+					System.out.format("Creating action: \n %s", act);
+					System.out.format("Action position\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+					allStatesAfterIteration = act.getNextItemSets();
 				}
+				indexOfLastStateInWhichAllRulesWereAnalysed++;
 			}
 			
-			if (itemSetsAfterIteration.size() != itemSetsBeforeIteration.size()) {
+			if (allStatesAfterIteration.size() != allStatesBeforeIteration.size()) {
 				itemSetsHasChanged = true;
 			}
 			
-			itemSetsBeforeIteration = itemSetsAfterIteration;
+			allStatesBeforeIteration = allStatesAfterIteration;
 		}
-		this.itemSets = itemSetsBeforeIteration;
-		System.out.format("All item sets found: %s", itemSets);
+		this.itemSets = allStatesBeforeIteration;
+		System.out.format("All state sets found: %s", itemSets);
 		return null;
 	}
-
 
 	private Map<Symbol, Set<RuleWithDot>> buildGrammarWithDots(Grammar grammar) {
 		// Initialise map
@@ -93,9 +91,12 @@ public class SLR {
 		// Convert Rule to RuleWithDot
 		for (Symbol nonTerminal : grammar.getNonTerminals()){
 			for (Rule rule : grammar.getRules().get(nonTerminal)){
-				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule));
+				boolean isStartRule = nonTerminal.equals(grammar.getStartSymbol());
+				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule, isStartRule));
 			}
 		}
+		
+		System.out.println("Grammar with dots: " + grammarWithDots);
 		return grammarWithDots;
 	}
 
@@ -155,9 +156,9 @@ public class SLR {
 			if (ruleWithDot.firstSymbolAfterDot().equals(sym)) {
 				newItemSet.add(RuleWithDot.generateRuleWithShiftedDot(ruleWithDot));
 			}
-			else {
-				newItemSet.add(ruleWithDot);
-			}
+//			else {
+//				newItemSet.add(ruleWithDot);
+//			}
 		}
 		return closure(newItemSet);
 	}
@@ -200,9 +201,9 @@ public class SLR {
 		return new HashSet<RuleWithDot>();
 	}
 
-	public int getStateNumber(Set<RuleWithDot> state) {
+	public int getStateNumber(Set<RuleWithDot> state, List<Set<RuleWithDot>> allStates) {
 		int stateNumber = 0;
-		for (Set<RuleWithDot> existingState : itemSets) {
+		for (Set<RuleWithDot> existingState : allStates) {
 			if (state.equals(existingState)) {
 				return stateNumber;
 			}

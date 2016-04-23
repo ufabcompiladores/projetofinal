@@ -18,6 +18,10 @@ public final class Grammar {
 	private Set<Symbol> terminals;
 	private Set<Symbol> nonTerminals;
 	private Symbol startSymbol;
+	public Symbol getStartSymbol() {
+		return startSymbol;
+	}
+
 	private Map<Symbol, Set<Symbol>> firstSets;
 	private Map<Symbol, Set<Symbol>> followSets;
 	private int numberOfRules;
@@ -40,12 +44,10 @@ public final class Grammar {
 	}
 	
 	
-	// TODO: continue
-	private Grammar grammarWithExtraStartSymbol() throws Exception {
-		// add new start symbol
+	public Grammar grammarWithExtraStartSymbol() throws Exception {
+		// create new start symbol
 		Symbol oldStartSymbol = this.startSymbol;
 		Symbol newStartSymbol = Symbol.newVersionOfGivenSymbol(oldStartSymbol, nonTerminals);
-		
 		
 		// new number of rules
 		int newNumberOfRules = this.numberOfRules + 1;
@@ -97,8 +99,8 @@ public final class Grammar {
 		this.startSymbol = startSymbol;
 		this.numberOfRules = numberOfRules;
 		
-//		this.firstSets = buildAllFirstSets();
-//		buildAllFollowSets();
+		this.firstSets = buildAllFirstSets();
+		buildAllFollowSets();
 	}
 
 
@@ -545,20 +547,14 @@ public final class Grammar {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
+//		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
+				Grammar g = new Grammar("S -> a S b S \n S -> a");
 		System.out.println(g.getNonTerminals());
 		System.out.println(g);
 
 		SLR slr = new SLR(g);
-//		slr.testBuildAllItemSets();
-//		slr.testGotos();
 		// end tests
-
-		g.buildAllFollowSetDescriptions();
-		System.out.println(g.followSets);
-		
-		g.grammarWithExtraStartSymbol();
 	}
 	
 }

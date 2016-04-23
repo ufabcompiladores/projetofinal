@@ -116,6 +116,11 @@ public final class Symbol {
 	public boolean isEmptyString() {
 		return this.type == SymbolType.EMPTYSTRING;
 	}
+	
+	
+	public boolean isEOF() {
+		return this.type == SymbolType.EOF;
+	}
 
 	public boolean isLastSymbolOfProduction(Rule rule) {
 		int lastIndex = rule.getProduction().size() - 1;

@@ -11,7 +11,7 @@ public class Accept extends Action {
 
 		Set<Symbol> columnsToStoreActionInTable = new HashSet<Symbol>();
 		// TODO: confirm whether this works for EOF
-		columnsToStoreActionInTable.add(ruleWithDot.firstSymbolAfterDot());
+		columnsToStoreActionInTable.add(Symbol.createEOFSymbol());
 		this.setColumnToStoreActionInTable(columnsToStoreActionInTable);
 	}
 

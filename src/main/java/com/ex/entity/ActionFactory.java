@@ -9,13 +9,13 @@ public class ActionFactory {
 		Symbol symbolAfterDot = ruleWithDot.firstSymbolAfterDot();
 		if (symbolAfterDot.isEmptyString()) {
 			System.out.println("Will create Reduce action");
-			return new Reduce(currentStateNumber, ruleWithDot, itemSets);	
+			return new Reduce(currentStateNumber, ruleWithDot, itemSets, slr);	
 		}
-		// TODO
-//		if (symbolAfterDot.isEOF) {
-//			System.out.println("Will create Accept action");
-//			return new Accept(ruleWithDot, itemSets);
-//		}
+		// TODO complete EOF
+		if (symbolAfterDot.isEOF()) {
+			System.out.println("Will create Accept action");
+			return new Accept(currentStateNumber, ruleWithDot, itemSets);
+		}
 		if (symbolAfterDot.isTerminal()) {
 			System.out.println("Will create Shift action");
 			return new Shift(currentStateNumber, state, ruleWithDot, itemSets, slr);

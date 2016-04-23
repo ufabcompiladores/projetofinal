@@ -10,9 +10,9 @@ public abstract class Action {
 	private Set<Symbol> columnToStoreActionInTable;
 	
 	
-	public Action(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> itemSets){
+	public Action(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates){
 		this.lineToStoreActionInTable = currentStateNumber;
-		this.nextItemSets = itemSets;
+		this.nextItemSets = allStates;
 	}
 
 

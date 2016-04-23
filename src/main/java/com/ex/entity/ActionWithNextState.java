@@ -9,16 +9,16 @@ public abstract class ActionWithNextState extends Action {
 
 	private int gotoStateNumber;
 	
-	public ActionWithNextState(int currentStateNumber, Set<RuleWithDot> state, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> itemSets, SLR slr) {
-		super(currentStateNumber, ruleWithDot, itemSets);
+	public ActionWithNextState(int currentStateNumber, Set<RuleWithDot> state, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates, SLR slr) {
+		super(currentStateNumber, ruleWithDot, allStates);
 		List<Set<RuleWithDot>> newItemSets = new ArrayList<Set<RuleWithDot>>();
-		newItemSets.addAll(itemSets);
+		newItemSets.addAll(allStates);
 
 		Set<RuleWithDot> nextState;
 		nextState = slr.gotoSet(state, ruleWithDot.firstSymbolAfterDot());
-		this.gotoStateNumber = slr.getStateNumber(nextState);
+		this.gotoStateNumber = slr.getStateNumber(nextState, allStates);
 		
-		if (gotoStateNumber == itemSets.size()) {
+		if (gotoStateNumber == allStates.size()) {
 			newItemSets.add(nextState);
 		}
 		
