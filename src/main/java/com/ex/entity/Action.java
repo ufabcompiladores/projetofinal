@@ -9,17 +9,14 @@ public abstract class Action {
 	private int lineToStoreActionInTable;
 	private Set<Symbol> columnToStoreActionInTable;
 	
-	
 	public Action(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates){
 		this.lineToStoreActionInTable = currentStateNumber;
 		this.nextItemSets = allStates;
 	}
 
-
 	public List<Set<RuleWithDot>> getNextItemSets() {
 		return nextItemSets;
 	}
-
 
 	public int getLineToStoreActionInTable() {
 		return lineToStoreActionInTable;
@@ -40,11 +37,7 @@ public abstract class Action {
 		this.lineToStoreActionInTable = lineToStoreActionInTable;
 	}
 
-
 	public void setColumnToStoreActionInTable(Set<Symbol> columnToStoreActionInTable) {
 		this.columnToStoreActionInTable = columnToStoreActionInTable;
 	}
-	
-	
-
 }

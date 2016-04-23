@@ -227,10 +227,9 @@ public final class Grammar {
 	}
 
 	/**
-	 * Deve retornar o first de uma única regra.
-	 * Função vai ser usada para conferir se a gramática é LL.1
-	 * @param rule
-	 * @return Set<Symbol>
+	 * Retornar conjunto first da produção da regra dada.
+	 * @param rule Regra.
+	 * @return Conjunto First(X), em que X é a produção da regra dada.
 	 */
 	public Set<Symbol> first(Rule rule){
 		Set<Symbol> firstFromRule = new HashSet<Symbol>();
@@ -464,7 +463,6 @@ public final class Grammar {
 	 * Isto é feito da mesma maneira usual na literatura,
 	 * em que se usa uma tabela que é atualizada até
 	 * encontrar um ponto fixo.
-	 * @return Um Map de Symbol para o follow set desse Symbol.
 	 */
 	public void buildAllFollowSets(){
 		// Initialize field

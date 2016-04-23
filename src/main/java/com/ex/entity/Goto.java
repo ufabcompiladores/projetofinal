@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Goto extends ActionWithNextState {
+public final class Goto extends ActionWithNextState {
 
 
 	public Goto(int currentStateNumber, Set<RuleWithDot> state, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> itemSets, SLR slr) {
@@ -17,7 +17,7 @@ public class Goto extends ActionWithNextState {
 
 	@Override
 	public String toString() {
-		return String.format("Goto %s \n", getGotoStateNumber());
+		return String.format("<Goto %s>", getGotoStateNumber());
 	}
 
 }
