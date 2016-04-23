@@ -10,13 +10,13 @@ public class Follow {
 	private boolean hasEOF;
 
 
-	public Follow() {
+	public Follow(boolean hasEOF) {
 		super();
 		this.firstSets = new HashSet<Symbol>();
 		this.firstSetsWithoutEps = new HashSet<Symbol>();
 		this.followSets = new HashSet<Symbol>();
 		this.terminals = new HashSet<Symbol>();
-		this.hasEOF = false;
+		this.hasEOF = hasEOF;
 	}
 
 
@@ -92,10 +92,13 @@ public class Follow {
 			stringb.append(String.format("Adding {%s} \n", sym));
 			elements.add(sym);
 		}
-		// TODO: handle this case
+
+		// TODO: check if it's correct
 		if (hasEOF){
 			stringb.append("{$}");
+			elements.add(Symbol.createEOFSymbol());
 		}
+
 		stringb.append(String.format("\n Elements: %s \n", elements));
 		System.out.println(stringb.toString());
 		return elements;

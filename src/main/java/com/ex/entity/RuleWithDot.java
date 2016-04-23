@@ -11,6 +11,10 @@ public final class RuleWithDot {
 	private List<Symbol> symbolsAfterDot;
 	private int number;
 	
+	public int getNumber() {
+		return number;
+	}
+
 	private RuleWithDot(){
 		this.symbolsBeforeDot = new ArrayList<Symbol>();
 		this.symbolsAfterDot = new ArrayList<Symbol>();
@@ -114,5 +118,8 @@ public final class RuleWithDot {
 		return new RuleWithDot(ruleWithDot.producer, newSymbolsBeforeDot, newSymbolsAfterDot, ruleWithDot.number);
 	}
 
+	public Symbol getProducer() {
+		return this.producer;
+	}
 	
 }
