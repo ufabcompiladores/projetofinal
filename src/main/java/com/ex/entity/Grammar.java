@@ -1,7 +1,9 @@
 package com.ex.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,17 +42,66 @@ public final class Grammar {
 	
 	// TODO: continue
 	private Grammar grammarWithExtraStartSymbol() throws Exception {
+		// add new start symbol
 		Symbol oldStartSymbol = this.startSymbol;
 		Symbol newStartSymbol = Symbol.newVersionOfGivenSymbol(oldStartSymbol, nonTerminals);
 		
 		
-		this.numberOfRules = 0;
-		this.rules = new HashMap<Symbol, Set<Rule>>();
-		this.terminals = new HashSet<Symbol>();
-		this.nonTerminals = new HashSet<Symbol>();
-		return null;
+		// new number of rules
+		int newNumberOfRules = this.numberOfRules + 1;
+		
+		// new nonterminals - same as before, but has new start symbol
+		Set<Symbol> newNonTerminals = new HashSet<Symbol>();
+		newNonTerminals.addAll(nonTerminals);
+		newNonTerminals.add(newStartSymbol);
+
+		// new rules
+		List<Symbol> newStartRuleProduction = new ArrayList<Symbol>();
+		newStartRuleProduction.add(oldStartSymbol);
+		Rule newStartRule = new Rule(newStartSymbol, newStartRuleProduction, 0);
+		Map<Symbol, Set<Rule>> newRules = new HashMap<Symbol, Set<Rule>>();
+		Set<Rule> setOfRulesForFirstRule = new HashSet<Rule>();
+		setOfRulesForFirstRule.add(newStartRule);
+		newRules.put(newStartSymbol, setOfRulesForFirstRule);
+		for (Symbol nonTerminal : nonTerminals) {
+			newRules.put(nonTerminal, new HashSet<Rule>());
+		}
+		for (Symbol nonTerminal : nonTerminals) {
+			for (Rule oldRule : rules.get(nonTerminal)) {
+				/*each new rule is the same as before, 
+				  except that its number increases by one */				
+				Rule newRule = new Rule(oldRule.getProducer(),
+						oldRule.getProduction(),
+						oldRule.getNumber() + 1);
+				newRules.get(nonTerminal).add(newRule);
+			}
+		}
+		
+		
+		// new terminals - same elements as before
+		Set<Symbol> newTerminals = new HashSet<Symbol>();
+		newTerminals.addAll(terminals);
+		
+		Grammar newGrammarWithExtraStartSymbol = new Grammar(newRules, newTerminals, newNonTerminals, newStartSymbol, newNumberOfRules);
+		System.out.println(newGrammarWithExtraStartSymbol);
+
+		return newGrammarWithExtraStartSymbol;
 	}
 	
+	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
+			int numberOfRules) {
+		super();
+		this.rules = rules;
+		this.terminals = terminals;
+		this.nonTerminals = nonTerminals;
+		this.startSymbol = startSymbol;
+		this.numberOfRules = numberOfRules;
+		
+//		this.firstSets = buildAllFirstSets();
+//		buildAllFollowSets();
+	}
+
+
 	private Symbol addStartSymbol(String inputGrammar) throws Exception {
 		String[] lines = inputGrammar.split("\n");
 		String line = lines[0];
@@ -363,7 +414,6 @@ public final class Grammar {
 
 		System.out.format("Follow set description for %s \n", sym);
 
-		// TODO: add {$} to first symbol
 		for (Symbol nonTerminal : nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)){
 				int i = 0;
@@ -507,6 +557,8 @@ public final class Grammar {
 
 		g.buildAllFollowSetDescriptions();
 		System.out.println(g.followSets);
+		
+		g.grammarWithExtraStartSymbol();
 	}
 	
 }
