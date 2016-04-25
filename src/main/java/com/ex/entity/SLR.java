@@ -16,20 +16,67 @@ public class SLR {
 
 	private Grammar grammar;
 	private List<Set<RuleWithDot>> itemSets;
-//	private table<Map<Pair<Integer, Symbol>, Set<Rule>>> slrTable;
+	//	private table<Map<Pair<Integer, Symbol>, Set<Rule>>> slrTable;
 	private Map<Symbol, Set<RuleWithDot>> grammarWithDots;
 
-	public SLR(Grammar grammar) {
+	public SLR(Grammar grammar) throws Exception {
 		super();
-		this.grammar = grammar;
-		this.itemSets = new ArrayList<>();
-		this.grammarWithDots = buildGrammarWithDots(grammar);
+		Grammar grammarWithExtraStartSymbol = grammar.grammarWithExtraStartSymbol();
+		this.grammar = grammarWithExtraStartSymbol;
+		this.grammarWithDots = buildGrammarWithDots(grammarWithExtraStartSymbol);
+		this.itemSets = buildAllItemSets();
 	}
-	
-//	public enum ACTION{
-//		ACCEPT, GOTO(n)
-//	}
-	
+
+	public Set<Symbol> follow(Symbol sym) {
+		return grammar.follow(sym);
+	}
+
+	private List<Set<RuleWithDot>> buildAllItemSets() {
+		System.out.println("\n\n\n==============================");
+		System.out.println("Building all states.");
+
+		// adding first state
+		System.out.println("Adding first state set:");
+		List<Set<RuleWithDot>> allStatesBeforeIteration = new ArrayList<Set<RuleWithDot>>();
+		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+		Set<RuleWithDot> firstState = new HashSet<RuleWithDot>();
+		firstState = closure(firstRuleSet);
+		allStatesBeforeIteration.add(firstState);
+
+		ActionFactory actionFactory = new ActionFactory();
+
+		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
+		boolean setOfAllStatesHasChanged = true;
+		while (setOfAllStatesHasChanged) {
+			System.out.println("******* New iteration (building all state sets) *******");
+			setOfAllStatesHasChanged = false;
+			List<Set<RuleWithDot>> allStatesAfterIteration = new ArrayList<Set<RuleWithDot>>();
+			allStatesAfterIteration.addAll(allStatesBeforeIteration);
+
+			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+				Set<RuleWithDot> state = allStatesAfterIteration.get(currentStateNumber);
+				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
+				for (RuleWithDot ruleWithDot : state) {
+					System.out.println("~~Analysing rule~~");
+					System.out.format("Analysing rule: %s\n", ruleWithDot);
+					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+					System.out.format("\nCreating action: \n %s\n", act);
+					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+					allStatesAfterIteration = act.getNextItemSets();
+				}
+				indexOfLastStateInWhichAllRulesWereAnalysed++;
+			}
+
+			if (allStatesAfterIteration.size() != allStatesBeforeIteration.size()) {
+				setOfAllStatesHasChanged = true;
+			}
+
+			allStatesBeforeIteration = allStatesAfterIteration;
+		}
+		System.out.format("All state sets found: %s", allStatesBeforeIteration);
+		return allStatesBeforeIteration;
+	}
+
 	private Map<Symbol, Set<RuleWithDot>> buildGrammarWithDots(Grammar grammar) {
 		// Initialise map
 		Map<Symbol, Set<RuleWithDot>> grammarWithDots = new HashMap<Symbol, Set<RuleWithDot>>();
@@ -41,64 +88,27 @@ public class SLR {
 		// Convert Rule to RuleWithDot
 		for (Symbol nonTerminal : grammar.getNonTerminals()){
 			for (Rule rule : grammar.getRules().get(nonTerminal)){
-				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule));
+				boolean isStartRule = nonTerminal.equals(grammar.getStartSymbol());
+				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule, isStartRule));
 			}
 		}
+
+		System.out.println("Grammar with dots: " + grammarWithDots);
 		return grammarWithDots;
 	}
-	
+
 	private void buildSLRTable(){
 		for(Set<RuleWithDot> itemSet : itemSets) {
-			analyseItemSet(itemSet);
+			//			analyseItemSet(itemSet);
 		}
 	}
-	
-	private void analyseItemSet(Set<RuleWithDot> itemSet){
-		for(RuleWithDot ruleWithDot : itemSet){
-//			getAction(ruleWithDot);
-//			fillTable();
-		}
-	}
-	
-//	private void getAction(RuleWithDot ruleWithDot){
-//		Symbol firstSymAfterDot = ruleWithDot.firstSymbolAfterDot();
-//		if (!ruleWithDot.firstSymbolAfterDot) {
-//		}
-//	}
-	
-	
-	private Set<RuleWithDot> gotoSet(Set<RuleWithDot> itemSet, Symbol sym) {
-		System.out.println("-------------");
-		System.out.format("goto(%s, %s) = \n", itemSet, sym);
-		Set<RuleWithDot> newItemSet = new HashSet<RuleWithDot>();
-		for (RuleWithDot ruleWithDot : itemSet) {
-			if (ruleWithDot.firstSymbolAfterDot().equals(sym)) {
-				newItemSet.add(RuleWithDot.generateRuleWithShiftedDot(ruleWithDot));
-			}
-			else {
-				newItemSet.add(ruleWithDot);
-			}
-		}
-		return closure(newItemSet);
-	}
-	
-	
-	public void testGotos() throws Exception {
-		for (Symbol nonTerminal : grammar.getNonTerminals()){
-			for (RuleWithDot rule : this.grammarWithDots.get(nonTerminal)){
-				Set<RuleWithDot> s = new HashSet<RuleWithDot>();
-				s.add(rule);
-				this.gotoSet(s, new Symbol("f"));
-			}
-		}
-	}
-	
+
 	public void testShifts() {
 		for (Symbol nonTerminal : grammar.getNonTerminals()){
 			for (RuleWithDot rule : this.grammarWithDots.get(nonTerminal)){
-//				Set<RuleWithDot> s = new HashSet<RuleWithDot>();
-//				s.add(rule);
-//				this.gotoSet(s, nonTerminal);
+				//				Set<RuleWithDot> s = new HashSet<RuleWithDot>();
+				//				s.add(rule);
+				//				this.gotoSet(s, nonTerminal);
 				System.out.println("before: " + rule); 
 				RuleWithDot after1 = RuleWithDot.generateRuleWithShiftedDot(rule);
 				System.out.println("after" + after1);
@@ -107,15 +117,28 @@ public class SLR {
 			}
 		}
 	}
-	
+
+
+	public Set<RuleWithDot> gotoSet(Set<RuleWithDot> itemSet, Symbol sym) {
+		System.out.println("-------------");
+		System.out.format("goto(%s, %s) = \n", itemSet, sym);
+		Set<RuleWithDot> newItemSet = new HashSet<RuleWithDot>();
+		for (RuleWithDot ruleWithDot : itemSet) {
+			if (ruleWithDot.firstSymbolAfterDot().equals(sym)) {
+				newItemSet.add(RuleWithDot.generateRuleWithShiftedDot(ruleWithDot));
+			}
+		}
+		return closure(newItemSet);
+	}
+
 	private Set<RuleWithDot> closure(Set<RuleWithDot> itemSet) {
 		System.out.format("closure(%s) = \n", itemSet);
 		Set<RuleWithDot> itemSetBeforeIteration = new HashSet<RuleWithDot>();
 		itemSetBeforeIteration.addAll(itemSet);
 		boolean itemSetHasChanged = true;
-		
+
 		while (itemSetHasChanged) {
-			System.out.println("New iteration");
+			System.out.println("  New iteration");
 			itemSetHasChanged = false;	
 			Set<RuleWithDot> itemSetAfterIteration = new HashSet<RuleWithDot>();
 			itemSetAfterIteration.addAll(itemSet);
@@ -125,29 +148,30 @@ public class SLR {
 				itemSetAfterIteration.addAll(rulesWhoseProducerIsSymbol(symAfterDot));
 			}
 
-			System.out.println("Set before iteration: " + itemSetBeforeIteration);
-			System.out.println("Set after iteration: " + itemSetAfterIteration);
-			System.out.println("--");
+			System.out.println("  Set before iteration: " + itemSetBeforeIteration);
+			System.out.println("  Set after iteration: " + itemSetAfterIteration);
+			System.out.println("  --");
 
 			if (!itemSetAfterIteration.equals(itemSetBeforeIteration)) {
 				itemSetHasChanged = true;	
 				itemSetBeforeIteration.addAll(itemSetAfterIteration);
 			}
 		}
-		System.out.println("Final: " + itemSetBeforeIteration);
+		System.out.println("  Final: " + itemSetBeforeIteration);
 		return itemSetBeforeIteration;
 	}
-	
+
+
 	private Set<RuleWithDot> rulesWhoseProducerIsSymbol(Symbol sym) {
 		if (sym.isNonTerminal()) {
 			return grammarWithDots.get(sym);
 		}
 		return new HashSet<RuleWithDot>();
 	}
-	
-	private int getStateNumber(Set<RuleWithDot> state) {
+
+	public int getStateNumber(Set<RuleWithDot> state, List<Set<RuleWithDot>> allStates) {
 		int stateNumber = 0;
-		for (Set<RuleWithDot> existingState : itemSets) {
+		for (Set<RuleWithDot> existingState : allStates) {
 			if (state.equals(existingState)) {
 				return stateNumber;
 			}
@@ -155,6 +179,6 @@ public class SLR {
 		}
 		return stateNumber;
 	}
-	
+
 
 }

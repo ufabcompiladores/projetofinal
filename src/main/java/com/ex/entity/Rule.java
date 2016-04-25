@@ -14,7 +14,7 @@ public final class Rule {
 	 * @param producer
 	 * @param production
 	 */
-	public Rule(Symbol producer, ArrayList<Symbol> production, int number) {
+	public Rule(Symbol producer, List<Symbol> production, int number) {
 		super();
 		this.producer = producer;
 		this.production = production;

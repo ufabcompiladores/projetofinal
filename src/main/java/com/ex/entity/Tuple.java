@@ -27,10 +27,34 @@ public class Tuple {
 	}
 	
 	@Override
-	public boolean equals(Object tuple) {
-		Tuple t = (Tuple) tuple;
-		
-		return t.leftSymbol.equals(this.leftSymbol) && t.upSymbol.equals(this.upSymbol);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((leftSymbol == null) ? 0 : leftSymbol.hashCode());
+		result = prime * result + ((upSymbol == null) ? 0 : upSymbol.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tuple other = (Tuple) obj;
+		if (leftSymbol == null) {
+			if (other.leftSymbol != null)
+				return false;
+		} else if (!leftSymbol.equals(other.leftSymbol))
+			return false;
+		if (upSymbol == null) {
+			if (other.upSymbol != null)
+				return false;
+		} else if (!upSymbol.equals(other.upSymbol))
+			return false;
+		return true;
 	}
 	
 	@Override

@@ -11,17 +11,25 @@ public final class RuleWithDot {
 	private List<Symbol> symbolsAfterDot;
 	private int number;
 	
+	public int getNumber() {
+		return number;
+	}
+
 	private RuleWithDot(){
 		this.symbolsBeforeDot = new ArrayList<Symbol>();
 		this.symbolsAfterDot = new ArrayList<Symbol>();
 	}
 	
-	public RuleWithDot(Rule rule) {
+	public RuleWithDot(Rule rule, boolean isStartRule) {
 		this();
 		this.number = rule.getNumber();
 		this.producer = rule.getProducer();
 		this.symbolsAfterDot = rule.getProduction();
 		this.symbolsBeforeDot.add(new Symbol(SymbolType.EMPTYSTRING, ""));
+
+		if (isStartRule) {
+			this.symbolsAfterDot.add(Symbol.createEOFSymbol());
+		}
 	}
 
 	public RuleWithDot(Symbol producer, List<Symbol> symbolsBeforeDot, List<Symbol> symbolsAfterDot, int number) {
@@ -114,5 +122,8 @@ public final class RuleWithDot {
 		return new RuleWithDot(ruleWithDot.producer, newSymbolsBeforeDot, newSymbolsAfterDot, ruleWithDot.number);
 	}
 
+	public Symbol getProducer() {
+		return this.producer;
+	}
 	
 }

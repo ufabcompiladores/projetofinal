@@ -1,7 +1,9 @@
 package com.ex.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,23 +17,103 @@ public final class Grammar {
 	private Map<Symbol, Set<Rule>> rules;
 	private Set<Symbol> terminals;
 	private Set<Symbol> nonTerminals;
+	private Symbol startSymbol;
+	public Symbol getStartSymbol() {
+		return startSymbol;
+	}
+
 	private Map<Symbol, Set<Symbol>> firstSets;
 	private Map<Symbol, Set<Symbol>> followSets;
 	private int numberOfRules;
 
 	public Grammar(String inputGrammar) throws Exception {
+		System.out.println("Input Grammar");	
+		System.out.println("=============");	
+		System.out.println(inputGrammar + "\n");
+		
 		this.numberOfRules = 0;
 		this.rules = new HashMap<Symbol, Set<Rule>>();
 		this.terminals = new HashSet<Symbol>();
 		this.nonTerminals = new HashSet<Symbol>();
 
 		isValidGrammar(inputGrammar);
+
+		this.startSymbol = addStartSymbol(inputGrammar);
 		addNonTerminals(inputGrammar);
 		addTerminals(inputGrammar);
 		readAllRules(inputGrammar);
 
 		this.firstSets = buildAllFirstSets();
 		buildAllFollowSets();
+	}
+	
+	
+	public Grammar grammarWithExtraStartSymbol() throws Exception {
+		// create new start symbol
+		Symbol oldStartSymbol = this.startSymbol;
+		Symbol newStartSymbol = Symbol.newVersionOfGivenSymbol(oldStartSymbol, nonTerminals);
+		
+		// new number of rules
+		int newNumberOfRules = this.numberOfRules + 1;
+		
+		// new nonterminals - same as before, but has new start symbol
+		Set<Symbol> newNonTerminals = new HashSet<Symbol>();
+		newNonTerminals.addAll(nonTerminals);
+		newNonTerminals.add(newStartSymbol);
+
+		// new rules
+		List<Symbol> newStartRuleProduction = new ArrayList<Symbol>();
+		newStartRuleProduction.add(oldStartSymbol);
+		Rule newStartRule = new Rule(newStartSymbol, newStartRuleProduction, 0);
+		Map<Symbol, Set<Rule>> newRules = new HashMap<Symbol, Set<Rule>>();
+		Set<Rule> setOfRulesForFirstRule = new HashSet<Rule>();
+		setOfRulesForFirstRule.add(newStartRule);
+		newRules.put(newStartSymbol, setOfRulesForFirstRule);
+		for (Symbol nonTerminal : nonTerminals) {
+			newRules.put(nonTerminal, new HashSet<Rule>());
+		}
+		for (Symbol nonTerminal : nonTerminals) {
+			for (Rule oldRule : rules.get(nonTerminal)) {
+				/*each new rule is the same as before, 
+				  except that its number increases by one */				
+				Rule newRule = new Rule(oldRule.getProducer(),
+						oldRule.getProduction(),
+						oldRule.getNumber() + 1);
+				newRules.get(nonTerminal).add(newRule);
+			}
+		}
+		
+		
+		// new terminals - same elements as before
+		Set<Symbol> newTerminals = new HashSet<Symbol>();
+		newTerminals.addAll(terminals);
+		
+		Grammar newGrammarWithExtraStartSymbol = new Grammar(newRules, newTerminals, newNonTerminals, newStartSymbol, newNumberOfRules);
+		System.out.println(newGrammarWithExtraStartSymbol);
+
+		return newGrammarWithExtraStartSymbol;
+	}
+	
+	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
+			int numberOfRules) {
+		super();
+		this.rules = rules;
+		this.terminals = terminals;
+		this.nonTerminals = nonTerminals;
+		this.startSymbol = startSymbol;
+		this.numberOfRules = numberOfRules;
+		
+		this.firstSets = buildAllFirstSets();
+		buildAllFollowSets();
+	}
+
+
+	private Symbol addStartSymbol(String inputGrammar) throws Exception {
+		String[] lines = inputGrammar.split("\n");
+		String line = lines[0];
+		String[] splitLine = line.split("->");
+		String LHS = splitLine[0].trim();
+		return new Symbol(LHS);
 	}
 
 	private void addTerminals(String inputGrammar) throws Exception {
@@ -58,6 +140,7 @@ public final class Grammar {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
+		string.append(String.format("\nStart Symbol: %s \n", startSymbol));
 		string.append("Grammar rules: \n");
 		for (Symbol nonTerminal : nonTerminals) {
 			for (Rule rule : rules.get(nonTerminal)) {
@@ -74,8 +157,8 @@ public final class Grammar {
 		String[] rightSideTextProductions = splitLine[1].split("\\|");
 
 		for (int i = 0; i < rightSideTextProductions.length; i++) {
-			System.out.println("producer text: " + producerText);
-			System.out.println("Right side text production" + rightSideTextProductions[i]);
+			System.out.println("Producer text: " + producerText);
+			System.out.format("Right side text production: %s\n\n", rightSideTextProductions[i]);
 			if (!rules.containsKey(producerSymbol)) {
 				rules.put(producerSymbol, new HashSet<Rule>());
 			}
@@ -85,6 +168,8 @@ public final class Grammar {
 	}
 
 	private void readAllRules(String rulesText) throws Exception {
+		System.out.println("Reading input grammar");
+		System.out.println("=====================");
 		String[] rules = rulesText.split("\n");
 		for (String rule : rules) {
 			System.out.println("Add rule: " + rule);
@@ -132,6 +217,7 @@ public final class Grammar {
 			}
 		}
 
+		// TODO
 		// if (!nonTerminalsLHS.equals(nonTerminalsRHS)) {
 		// throw new Exception ("Quantidade de não-terminais à esquerda
 		// diferente da quantidade à direita.");
@@ -148,10 +234,9 @@ public final class Grammar {
 	}
 
 	/**
-	 * Deve retornar o first de uma única regra.
-	 * Função vai ser usada para conferir se a gramática é LL.1
-	 * @param rule
-	 * @return Set<Symbol>
+	 * Retorna conjunto first da produção da regra dada.
+	 * @param rule Regra.
+	 * @return Conjunto First(X), em que X é a produção da regra dada.
 	 */
 	public Set<Symbol> first(Rule rule){
 		Set<Symbol> firstFromRule = new HashSet<Symbol>();
@@ -221,6 +306,9 @@ public final class Grammar {
 	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
 	public Map<Symbol, Set<Symbol>> buildAllFirstSets(){
+	System.out.println("Building all first sets");	
+	System.out.println("=======================");	
+		
 		// Initialize set.
 		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -333,11 +421,10 @@ public final class Grammar {
 	}
 
 	public Follow buildFollowDescription(Symbol sym){
-		Follow followSet = new Follow();
+		Follow followSet = new Follow(sym.equals(startSymbol));
 
 		System.out.format("Follow set description for %s \n", sym);
 
-		// TODO: add {$} to first symbol
 		for (Symbol nonTerminal : nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)){
 				int i = 0;
@@ -386,7 +473,6 @@ public final class Grammar {
 	 * Isto é feito da mesma maneira usual na literatura,
 	 * em que se usa uma tabela que é atualizada até
 	 * encontrar um ponto fixo.
-	 * @return Um Map de Symbol para o follow set desse Symbol.
 	 */
 	public void buildAllFollowSets(){
 		// Initialize field
@@ -443,6 +529,10 @@ public final class Grammar {
 		System.out.println(this.followSets);
 	}
 
+	// TODO: this does not cover all cases.
+	// ex: A->BC, B->eps, C->eps is not covered
+	// strategy: very productions that directely produce eps,
+	// then verify others that produce it indirectely until fp
 	private boolean producesEps(Symbol symbol) {
 		for (Rule rule : this.getRules().get(symbol)){
 			if (rule.producesEmptyString()) {
@@ -469,27 +559,15 @@ public final class Grammar {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
+//		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		//		Grammar g = new Grammar("S -> c A a\nA -> c B | B\n B -> b c B | \n A -> A f");
+				Grammar g = new Grammar("S -> a S b S \n S -> a");
 		System.out.println(g.getNonTerminals());
 		System.out.println(g);
 
-		// tests
-//		Set<RuleWithDot> s1 = new HashSet<RuleWithDot>();
-//		System.out.println("---------");
-//		System.out.println("Rule with dot de cada regra: \n");
-//		for (Symbol nonTerminal : g.getNonTerminals()){
-//			for (Rule rule : g.getRules().get(nonTerminal)){
-//				s1.add(new RuleWithDot(rule));
-//			}
-//		}
-//		System.out.println("---------");
-		
 		SLR slr = new SLR(g);
-		slr.testGotos();
+		System.out.format("test %s, %s", "", "oi");
 		// end tests
-
-		g.buildAllFollowSetDescriptions();
 	}
 	
 	public Map<Symbol, Set<Symbol>> getFirstSets() {

@@ -1,11 +1,18 @@
 package com.ex.entity;
 
+import java.util.Set;
+
 public final class Symbol {
 
 	public static final String TERMINAL_REGEX = "^[a-z][A-Za-z0-9]*";
 	public static final String NONTERMINAL_REGEX = "^[A-Z][A-Za-z0-9]*";
 	public static final String EMPTY_STRING_REGEX = "";
+
+	// TODO: remove this regex (got error on DefaultSymbols)
 	public static final String EOF_STRING_REGEX = "$";
+
+	public static final String EOF_LITERAL_REPRESENTATION = "$";
+	public static final String EMPTY_STRING_LITERAL_REPRESENTATION = "ε";
 
 	public enum SymbolType {
 		NONTERMINAL, TERMINAL, EMPTYSTRING, EOF,
@@ -109,14 +116,36 @@ public final class Symbol {
 	public boolean isEmptyString() {
 		return this.type == SymbolType.EMPTYSTRING;
 	}
+	
+	
+	public boolean isEOF() {
+		return this.type == SymbolType.EOF;
+	}
 
 	public boolean isLastSymbolOfProduction(Rule rule) {
 		int lastIndex = rule.getProduction().size() - 1;
 		return rule.getProduction().get(lastIndex).equals(this);
 	}
 
-	public String getLiteralRepresentation() {
-		return literalRepresentation;
+	public static Symbol createEOFSymbol() {
+		return new Symbol(SymbolType.EOF, EOF_LITERAL_REPRESENTATION);
+	}
+	
+	// TODO: use this
+	public static Symbol createEmptyStringSymbol() {
+		return new Symbol(SymbolType.EMPTYSTRING, EMPTY_STRING_LITERAL_REPRESENTATION);
 	}
 
+	public static Symbol newVersionOfGivenSymbol(Symbol sym, Set<Symbol> existingNonTerminalsInGrammar) throws Exception {
+		String oldLiteralRepresentation = sym.literalRepresentation;
+		String newLiteralRepresentation = "new" + oldLiteralRepresentation;
+
+		for (Symbol nonTerminal : existingNonTerminalsInGrammar) {
+			if (nonTerminal.literalRepresentation.equals(newLiteralRepresentation)) {
+				throw new Exception(String.format("Tried to create new symbol with name %s, but it already exists", newLiteralRepresentation));
+			}
+		}
+
+		return new Symbol(newLiteralRepresentation);
+	}
 }
