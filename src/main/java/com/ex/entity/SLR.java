@@ -26,51 +26,51 @@ public class SLR {
 		this.grammarWithDots = buildGrammarWithDots(grammarWithExtraStartSymbol);
 		this.itemSets = buildAllItemSets();
 	}
-	
+
 	public Set<Symbol> follow(Symbol sym) {
 		return grammar.follow(sym);
 	}
-	
+
 	private List<Set<RuleWithDot>> buildAllItemSets() {
 		System.out.println("\n\n\n==============================");
 		System.out.println("Building all states.");
-		
-		// adding q0 (first state)
+
+		// adding first state
 		System.out.println("Adding first state set:");
 		List<Set<RuleWithDot>> allStatesBeforeIteration = new ArrayList<Set<RuleWithDot>>();
 		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
 		Set<RuleWithDot> firstState = new HashSet<RuleWithDot>();
 		firstState = closure(firstRuleSet);
 		allStatesBeforeIteration.add(firstState);
-		
+
 		ActionFactory actionFactory = new ActionFactory();
 
 		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
-		boolean itemSetsHasChanged = true;
-		while (itemSetsHasChanged) {
+		boolean setOfAllStatesHasChanged = true;
+		while (setOfAllStatesHasChanged) {
 			System.out.println("******* New iteration (building all state sets) *******");
-			itemSetsHasChanged = false;
+			setOfAllStatesHasChanged = false;
 			List<Set<RuleWithDot>> allStatesAfterIteration = new ArrayList<Set<RuleWithDot>>();
 			allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
-			for (int i = indexOfLastStateInWhichAllRulesWereAnalysed + 1; i < allStatesBeforeIteration.size(); i++) {
-				Set<RuleWithDot> state = allStatesAfterIteration.get(i);
-				System.out.format("Analysing state %s: %s\n", i, state);
+			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+				Set<RuleWithDot> state = allStatesAfterIteration.get(currentStateNumber);
+				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
 				for (RuleWithDot ruleWithDot : state) {
 					System.out.println("~~Analysing rule~~");
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
-					Action act = actionFactory.getAction(i, state, ruleWithDot, allStatesAfterIteration, this);
+					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
 					System.out.format("\nCreating action: \n %s\n", act);
 					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
 					allStatesAfterIteration = act.getNextItemSets();
 				}
 				indexOfLastStateInWhichAllRulesWereAnalysed++;
 			}
-			
+
 			if (allStatesAfterIteration.size() != allStatesBeforeIteration.size()) {
-				itemSetsHasChanged = true;
+				setOfAllStatesHasChanged = true;
 			}
-			
+
 			allStatesBeforeIteration = allStatesAfterIteration;
 		}
 		System.out.format("All state sets found: %s", allStatesBeforeIteration);
@@ -92,14 +92,14 @@ public class SLR {
 				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule, isStartRule));
 			}
 		}
-		
+
 		System.out.println("Grammar with dots: " + grammarWithDots);
 		return grammarWithDots;
 	}
 
 	private void buildSLRTable(){
 		for(Set<RuleWithDot> itemSet : itemSets) {
-//			analyseItemSet(itemSet);
+			//			analyseItemSet(itemSet);
 		}
 	}
 
@@ -127,14 +127,11 @@ public class SLR {
 			if (ruleWithDot.firstSymbolAfterDot().equals(sym)) {
 				newItemSet.add(RuleWithDot.generateRuleWithShiftedDot(ruleWithDot));
 			}
-//			else {
-//				newItemSet.add(ruleWithDot);
-//			}
 		}
 		return closure(newItemSet);
 	}
-	
-		private Set<RuleWithDot> closure(Set<RuleWithDot> itemSet) {
+
+	private Set<RuleWithDot> closure(Set<RuleWithDot> itemSet) {
 		System.out.format("closure(%s) = \n", itemSet);
 		Set<RuleWithDot> itemSetBeforeIteration = new HashSet<RuleWithDot>();
 		itemSetBeforeIteration.addAll(itemSet);

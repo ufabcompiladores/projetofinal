@@ -27,6 +27,10 @@ public final class Grammar {
 	private int numberOfRules;
 
 	public Grammar(String inputGrammar) throws Exception {
+		System.out.println("Input Grammar");	
+		System.out.println("=============");	
+		System.out.println(inputGrammar + "\n");
+		
 		this.numberOfRules = 0;
 		this.rules = new HashMap<Symbol, Set<Rule>>();
 		this.terminals = new HashSet<Symbol>();
@@ -153,8 +157,8 @@ public final class Grammar {
 		String[] rightSideTextProductions = splitLine[1].split("\\|");
 
 		for (int i = 0; i < rightSideTextProductions.length; i++) {
-			System.out.println("producer text: " + producerText);
-			System.out.println("Right side text production" + rightSideTextProductions[i]);
+			System.out.println("Producer text: " + producerText);
+			System.out.format("Right side text production: %s\n\n", rightSideTextProductions[i]);
 			if (!rules.containsKey(producerSymbol)) {
 				rules.put(producerSymbol, new HashSet<Rule>());
 			}
@@ -164,6 +168,8 @@ public final class Grammar {
 	}
 
 	private void readAllRules(String rulesText) throws Exception {
+		System.out.println("Reading input grammar");
+		System.out.println("=====================");
 		String[] rules = rulesText.split("\n");
 		for (String rule : rules) {
 			System.out.println("Add rule: " + rule);
@@ -211,6 +217,7 @@ public final class Grammar {
 			}
 		}
 
+		// TODO
 		// if (!nonTerminalsLHS.equals(nonTerminalsRHS)) {
 		// throw new Exception ("Quantidade de não-terminais à esquerda
 		// diferente da quantidade à direita.");
@@ -227,7 +234,7 @@ public final class Grammar {
 	}
 
 	/**
-	 * Retornar conjunto first da produção da regra dada.
+	 * Retorna conjunto first da produção da regra dada.
 	 * @param rule Regra.
 	 * @return Conjunto First(X), em que X é a produção da regra dada.
 	 */
@@ -299,6 +306,9 @@ public final class Grammar {
 	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
 	public Map<Symbol, Set<Symbol>> buildAllFirstSets(){
+	System.out.println("Building all first sets");	
+	System.out.println("=======================");	
+		
 		// Initialize set.
 		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -519,6 +529,10 @@ public final class Grammar {
 		System.out.println(this.followSets);
 	}
 
+	// TODO: this does not cover all cases.
+	// ex: A->BC, B->eps, C->eps is not covered
+	// strategy: very productions that directely produce eps,
+	// then verify others that produce it indirectely until fp
 	private boolean producesEps(Symbol symbol) {
 		for (Rule rule : this.getRules().get(symbol)){
 			if (rule.producesEmptyString()) {
@@ -552,6 +566,7 @@ public final class Grammar {
 		System.out.println(g);
 
 		SLR slr = new SLR(g);
+		System.out.format("test %s, %s", "", "oi");
 		// end tests
 	}
 	

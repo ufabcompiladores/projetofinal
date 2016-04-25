@@ -131,7 +131,10 @@ public final class Symbol {
 		return new Symbol(SymbolType.EOF, EOF_LITERAL_REPRESENTATION);
 	}
 	
-	// todo: create createEmptyStringSymbol
+	// TODO: use this
+	public static Symbol createEmptyStringSymbol() {
+		return new Symbol(SymbolType.EMPTYSTRING, EMPTY_STRING_LITERAL_REPRESENTATION);
+	}
 
 	public static Symbol newVersionOfGivenSymbol(Symbol sym, Set<Symbol> existingNonTerminalsInGrammar) throws Exception {
 		String oldLiteralRepresentation = sym.literalRepresentation;

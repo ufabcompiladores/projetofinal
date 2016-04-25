@@ -7,7 +7,7 @@ import java.util.Set;
 
 public abstract class ActionWithNextState extends Action {
 
-	private int gotoStateNumber;
+	private int gotoOrShiftStateNumber;
 	
 	public ActionWithNextState(int currentStateNumber, Set<RuleWithDot> state, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates, SLR slr) {
 		super(currentStateNumber, ruleWithDot, allStates);
@@ -16,9 +16,9 @@ public abstract class ActionWithNextState extends Action {
 
 		Set<RuleWithDot> nextState;
 		nextState = slr.gotoSet(state, ruleWithDot.firstSymbolAfterDot());
-		this.gotoStateNumber = slr.getStateNumber(nextState, allStates);
+		this.gotoOrShiftStateNumber = slr.getStateNumber(nextState, allStates);
 		
-		if (gotoStateNumber == allStates.size()) {
+		if (gotoOrShiftStateNumber == allStates.size()) {
 			newItemSets.add(nextState);
 		}
 		
@@ -26,7 +26,7 @@ public abstract class ActionWithNextState extends Action {
 	}
 
 	public int getGotoStateNumber() {
-		return gotoStateNumber;
+		return gotoOrShiftStateNumber;
 	}
 
 
