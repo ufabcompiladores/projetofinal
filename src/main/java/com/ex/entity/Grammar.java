@@ -492,4 +492,12 @@ public final class Grammar {
 		g.buildAllFollowSetDescriptions();
 	}
 	
+	public Map<Symbol, Set<Symbol>> getFirstSets() {
+		return firstSets;
+	}
+	
+	public Map<Symbol, Set<Symbol>> getFollowSets() {
+		return followSets;
+	}
+	
 }

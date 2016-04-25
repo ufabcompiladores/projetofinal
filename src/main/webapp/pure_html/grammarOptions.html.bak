@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
+    <title>Ex | Grammar</title>
+  </head>
+  <body>
+    <h1>Sua Gramática:</h1>
+    <p><br>
+    </p>
+    <h2>O que deseja estudar sobre sua gramática?</h2>
+    <form  accept-charset="utf-8"  target="_self"  novalidate="novalidate"  autocomplete="off"
+       method="GET"  action="/grammar/process"  name="grammar-option"><br>
+      <select  required="required"  name="grammar-options">
+        <option  selected="selected"  value="1">Calcule os Firsts</option>
+        <option  value="2">Calcule os Follows</option>
+        <option  value="3">Gere a tabela LL</option>
+        <option  value="4">Gere a tabela SLR</option>
+      </select><br>
+      <button  type="submit"  autofocus="autofocus"  name="submit-option">Enviar</button>
+    </form>
+  </body>
+</html>
