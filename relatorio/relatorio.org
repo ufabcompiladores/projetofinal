@@ -6,7 +6,20 @@
 #+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="media/style.css" />
 #+SUBTITLE: Trabalho para a disciplina Compiladores na Universidade Federal do ABC sob orientação da Profa. Mirtha Lina Fernández Venero 
 
-* Introdução
+* *Introdução*
+Este projeto foi criado para possibilitar aos interessados no estudo de compiladores,
+possibilitando uma forma prática e simples de conseguir gerar gramáticas a partir de 
+regras e gerar as principais funções estudadas em compiladores:
+- Função First,
+- Função Follow,
+- Geração de tabela LL(1),
+- Função Goto,
+- Função Closure,
+- Geração de tabela SLR.
+
+Este projeto possui código aberto e existe interesse em continuá-lo, expandindo-o
+para outras partes do estudo de compiladores.
+
 *negrito*
 /itálico/
 [[https://google.com][google]]
@@ -15,7 +28,39 @@ imagem:
 [[./media/Screenshot 2016-04-25 17.54.18.png]]
 
 * Objetivos
+O principal objetivo desse projeto é viabilizar um modelo simples e prático para
+a geração de recursos utilizados na disciplina [[http://bcc.ufabc.edu.br/images/Ementas_2015/Compiladores.pdf][Compiladores]] dos cursos de 
+[[http://bcc.ufabc.edu.br/][Ciência da Computação]] da [[http://ufabc.edu.br/][Universidade Federal do ABC]].
+
+Isso deverá facilitar o aprendizado dos alunos e o alavancamento dos mesmos ao
+aprofundamento na matéria, aumentando o nível de conhecimento dos estudantes e
+possibilitando que outros trabalhos sejam realizados para oferecer mais conhecimento
+para ainda mais alunos.
+
 * Justificativa
+Atualmente, não existem muitos recursos tecnológicos (softwares) sobre compiladores
+que possibilitem estudantes e interessados a gerar passo a passo estruturas que
+viabilizem uma melhor compreensão de compiladores, principalmente conteúdos em
+português.
+Assim, este projeto será utilizado para aumentar o conteúdo de locais onde um
+estudante pode pesquisar, on-line, alavancando seu estudo e aumentando o conteúdo
+para estudo de compiladores.
+
 * Metodologia de Projeto
+O projeto foi dividido em três partes:
+
+- *Planejamento*
+No /planejamento/, foi analisado junto com a orientadora do projeto, um bom 
+projeto que poderia ser feito dentro de um quadrimestre letivo para os dois
+desenvolvedores do projeto.
+Os requisitos levantados pelo projeto foram os seguintes:
+1 - O projeto deve ter uma interface gráfica de fácil acesso para o usuário;
+2 - O projeto deve possuir um *histórico* de cálculos anteriores;
+3 - O projeto deve ser capaz de processar as funções básicas de parte dos conteúdos aprendidos na disciplina, tais como explicitados na *introdução*; 
+
+
+- *Projeto*
+- *Implementação*
+
 * Conclusão
 * Referências Bibliográficas

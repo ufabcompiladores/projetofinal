@@ -24,7 +24,7 @@ public class GrammarController {
 		} catch (Exception e) {
 			mv.addObject("error", e.getMessage());
 			
-			mv.setViewName("/error");
+			mv.setViewName("/error");	
 		}
 		
 		return mv;

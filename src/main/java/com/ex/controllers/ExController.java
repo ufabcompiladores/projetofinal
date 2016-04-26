@@ -11,6 +11,8 @@ public class ExController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String home (Model model) {
-		return "home.html";
+		model.addAttribute("teste", 5);
+		
+		return "home";
 	}
 }
