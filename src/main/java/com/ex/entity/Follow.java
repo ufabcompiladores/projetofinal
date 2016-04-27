@@ -71,7 +71,14 @@ public class Follow {
 
 
 	
-	public Set<Symbol> update(Grammar grammar){
+	/**
+	 * Compute the set of all symbols according to the description of this follow set.
+	 * For example, if the follow object represents "First(A) union Follow(B)", then
+	 * First(A) union Follow(B) will be computed.
+	 * @param grammar
+	 * @return
+	 */
+	public Set<Symbol> getAllElements(Grammar grammar){
 		Set<Symbol> elements = new HashSet<Symbol>();	
 		StringBuilder stringb = new StringBuilder();
 		stringb.append(String.format("Follow set description: %s \n", this));

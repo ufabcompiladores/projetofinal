@@ -4,7 +4,6 @@ package com.ex.entity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,32 +14,38 @@ import javax.persistence.Entity;
 public class SLR {
 
 	private Grammar grammar;
-	private List<Set<RuleWithDot>> itemSets;
-	//	private table<Map<Pair<Integer, Symbol>, Set<Rule>>> slrTable;
+	private List<State> allStates;
 	private Map<Symbol, Set<RuleWithDot>> grammarWithDots;
 
 	public SLR(Grammar grammar) throws Exception {
 		super();
 		Grammar grammarWithExtraStartSymbol = grammar.grammarWithExtraStartSymbol();
 		this.grammar = grammarWithExtraStartSymbol;
-		this.grammarWithDots = buildGrammarWithDots(grammarWithExtraStartSymbol);
-		this.itemSets = buildAllItemSets();
+		this.grammarWithDots = convertAllRulesToRulesWithDots(grammarWithExtraStartSymbol);
+		buildAllItemSets();
 	}
 
+	/**
+	 * Get the follow set from the given symbol.
+	 * @param sym A symbol.
+	 * @return An object that represents follow(X), where X is the given symbol.
+	 */
 	public Set<Symbol> follow(Symbol sym) {
 		return grammar.follow(sym);
 	}
 
-	private List<Set<RuleWithDot>> buildAllItemSets() {
+	/**
+	 * Initialises all states and gets all actions for the SLR table.
+	 */
+	private void buildAllItemSets() {
 		System.out.println("\n\n\n==============================");
 		System.out.println("Building all states.");
 
 		// adding first state
 		System.out.println("Adding first state set:");
-		List<Set<RuleWithDot>> allStatesBeforeIteration = new ArrayList<Set<RuleWithDot>>();
+		List<State> allStatesBeforeIteration = new ArrayList<State>();
 		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
-		Set<RuleWithDot> firstState = new HashSet<RuleWithDot>();
-		firstState = closure(firstRuleSet);
+		State firstState = closure(new State(firstRuleSet));
 		allStatesBeforeIteration.add(firstState);
 
 		ActionFactory actionFactory = new ActionFactory();
@@ -50,13 +55,13 @@ public class SLR {
 		while (setOfAllStatesHasChanged) {
 			System.out.println("******* New iteration (building all state sets) *******");
 			setOfAllStatesHasChanged = false;
-			List<Set<RuleWithDot>> allStatesAfterIteration = new ArrayList<Set<RuleWithDot>>();
+			List<State> allStatesAfterIteration = new ArrayList<State>();
 			allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
 			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
-				Set<RuleWithDot> state = allStatesAfterIteration.get(currentStateNumber);
+				State state = allStatesAfterIteration.get(currentStateNumber);
 				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
-				for (RuleWithDot ruleWithDot : state) {
+				for (RuleWithDot ruleWithDot : state.getRules()) {
 					System.out.println("~~Analysing rule~~");
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
 					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
@@ -74,10 +79,16 @@ public class SLR {
 			allStatesBeforeIteration = allStatesAfterIteration;
 		}
 		System.out.format("All state sets found: %s", allStatesBeforeIteration);
-		return allStatesBeforeIteration;
+		this.allStates =  allStatesBeforeIteration;
 	}
 
-	private Map<Symbol, Set<RuleWithDot>> buildGrammarWithDots(Grammar grammar) {
+	/**
+	 * Converts grammar rules to their version with dots.
+	 * For example, A -> B C D would resulting in an object that represents A -> [ε] . [B C D]
+	 * @param grammar A  grammar that has the rules to be converted.
+	 * @return A Map from Symbolt to a set of RuleWithDot.
+	 */
+	private Map<Symbol, Set<RuleWithDot>> convertAllRulesToRulesWithDots(Grammar grammar) {
 		// Initialise map
 		Map<Symbol, Set<RuleWithDot>> grammarWithDots = new HashMap<Symbol, Set<RuleWithDot>>();
 		for (Symbol nonTerminal : grammar.getNonTerminals()){
@@ -92,23 +103,14 @@ public class SLR {
 				grammarWithDots.get(nonTerminal).add(new RuleWithDot(rule, isStartRule));
 			}
 		}
-
 		System.out.println("Grammar with dots: " + grammarWithDots);
 		return grammarWithDots;
 	}
 
-	private void buildSLRTable(){
-		for(Set<RuleWithDot> itemSet : itemSets) {
-			//			analyseItemSet(itemSet);
-		}
-	}
-
+	// TODO: make this a test
 	public void testShifts() {
 		for (Symbol nonTerminal : grammar.getNonTerminals()){
 			for (RuleWithDot rule : this.grammarWithDots.get(nonTerminal)){
-				//				Set<RuleWithDot> s = new HashSet<RuleWithDot>();
-				//				s.add(rule);
-				//				this.gotoSet(s, nonTerminal);
 				System.out.println("before: " + rule); 
 				RuleWithDot after1 = RuleWithDot.generateRuleWithShiftedDot(rule);
 				System.out.println("after" + after1);
@@ -119,29 +121,41 @@ public class SLR {
 	}
 
 
-	public Set<RuleWithDot> gotoSet(Set<RuleWithDot> itemSet, Symbol sym) {
+	/**
+	 * Executes Goto on the given state for the given symbol.
+	 * @param state
+	 * @param sym
+	 * @return A new state that has the rules correspoding to the Goto operation applied on the given inputs.
+	 */
+	public State gotoSet(State state, Symbol sym) {
 		System.out.println("-------------");
-		System.out.format("goto(%s, %s) = \n", itemSet, sym);
+		System.out.format("goto(%s, %s) = \n", state, sym);
 		Set<RuleWithDot> newItemSet = new HashSet<RuleWithDot>();
-		for (RuleWithDot ruleWithDot : itemSet) {
+		for (RuleWithDot ruleWithDot : state.getRules()) {
 			if (ruleWithDot.firstSymbolAfterDot().equals(sym)) {
 				newItemSet.add(RuleWithDot.generateRuleWithShiftedDot(ruleWithDot));
 			}
 		}
-		return closure(newItemSet);
+		State resultingState = new State(newItemSet);
+		return closure(resultingState);
 	}
 
-	private Set<RuleWithDot> closure(Set<RuleWithDot> itemSet) {
+	/**
+	 * Computes the closure set for the given state set. 
+	 * @param itemSet
+	 * @return
+	 */
+	private State closure(State itemSet) {
 		System.out.format("closure(%s) = \n", itemSet);
 		Set<RuleWithDot> itemSetBeforeIteration = new HashSet<RuleWithDot>();
-		itemSetBeforeIteration.addAll(itemSet);
+		itemSetBeforeIteration.addAll(itemSet.getRules());
 		boolean itemSetHasChanged = true;
 
 		while (itemSetHasChanged) {
 			System.out.println("  New iteration");
 			itemSetHasChanged = false;	
 			Set<RuleWithDot> itemSetAfterIteration = new HashSet<RuleWithDot>();
-			itemSetAfterIteration.addAll(itemSet);
+			itemSetAfterIteration.addAll(itemSet.getRules());
 
 			for (RuleWithDot ruleWithDot : itemSetBeforeIteration) {
 				Symbol symAfterDot = ruleWithDot.firstSymbolAfterDot();
@@ -158,7 +172,7 @@ public class SLR {
 			}
 		}
 		System.out.println("  Final: " + itemSetBeforeIteration);
-		return itemSetBeforeIteration;
+		return new State(itemSetBeforeIteration);
 	}
 
 
@@ -169,9 +183,18 @@ public class SLR {
 		return new HashSet<RuleWithDot>();
 	}
 
-	public int getStateNumber(Set<RuleWithDot> state, List<Set<RuleWithDot>> allStates) {
+	/**
+	 * Given a set of known states, verifies whether the given state is contained in
+	 * any existing state. If there is such a state, return its index on the list of all states.
+	 * Otherwise, returns the index of the next position that will be used
+	 * (that is, the size of allStates).
+	 * @param state
+	 * @param allStates
+	 * @return
+	 */
+	public int getStateNumber(State state, List<State> allStates) {
 		int stateNumber = 0;
-		for (Set<RuleWithDot> existingState : allStates) {
+		for (State existingState : allStates) {
 			if (state.equals(existingState)) {
 				return stateNumber;
 			}
@@ -179,6 +202,5 @@ public class SLR {
 		}
 		return stateNumber;
 	}
-
 
 }

@@ -9,6 +9,11 @@ import java.util.Set;
 
 import com.ex.entity.Symbol.SymbolType;
 
+/**
+ * Represents a grammar.
+ * @author andre0991
+ *
+ */
 public final class Grammar {
 
 	/**
@@ -47,7 +52,27 @@ public final class Grammar {
 		buildAllFollowSets();
 	}
 	
-	
+	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
+			int numberOfRules) {
+		super();
+		this.rules = rules;
+		this.terminals = terminals;
+		this.nonTerminals = nonTerminals;
+		this.startSymbol = startSymbol;
+		this.numberOfRules = numberOfRules;
+		
+		this.firstSets = buildAllFirstSets();
+		buildAllFollowSets();
+	}
+
+	/**
+	 * Returns a grammar that is identical to this, except that is has a new start symbol
+	 * that produces the old start symbol.
+	 * For example, if the old grammar is "S -> A,  A -> B", then the new grammar is
+	 * "newS -> S, S -> A, A -> B"
+	 * @return
+	 * @throws Exception
+	 */
 	public Grammar grammarWithExtraStartSymbol() throws Exception {
 		// create new start symbol
 		Symbol oldStartSymbol = this.startSymbol;
@@ -93,20 +118,6 @@ public final class Grammar {
 
 		return newGrammarWithExtraStartSymbol;
 	}
-	
-	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
-			int numberOfRules) {
-		super();
-		this.rules = rules;
-		this.terminals = terminals;
-		this.nonTerminals = nonTerminals;
-		this.startSymbol = startSymbol;
-		this.numberOfRules = numberOfRules;
-		
-		this.firstSets = buildAllFirstSets();
-		buildAllFollowSets();
-	}
-
 
 	private Symbol addStartSymbol(String inputGrammar) throws Exception {
 		String[] lines = inputGrammar.split("\n");
@@ -512,7 +523,7 @@ public final class Grammar {
 				System.out.println("---- \nUpdating set " + nonTerminal);
 				Follow followDescription = followSetDescriptions.get(nonTerminal);
 				int numElementsBefore = this.follow(nonTerminal).size();
-				newFollowSets.get(nonTerminal).addAll(followDescription.update(this));
+				newFollowSets.get(nonTerminal).addAll(followDescription.getAllElements(this));
 				int numElementsAfter = newFollowSets.get(nonTerminal).size();
 				if (numElementsBefore != numElementsAfter){
 					someFollowSetHasChanged = true;

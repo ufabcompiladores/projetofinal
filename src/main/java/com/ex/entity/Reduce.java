@@ -4,12 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents a Reduce action.
+ * @author andre0991
+ *
+ */
 public final class Reduce extends Action {
 	
 	private int ruleNumber;
 
-	public Reduce(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> itemSets, SLR slr) {
-		super(currentStateNumber, ruleWithDot, itemSets);
+	public Reduce(int currentStateNumber, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
+		super(currentStateNumber, ruleWithDot, allStates);
 		this.ruleNumber = ruleWithDot.getNumber();
 		
 		// set columns to follow set from producer

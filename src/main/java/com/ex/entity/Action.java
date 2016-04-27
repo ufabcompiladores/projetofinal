@@ -3,18 +3,25 @@ package com.ex.entity;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents an Action in the context of SLR parsing.
+ * The type of action is determined by the instantiated subclass - Goto, Shift, Reduce or Accept.
+ * Actions store also the line and columns in which they are placed on the SLR table.
+ * @author andre0991
+ *
+ */
 public abstract class Action {
 
-	private List<Set<RuleWithDot>> nextItemSets;
+	private List<State> nextItemSets;
 	private int lineToStoreActionInTable;
 	private Set<Symbol> columnToStoreActionInTable;
 	
-	public Action(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates){
+	public Action(int currentStateNumber, RuleWithDot ruleWithDot, List<State> allStates){
 		this.lineToStoreActionInTable = currentStateNumber;
 		this.nextItemSets = allStates;
 	}
 
-	public List<Set<RuleWithDot>> getNextItemSets() {
+	public List<State> getNextItemSets() {
 		return nextItemSets;
 	}
 
@@ -28,7 +35,7 @@ public abstract class Action {
 	}
 
 
-	public void setNextItemSets(List<Set<RuleWithDot>> nextItemSets) {
+	public void setNextItemSets(List<State> nextItemSets) {
 		this.nextItemSets = nextItemSets;
 	}
 
