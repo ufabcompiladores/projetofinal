@@ -581,4 +581,12 @@ public final class Grammar {
 		// end tests
 	}
 	
+	public Map<Symbol, Set<Symbol>> getFirstSets() {
+		return firstSets;
+	}
+	
+	public Map<Symbol, Set<Symbol>> getFollowSets() {
+		return followSets;
+	}
+	
 }
