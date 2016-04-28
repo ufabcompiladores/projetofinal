@@ -461,7 +461,7 @@ public final class Grammar {
 					// achou sym no RHS da producao
 					if (rule.getProduction().get(i).equals(sym)) {
 						StringBuilder followDescSb = new StringBuilder();
-						followDescSb.append(String.format("Found symbol %s in rule %s at position %s:\n", sym, rule, i));
+						followDescSb.append(String.format("\nFound symbol %s in rule %s at position %s:\n", sym, rule, i));
 						int indexRightSideOfSym = i + 1;
 						// se nao eh ultimo simbolo da producao
 						if (indexRightSideOfSym < rule.getProduction().size()) {
@@ -547,8 +547,10 @@ public final class Grammar {
 				newFollowSets.put(nonTerminal, newSet);
 			}
 
-			System.out.println("newFollowSets: " + newFollowSets);
-			System.out.println("FollowSets: " + followSets);
+			System.out.println("newFollowSets: " + newFollowSets + "\n");
+			for (Symbol nonTerminal : nonTerminals) {
+				System.out.println(String.format("Follow(%s) = %s\n", nonTerminal, followSets.get(nonTerminal)));
+			}
 
 			for (Symbol nonTerminal: nonTerminals){
 				System.out.println("---- \nUpdating set " + nonTerminal);
@@ -602,7 +604,7 @@ public final class Grammar {
 
 	public static void main(String[] args) throws Exception {
 		//		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
-		Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
+		Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
 		// falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
 //		Grammar g = new Grammar("S -> a S b S \n S -> a");
 		System.out.println(g.getNonTerminals());

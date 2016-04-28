@@ -40,6 +40,7 @@ public class Follow {
 		if (hasEOF){
 			string.append("{$}");
 		}
+		// TODO: if end is " union ", then delete it
 		string.append(" }");
 		return string.toString();
 	}
@@ -107,6 +108,8 @@ public class Follow {
 		}
 
 		stringb.append(String.format("\n Elements: %s \n", elements));
+		grammar.outputString.get("follow").add(stringb.toString());
+		// TODO: remove println
 		System.out.println(stringb.toString());
 		return elements;
 	}
