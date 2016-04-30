@@ -29,7 +29,7 @@ public class Follow {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		string.append(" = {");
+		string.append("{");
 		// TODO: nao printar ultimo ∪
 		for (Symbol sym : firstSets){
 			string.append(String.format("First(%s) ∪ ", sym));
@@ -91,7 +91,6 @@ public class Follow {
 	public Set<Symbol> getAllElements(Grammar grammar){
 		Set<Symbol> elements = new HashSet<Symbol>();	
 		StringBuilder stringb = new StringBuilder();
-		stringb.append(String.format("Follow set description: %s \n", this));
 
 		for (Symbol sym : firstSets){
 			stringb.append(String.format("First(%s) = %s \n", sym, grammar.first(sym)));
@@ -116,10 +115,8 @@ public class Follow {
 			elements.add(Symbol.createEOFSymbol());
 		}
 
-		stringb.append(String.format("\n Elements: %s \n", elements));
+		stringb.append(String.format("All added elements: %s \n\n", elements));
 		grammar.outputString.get("follow").add(stringb.toString());
-		// TODO: remove println
-		System.out.println(stringb.toString());
 		return elements;
 	}
 	

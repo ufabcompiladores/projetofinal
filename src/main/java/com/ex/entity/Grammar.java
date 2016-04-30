@@ -48,9 +48,8 @@ public final class Grammar {
 		addTerminals(inputGrammar);
 		readAllRules(inputGrammar);
 		buildAllNonTerminalsThatProduceEps();
-		buildAllFirstSetsNew();
+		buildAllFirstSets();
 		buildAllFollowSets();
-		System.out.println("printing");
 		printOutput();
 	}
 
@@ -68,14 +67,21 @@ public final class Grammar {
 	
 	
 	public void printOutput() {
-		System.out.println(outputString.get("readingGrammar"));
-		System.out.println(outputString.get("first"));
-		System.out.println(outputString.get("followSetDescriptions"));
-		System.out.println(outputString.get("firstSetDescriptions"));
-		System.out.println(outputString.get("follow"));
+		System.out.println("READING GRAMMAR");
+		System.out.println(outputString.get("readingGrammar").stream().reduce("" , (a, b) -> a + b));
+
+		System.out.println("BUILDING FIRST SETS DESCRIPTIONS");
+		System.out.println(outputString.get("firstSetDescriptions").stream().reduce("" , (a, b) -> a + b));
+
+		System.out.println("BUILDING FIRST SETS");
+		System.out.println(outputString.get("first").stream().reduce("" , (a, b) -> a + b));
+
+		System.out.println("BUILDING FOLLOW SETS DESCRIPTIONS");
+		System.out.println(outputString.get("followSetDescriptions").stream().reduce("" , (a, b) -> a + b));
+
+		System.out.println("BUILDING FOLLOW SETS");
+		System.out.println(outputString.get("follow").stream().reduce("" , (a, b) -> a + b));
 	}
-
-
 
 	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
 		int numberOfRules) {
@@ -90,7 +96,7 @@ public final class Grammar {
 		
 		buildAllNonTerminalsThatProduceEps();
 
-		buildAllFirstSetsNew();
+		buildAllFirstSets();
 		buildAllFollowSets();
 	}
 
@@ -216,7 +222,6 @@ public final class Grammar {
 
 	private void readAllRules(String rulesText) throws Exception {
 		List<String> outReadRules = this.outputString.get("readingGrammar");
-		outReadRules.add("Reading input grammar\n=====================\n");
 		String[] rules = rulesText.split("\n");
 		for (String rule : rules) {
 			outReadRules.add(String.format("Add rule: %s\n", rule));
@@ -353,7 +358,9 @@ public final class Grammar {
 	 * encontrar um ponto fixo.
 	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
-	public void buildAllFirstSetsNew() {
+	public void buildAllFirstSets() {
+		List<String> out = this.outputString.get("first");
+		
 		// Initialize set
 		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -370,7 +377,7 @@ public final class Grammar {
 		boolean someFirstSetHasChanged = true;
 		while (someFirstSetHasChanged) {
 			StringBuilder iterationSb = new StringBuilder();
-			System.out.println("\n (first sets new) New iteration \n ------------\n");
+			iterationSb.append("New iteration (building first sets)\n");
 			someFirstSetHasChanged = false;
 
 			// Copy elements from old first sets to new first sets
@@ -386,24 +393,25 @@ public final class Grammar {
 
 			// Updates, possibly getting new elements
 			for (Symbol nonTerminal: nonTerminals){
-				System.out.println("---- \nUpdating set " + nonTerminal);
+				iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
 				First firstDescription = firstSetDescriptions.get(nonTerminal);
+				iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
 				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
 				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
+				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
 				int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
 				if (numElementsBefore != numElementsAfter){
 					someFirstSetHasChanged = true;
 				}
 			}
-			System.out.println("Old first sets: "+ firstSetsBeforeIteration);
-			System.out.println("New first sets: "+ firstSetsAfterIteration);
+
+			iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
+			iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+			out.add(iterationSb.toString());
+
 			firstSetsBeforeIteration = firstSetsAfterIteration;
-//			this.followSets = firstSetsAfterIteration;
 		}
-		System.out.println("------");
-		System.out.println("Final result: ");
-		System.out.println(firstSetsBeforeIteration);
-//		System.out.println(this.followSets);
+		out.add(String.format("Final result: %s\n\n", firstSetsBeforeIteration));
 		this.firstSets = firstSetsBeforeIteration;
 	}
 
@@ -419,7 +427,6 @@ public final class Grammar {
 			First first = buildFirstDescription(terminal);
 			firstSetsDescriptions.put(terminal, first);
 		}
-		System.out.println("First set descriptions: " + firstSetsDescriptions);
 		return firstSetsDescriptions;
 	}
 	
@@ -428,20 +435,25 @@ public final class Grammar {
 		Set<Symbol> firstSetsWithoutEps = new HashSet<Symbol>();
 		boolean hasEps = false;
 		
+		List<String> out = this.outputString.get("firstSetDescriptions");
+		out.add(String.format("Building set description for %s:\n", sym));
+
 		if (sym.isTerminal()) {
 			firstSets.add(sym);
+			out.add(String.format("Symbol %s is terminal - adding {%s} to First(%s)\n", sym, sym, sym));
 			return new First(firstSets, firstSetsWithoutEps, hasEps);
 		}
 
-		this.outputString.get("firstSetDescriptions").add(String.format("First set description for %s:\n", sym));
 
 		for (Rule rule : rules.get(sym)){
+			out.add(String.format("Analysing rule %s\n", rule));
 			List<Symbol> production = rule.getProduction();
 			int i = 0;
 			Symbol currentSymbol = production.get(i);
 			
 			// if it produces eps directly
 			if (currentSymbol.isEmptyString()) {
+				out.add(String.format("Rule produces eps directly. Adding {ε} to First(%s)\n", sym));
 				hasEps = true;
 				continue;
 			}
@@ -449,6 +461,7 @@ public final class Grammar {
 			// add all consecutive nonTerminals that produce eps
 			while (i < production.size() &&	
 					producesEps(currentSymbol)) {
+				out.add(String.format("Symbol %s produces ε. Adding First(%s) - ε to First(%s).\n", currentSymbol, currentSymbol, sym));
 				firstSetsWithoutEps.add(currentSymbol);
 				i++;
 				if (i < rule.getProduction().size()) {
@@ -458,15 +471,17 @@ public final class Grammar {
 
 			// if did not reach end of production
 			if (i < rule.getProduction().size()) {
+				out.add(String.format("Adding First(%s) to Firsts(%s)\n", currentSymbol, sym));
 				firstSets.add(currentSymbol);
 			}
 			else {
+				out.add(String.format("Reached end of production - adding ε to First(%s)\n", sym));
 				hasEps = true;
 			}
 
 		}
 		First firstSet = new First(firstSets, firstSetsWithoutEps, hasEps);
-		System.out.println(String.format("First(%s) = %s", sym, firstSet));
+		out.add(String.format("Final description: First(%s) = %s\n\n", sym, firstSet));
 		return firstSet;
 	}
 
@@ -476,14 +491,13 @@ public final class Grammar {
 		for (Symbol nonTerminal: nonTerminals){
 			Follow follow = buildFollowDescription(nonTerminal);
 			followSetsDescriptions.put(nonTerminal, follow);
-			System.out.println(follow);
 		}
 		return followSetsDescriptions;
 	}
 
 	private Follow buildFollowDescription(Symbol sym){
 		Follow followSet = new Follow(sym.equals(startSymbol));
-		this.outputString.get("followSetDescriptions").add(String.format("Follow set description for %s:\n", sym));
+		this.outputString.get("followSetDescriptions").add(String.format("Building Follow set description for %s:\n", sym));
 		
 		for (Symbol nonTerminal : nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)){
@@ -506,7 +520,6 @@ public final class Grammar {
 										+ "we add First(%s) - {ε} to the description of Follow(%s) \n", 
 										symbolOnRightSide, symbolOnRightSide, sym));
 								followSet.getFirstSetsWithoutEps().add(symbolOnRightSide);
-								System.out.println("analysing sym: " + sym + "\ncurrent sym on right side: " + symbolOnRightSide);
 								// FIXME: issue when A -> BC, B and C produce eps
 								indexRightSideOfSym++;
 								if (indexRightSideOfSym < rule.getProduction().size()) {
@@ -559,6 +572,9 @@ public final class Grammar {
 	 * encontrar um ponto fixo.
 	 */
 	private void buildAllFollowSets(){
+		List<String> out = this.outputString.get("follow");
+		// TODO: make this function more similar to buildAllFirstSets (minimize side effects).
+		
 		// Initialize field
 		Map<Symbol, Set<Symbol>> followSetsField = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -572,8 +588,7 @@ public final class Grammar {
 		// Iterate until fixed point is found
 		boolean someFollowSetHasChanged = true;
 		while (someFollowSetHasChanged){
-			StringBuilder iterationSb = new StringBuilder();
-			System.out.println("\n New iteration \n ------------\n");
+			out.add("New iteration (building all follow sets)\n");
 			someFollowSetHasChanged = false;
 			Map<Symbol, Set<Symbol>> newFollowSets = new HashMap<Symbol, Set<Symbol>>();
 
@@ -584,14 +599,14 @@ public final class Grammar {
 				newFollowSets.put(nonTerminal, newSet);
 			}
 
-			System.out.println("newFollowSets: " + newFollowSets + "\n");
-			for (Symbol nonTerminal : nonTerminals) {
-				System.out.println(String.format("Follow(%s) = %s\n", nonTerminal, followSets.get(nonTerminal)));
-			}
+//			for (Symbol nonTerminal : nonTerminals) {
+//				iterationSb.append(String.format("Follow(%s) = %s\n", nonTerminal, followSets.get(nonTerminal)));
+//			}
 
 			for (Symbol nonTerminal: nonTerminals){
-				System.out.println("---- \nUpdating set " + nonTerminal);
+				out.add(String.format("Updating Follow(%s)\n", nonTerminal));
 				Follow followDescription = followSetDescriptions.get(nonTerminal);
+				out.add(String.format("Follow(%s) = %s\n", nonTerminal, followDescription));
 				int numElementsBefore = this.follow(nonTerminal).size();
 				newFollowSets.get(nonTerminal).addAll(followDescription.getAllElements(this));
 				int numElementsAfter = newFollowSets.get(nonTerminal).size();
@@ -599,15 +614,12 @@ public final class Grammar {
 					someFollowSetHasChanged = true;
 				}
 			}
-			System.out.println("Old follow sets: "+ this.followSets);
-			System.out.println("New follow sets: "+ newFollowSets);
-			// old
-			//			followSetsBeforeIteration = newFollowSets;
+
+			out.add(String.format("All elements form follow sets before iteration: %s\n", this.followSets));
+			out.add(String.format("All elements form follow sets after iteration: %s\n\n", newFollowSets));
 			this.followSets = newFollowSets;
 		}
-		System.out.println("------");
-		System.out.println("Final result: ");
-		System.out.println(this.followSets);
+		out.add(String.format("Final result: %s\n\n", this.followSets));
 	}
 
 	// TODO: this does not cover all cases.
@@ -668,7 +680,6 @@ public final class Grammar {
 			producesEps.put(terminal, false);
 		}
 		
-		System.out.println("test: producesEPS: " + producesEps); 
 		this.nonTerminalsToProducesEps = producesEps;
 	}
 
@@ -695,16 +706,8 @@ public final class Grammar {
 		// falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
 //		Grammar g = new Grammar("S -> a S b S \n S -> a");
 		Grammar g = new Grammar("A -> B C \n B -> \n C -> ");
-		System.out.println(g.getNonTerminals());
-		System.out.println(g);
 
 		SLR slr = new SLR(g);
-		System.out.format("test %s, %s", "", "oi");
-		// end tests
-
-		System.out.println(g.outputString.get("first"));
-		System.out.println(g.outputString.get("followSetDescriptions"));
-		System.out.println(g.followSets);
 	}
 
 	public Map<Symbol, Set<Symbol>> getFirstSets() {
