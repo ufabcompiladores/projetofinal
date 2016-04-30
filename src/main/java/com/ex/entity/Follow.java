@@ -2,6 +2,12 @@ package com.ex.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * TODO: extend this description.
+ * Represents a follow set.
+ * @author andre0991
+ *
+ */
 public class Follow {
 	private Set<Symbol> firstSets;
 	private Set<Symbol> firstSetsWithoutEps;
@@ -41,7 +47,10 @@ public class Follow {
 			string.append("{$}");
 		}
 		// TODO: if end is " union ", then delete it
-		string.append(" }");
+		if (string.substring(string.length() - 3, string.length()).equals(" ∪ ")) {
+			string.delete(string.length() - 3, string.length());
+		}
+		string.append("}");
 		return string.toString();
 	}
 
@@ -90,7 +99,7 @@ public class Follow {
 		}
 		for (Symbol sym : firstSetsWithoutEps){
 			stringb.append(String.format("First(%s) - {ε} = %s - {ε}\n", sym, grammar.first(sym)));
-			grammar.addAllElementsFromSetExceptEmptyString(grammar.first(sym), elements);
+			Grammar.addAllElementsFromSetExceptEmptyString(grammar.first(sym), elements);
 		}
 		for (Symbol sym : followSets){
 			stringb.append(String.format("Follow(%s)  = %s\n", sym, grammar.follow(sym)));
