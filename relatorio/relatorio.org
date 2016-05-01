@@ -16,6 +16,277 @@ imagem:
 
 * Objetivos
 * Justificativa
-* Metodologia de Projeto
+* Funcionamento
+** Produção de cadeia vazia
+O cálculo dos conjuntos FIRST e FOLLOW exigem em diversos momentos saber se
+um determinado não terminal produz \epsilon. Por exemplo, considere a sequência
+de símbolos /ABC/. Queremos calcular FIRST(ABC). Sabemos que
+
+#+BEGIN_CENTER
+FIRST(ABC) = FIRST(A) \oplus FIRST(BCD)
+#+END_CENTER
+
+e o resultado desta operação é somente FIRST(A) se $A$ não produz \epsilon ou
+FIRST(A) - \epsilon se \epsilon \in FIRST(A). Então é conveniente saber de
+antemão quais símbolos produzem \epsilon.
+
+Para tanto, usa-se o método ~buildAllNonTerminalsThatProduceEps~ na classe
+~Grammar~. O algoritmo utilizado é simples: primeiro, verifica-se todos os não
+terminais que produzem diretamente \epsilon, isto é, aqueles que têm uma regra
+que produz \epsilon sem etapas intermediárias, como em $A \rightarrow \epsilon$.
+
+Em seguida, todas as regras são percorridas, e se todos os símbolos da parte
+direita de uma regra produzem \epsilon, então adicionamos o produtor dessa regra
+à lista de não terminais que produzem \epsilon. Todas as regras são percorridas
+novamente até que nenhum símbolo novo tenha sido adicionado à lista de símbolos
+que produzem \epsilon. Em outras palavras, até que o ponto fixo seja atingido.
+
+Por exemplo, considere a seguinte gramática:
+
+#+BEGIN_CENTER
+A \rightarrow BC \\
+B \rightarrow \epsilon \\
+C \rightarrow \epsilon
+#+END_CENTER
+
+A tabela a seguir mostra o resultado desse algoritmo aplicado à gramática
+anterior em cada iteração.
+
+| Produz \epsilon? | A   | B   | C   |
+| Iteração 1       | não | sim | sim |
+| Iteração 2       | sim | sim | sim |
+| Iteração 3       | sim | sim | sim |
+
+Na iteração 3, o conjunto de elementos que produzem \epsilon não mudou, e assim
+o algoritmo termina.
+
+O código é apresentado a seguir.
+
+#+BEGIN_SRC java
+	private final void buildAllNonTerminalsThatProduceEps() {
+		Set<Symbol> nonTerminalsThatGenerateEps = new HashSet<Symbol>();
+
+		// rules that directly generate eps
+		for (Symbol nonTerminal : nonTerminals) {
+			for (Rule rule : rules.get(nonTerminal)) {
+				if (rule.producesEmptyString()) {
+					nonTerminalsThatGenerateEps.add(nonTerminal);
+				}
+			}
+		}
+		
+		// iterates until fp is found
+		boolean newNonTerminalThatGeneratesEpsHasBeenFound = true;
+		while (newNonTerminalThatGeneratesEpsHasBeenFound) {
+			newNonTerminalThatGeneratesEpsHasBeenFound = false;
+			int setSizeBeforeIteration = nonTerminalsThatGenerateEps.size();
+
+			for (Symbol nonTerminal : nonTerminals) {
+				for (Rule rule : rules.get(nonTerminal)) {
+					// verifies if all symbols from rule produce eps
+					List<Symbol> production = rule.getProduction();
+					boolean allSymbolsFromProductionProduceEps;
+					allSymbolsFromProductionProduceEps = production
+							.stream()
+							.allMatch(symbol -> nonTerminalsThatGenerateEps.contains(symbol));
+
+					// if so, add it to set
+					if (allSymbolsFromProductionProduceEps) {
+						nonTerminalsThatGenerateEps.add(nonTerminal);
+					}
+				}
+			}
+
+			// verifies whether some non terminal has been added to set
+			int setSizeAfterIteration = nonTerminalsThatGenerateEps.size();
+			if (setSizeBeforeIteration != setSizeAfterIteration) {
+				newNonTerminalThatGeneratesEpsHasBeenFound = true;
+			}
+		}
+		
+		// initialise Map
+		Map<Symbol, Boolean> producesEps = new HashMap<Symbol, Boolean>();
+		for (Symbol nonTerminal : nonTerminals) {
+			producesEps.put(nonTerminal, nonTerminalsThatGenerateEps.contains(nonTerminal));
+		}
+		for (Symbol terminal : terminals) {
+			producesEps.put(terminal, false);
+		}
+		
+		this.nonTerminalsToProducesEps = producesEps;
+	}
+#+END_SRC
+
+** Representação dos conjuntos FIRST e FOLLOW
+Uma das principais funcionalidades do programa deste trabalho é não só calcular
+os conjuntos FIRST e FOLLOW, mas fazer isso apresentando as etapas
+intermediárias, fazendo com que o usuário veja cada passo do algoritmo. Isso faz
+com que o cálculo desses conjuntos não seja o mais eficiente possível, pois
+precisamos lidar também com o /output/ sem pular nenhuma etapa.
+
+Para isto, criamos classes ~First~ e ~Follow~. Estas classes têm atributos que
+indicam a /representação/ do conjunto dado em termos de outros conjuntos.
+
+Por exemplo, considere os seguintes atributos da classe ~Follow~:
+
+#+BEGIN_SRC java
+private Set<Symbol> firstSets;
+private Set<Symbol> firstSetsWithoutEps;
+private Set<Symbol> followSets;
+private Set<Symbol> terminals;
+private boolean hasEOF;
+#+END_SRC
+
+Suponha que um objeto dessa classe tenha as seguintes atribuições (aqui em
+notação de teoria dos conjuntos):
+
+#+BEGIN_CENTER
+firstSets = {A} \\
+firstSetsWithoutEps = {B, C} \\
+followSets = {D} \\
+terminals = {a, b} \\
+hasEOF = true \\
+#+END_CENTER
+
+Então esse conjunto seria
+
+#+BEGIN_CENTER
+FIRST(A) \cup (FIRST(B) - \epsilon) \cup (FIRST(C) - \epsilon) \cup FOLLOW(D)
+\cup {a} \cup {b} \cup {$}
+#+END_CENTER
+
+Ambas as classes têm o método ~toString~ sobrescrito para exibir essa
+representação como mostrado acima e um método ~getAllElements~ que coleta
+todos os elementos vindos da união dos conjuntos.
+
+** Cálculo dos conjuntos FIRST e FOLLOW
+De maneira semelhante à computação de todos os não terminais que geram \epsilon,
+o cálculo dos conjuntos FIRST e FOLLOW consiste, em essência, em iterar até
+encontrar um ponto fixo.
+
+Note que a aplicação direta da definição de FIRST e FOLLOW não funciona, pois
+ela falharia no caso de definições recursivas que são dependentes entre
+si. Por exemplo, considere o caso em que FIRST(A) = FIRST(B) e FIRST(B) =
+FIRST(A). Para calcular FIRST(A), calcula-se FIRST(B). Mas FIRST(B) é FIRST(A),
+o que resulta num /loop/ infinito. Em vez disso, começamos com todos os
+conjuntos FIRST setados para \emptyset, e a cada iteração atualizamos todos os
+conjuntos até atingir um ponto fixo. 
+
+O código a seguir mostra a implementação desse algoritmo para o cálculo dos
+conjuntos FIRST.
+
+#+BEGIN_SRC java
+	public final void buildAllFirstSets() {
+		
+		// Initialize set
+    // omitido
+
+		// Get description of each first set
+		Map<Symbol, First> firstSetDescriptions = buildAllFirstSetDescriptions();
+
+		// Iterate until fixed point is found
+		boolean someFirstSetHasChanged = true;
+		while (someFirstSetHasChanged) {
+			StringBuilder iterationSb = new StringBuilder();
+			iterationSb.append("New iteration (building first sets)\n");
+			someFirstSetHasChanged = false;
+
+			// Copy elements from old first sets to new first sets
+      // omitido
+
+			// Updates, possibly getting new elements
+			for (Symbol nonTerminal: nonTerminals){
+				iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
+				First firstDescription = firstSetDescriptions.get(nonTerminal);
+				iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
+				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
+				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
+				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
+				int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
+				if (numElementsBefore != numElementsAfter){
+					someFirstSetHasChanged = true;
+				}
+			}
+
+			iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
+			iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+
+			firstSetsBeforeIteration = firstSetsAfterIteration;
+		}
+		this.firstSets = firstSetsBeforeIteration;
+	}
+#+END_SRC
+
+O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
+
+** TODO LL
+
+** SLR
+
+*** Regras
+Usamos a classe ~RuleWithDot~ para representar os itens dos estados.
+Um objeto dessa classe têm listas de símbolos para representar o que vem antes e
+depois do ponto. Por exemplo, a regra A \rightarrow BC.DE teria BC em
+~symbolsBeforeDot~ e DE em ~symbolsAfterDot~.
+
+[[./media/ruleWithDot.png]]
+
+O método ~generateRuleWithShiftedDot~ serve para gerar um novo objeto do tipo
+~RuleWithDot~ com o ponto deslocado para a direita. Usando o exemplo anterior, o
+objeto gerado a partir de A \rightarrow BC.DE representaria A \rightarrow BCD.E.
+Note que o objeto retornado é um novo. Não há efeitos colaterais.
+
+*** Ações
+Ações no contexto da tabela SLR são representadas por classes.
+
+Além de ter um tipo específico, uma ~Action~ contém atributos para indicar sua
+posição na tabela, a saber, ~lineToStoreActionInTable~ e ~columnToStoreActionInTable~.
+
+Assim, a partir de uma lista de todos os objetos do tipo ~Action~ gerados é
+possível construir a tabela SLR.
+
+[[./media/actions.png]]
+
+As ações ~Shift~ e ~Goto~ têm o método ~getGotoStateNumber~, cujo resultado é
+armazenado em ~gotoOrShiftStateNumber~.
+
+Esse atributo armazena o número do estado que deve ser usado após executar a
+ação. Por exemplo, para um objeto ~Shift~ que representa a ação /shift 8/, esse
+número é 8. Note que esse número pode indicar um estado que já existe ou um
+novo.
+
+Além disso, todas as ações têm um atributo ~nextItemSets~ que possui uma lista
+de todos os estados descobertos após essa ação. Se a ação é  ~Accept~ ou
+~Reduce~, essa lista é exatamente a mesma de antes. Por outro lado, no
+caso de ~Shift~ e ~Goto~, calcula-se goto(q, a), em que /q/ é o estado sendo
+analisado e /a/ é o primeiro símbolo após o ponto, e se o resultado de goto(q,
+a) não estiver na lista de estados conhecida até então, um novo estado é
+adicionado a ela. Se o resultado de goto(q, a) já estiver na lista de estados,
+então esta permanece a mesma.
+
+O código abaixo ilustra esse processo no caso do ~ActionWithNextState~.
+
+#+BEGIN_SRC java
+	public ActionWithNextState(int currentStateNumber, State state, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
+		super(currentStateNumber, ruleWithDot, allStates);
+		List<State> newItemSets = new ArrayList<State>();
+		newItemSets.addAll(allStates);
+		
+		// Sets next state number and the new list of states.
+		State nextState = slr.gotoSet(state, ruleWithDot.firstSymbolAfterDot());
+		this.gotoOrShiftStateNumber = slr.getStateNumber(nextState, allStates);
+		if (gotoOrShiftStateNumber == allStates.size()) {
+			newItemSets.add(nextState);
+		}
+		setNextItemSets(newItemSets);
+	}
+#+END_SRC
+
+Note que ~newItemSets~ é uma /nova/ lista de estados. Assim, não há efeitos
+colaterais envolvidos.
+
+*** Algoritmo
+Ainda à maneira do 
 * Conclusão
+* Adendo - notas sobre algumas decisões de /design/ 
 * Referências Bibliográficas

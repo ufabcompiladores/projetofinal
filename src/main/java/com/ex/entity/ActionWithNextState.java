@@ -22,7 +22,6 @@ public abstract class ActionWithNextState extends Action {
 		List<State> newItemSets = new ArrayList<State>();
 		newItemSets.addAll(allStates);
 		
-		
 		// Sets next state number and the new list of states.
 		State nextState = slr.gotoSet(state, ruleWithDot.firstSymbolAfterDot());
 		this.gotoOrShiftStateNumber = slr.getStateNumber(nextState, allStates);

@@ -358,7 +358,7 @@ public final class Grammar {
 	 * encontrar um ponto fixo.
 	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
-	public void buildAllFirstSets() {
+	public final void buildAllFirstSets() {
 		List<String> out = this.outputString.get("first");
 		
 		// Initialize set
@@ -571,7 +571,7 @@ public final class Grammar {
 	 * em que se usa uma tabela que é atualizada até
 	 * encontrar um ponto fixo.
 	 */
-	private void buildAllFollowSets(){
+	private final void buildAllFollowSets(){
 		List<String> out = this.outputString.get("follow");
 		// TODO: make this function more similar to buildAllFirstSets (minimize side effects).
 		
@@ -599,10 +599,6 @@ public final class Grammar {
 				newFollowSets.put(nonTerminal, newSet);
 			}
 
-//			for (Symbol nonTerminal : nonTerminals) {
-//				iterationSb.append(String.format("Follow(%s) = %s\n", nonTerminal, followSets.get(nonTerminal)));
-//			}
-
 			for (Symbol nonTerminal: nonTerminals){
 				out.add(String.format("Updating Follow(%s)\n", nonTerminal));
 				Follow followDescription = followSetDescriptions.get(nonTerminal);
@@ -622,15 +618,11 @@ public final class Grammar {
 		out.add(String.format("Final result: %s\n\n", this.followSets));
 	}
 
-	// TODO: this does not cover all cases.
-	// ex: A->BC, B->eps, C->eps is not covered
-	// strategy: verify productions that directely produce eps,
-	// then verify others that produce it indirectely until fp
 	private boolean producesEps(Symbol symbol) {
 		return this.nonTerminalsToProducesEps.get(symbol);
 	}
 	
-	private void buildAllNonTerminalsThatProduceEps() {
+	private final void buildAllNonTerminalsThatProduceEps() {
 		Set<Symbol> nonTerminalsThatGenerateEps = new HashSet<Symbol>();
 
 		// rules that directly generate eps

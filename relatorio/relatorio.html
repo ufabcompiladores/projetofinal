@@ -1,203 +1,671 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br" xml:lang="pt-br">
+<!doctype html>
+<html lang="pt-br">
 <head>
-<!-- 2016-04-25 Mon 20:11 -->
-<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title>Projeto de Compiladores</title>
-<meta  name="generator" content="Org-mode" />
-<meta  name="author" content="André Peric Tavares, Giulio Parva Denardi" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
-  .title  { text-align: center;
-             margin-bottom: .2em; }
-  .subtitle { text-align: center;
-              font-size: medium;
-              font-weight: bold;
-              margin-top:0; }
-  .todo   { font-family: monospace; color: red; }
-  .done   { font-family: monospace; color: green; }
-  .priority { font-family: monospace; color: orange; }
-  .tag    { background-color: #eee; font-family: monospace;
-            padding: 2px; font-size: 80%; font-weight: normal; }
-  .timestamp { color: #bebebe; }
-  .timestamp-kwd { color: #5f9ea0; }
-  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
-  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
-  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
-  .underline { text-decoration: underline; }
-  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
-  p.verse { margin-left: 3%; }
-  pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
-    padding: 8pt;
-    font-family: monospace;
-    overflow: auto;
-    margin: 1.2em;
-  }
-  pre.src {
-    position: relative;
-    overflow: visible;
-    padding-top: 1.2em;
-  }
-  pre.src:before {
-    display: none;
-    position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
-    padding: 3px;
-    border: 1px solid black;
-  }
-  pre.src:hover:before { display: inline;}
-  pre.src-sh:before    { content: 'sh'; }
-  pre.src-bash:before  { content: 'sh'; }
-  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
-  pre.src-R:before     { content: 'R'; }
-  pre.src-perl:before  { content: 'Perl'; }
-  pre.src-java:before  { content: 'Java'; }
-  pre.src-sql:before   { content: 'SQL'; }
+<!-- 2016-05-01 Sun 17:42 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Org-mode">
+<meta name="author" content="André Peric Tavares, Giulio Parva Denardi">
 
-  table { border-collapse:collapse; }
-  caption.t-above { caption-side: top; }
-  caption.t-bottom { caption-side: bottom; }
-  td, th { vertical-align:top;  }
-  th.org-right  { text-align: center;  }
-  th.org-left   { text-align: center;   }
-  th.org-center { text-align: center; }
-  td.org-right  { text-align: right;  }
-  td.org-left   { text-align: left;   }
-  td.org-center { text-align: center; }
-  dt { font-weight: bold; }
-  .footpara { display: inline; }
-  .footdef  { margin-bottom: 1em; }
-  .figure { padding: 1em; }
-  .figure p { text-align: center; }
-  .inlinetask {
-    padding: 10px;
-    border: 2px solid gray;
-    margin: 10px;
-    background: #ffffcc;
-  }
-  #org-div-home-and-up
-   { text-align: right; font-size: 70%; white-space: nowrap; }
-  textarea { overflow-x: auto; }
-  .linenr { font-size: smaller }
-  .code-highlighted { background-color: #ffff00; }
-  .org-info-js_info-navigation { border-style: none; }
-  #org-info-js_console-label
-    { font-size: 10px; font-weight: bold; white-space: nowrap; }
-  .org-info-js_search-highlight
-    { background-color: #ffff00; color: #000000; font-weight: bold; }
-  /*]]>*/-->
-</style>
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="media/style.css" />
+<style type="text/css">
+/* org mode styles on top of twbs */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-size: 16px;
+    margin-bottom: 95px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 101px;
+    background-color: #f5f5f5;
+}
+
+footer > div {
+    padding: 10px;
+}
+
+footer p {
+    margin: 0 0 5px;
+    text-align: center;
+}
+
+#table-of-contents {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+blockquote p {
+    font-size: 16px;
+}
+
+pre {
+    font-size: 16px;
+}
+
+.footpara {
+    display: inline-block;
+}
+
+/* from twbs docs */
+
+.bs-docs-sidebar.affix {
+    position: static;
+}
+@media (min-width: 768px) {
+    .bs-docs-sidebar {
+        padding-left: 20px;
+    }
+}
+
+/* All levels of nav */
+.bs-docs-sidebar .nav > li > a {
+    display: block;
+    padding: 4px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #999;
+}
+.bs-docs-sidebar .nav > li > a:hover,
+.bs-docs-sidebar .nav > li > a:focus {
+    padding-left: 19px;
+    color: #A1283B;
+    text-decoration: none;
+    background-color: transparent;
+    border-left: 1px solid #A1283B;
+}
+.bs-docs-sidebar .nav > .active > a,
+.bs-docs-sidebar .nav > .active:hover > a,
+.bs-docs-sidebar .nav > .active:focus > a {
+    padding-left: 18px;
+    font-weight: bold;
+    color: #A1283B;
+    background-color: transparent;
+    border-left: 2px solid #A1283B;
+}
+
+/* Nav: second level (shown on .active) */
+.bs-docs-sidebar .nav .nav {
+    display: none; /* Hide by default, but at >768px, show it */
+    padding-bottom: 10px;
+}
+.bs-docs-sidebar .nav .nav > li > a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+    font-weight: normal;
+}
+.bs-docs-sidebar .nav .nav > li > a:hover,
+.bs-docs-sidebar .nav .nav > li > a:focus {
+    padding-left: 29px;
+}
+.bs-docs-sidebar .nav .nav > .active > a,
+.bs-docs-sidebar .nav .nav > .active:hover > a,
+.bs-docs-sidebar .nav .nav > .active:focus > a {
+    padding-left: 28px;
+    font-weight: 500;
+}
+
+/* Nav: third level (shown on .active) */
+.bs-docs-sidebar .nav .nav .nav {
+    padding-bottom: 10px;
+}
+.bs-docs-sidebar .nav .nav .nav > li > a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 40px;
+    font-size: 12px;
+    font-weight: normal;
+}
+.bs-docs-sidebar .nav .nav .nav > li > a:hover,
+.bs-docs-sidebar .nav .nav .nav > li > a:focus {
+    padding-left: 39px;
+}
+.bs-docs-sidebar .nav .nav .nav > .active > a,
+.bs-docs-sidebar .nav .nav .nav > .active:hover > a,
+.bs-docs-sidebar .nav .nav .nav > .active:focus > a {
+    padding-left: 38px;
+    font-weight: 500;
+}
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+    .bs-docs-sidebar .nav > .active > ul {
+        display: block;
+    }
+    /* Widen the fixed sidebar */
+    .bs-docs-sidebar.affix,
+    .bs-docs-sidebar.affix-bottom {
+        width: 213px;
+    }
+    .bs-docs-sidebar.affix {
+        position: fixed; /* Undo the static from mobile first approach */
+        top: 20px;
+    }
+    .bs-docs-sidebar.affix-bottom {
+        position: absolute; /* Undo the static from mobile first approach */
+    }
+    .bs-docs-sidebar.affix .bs-docs-sidenav,.bs-docs-sidebar.affix-bottom .bs-docs-sidenav {
+        margin-top: 0;
+        margin-bottom: 0
+    }
+}
+@media (min-width: 1200px) {
+    /* Widen the fixed sidebar again */
+    .bs-docs-sidebar.affix-bottom,
+    .bs-docs-sidebar.affix {
+        width: 263px;
+    }
+}
+</style>
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
 
-Copyright (C) 2012-2013 Free Software Foundation, Inc.
+$(function() {
+    'use strict';
 
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+    $('.bs-docs-sidebar li').first().addClass('active');
 
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
+    $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
-<!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+    $('.bs-docs-sidebar').affix();
+});
 </script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
-<div id="content">
-<h1 class="title">Projeto de Compiladores
-<br>
-<span class="subtitle">Trabalho para a disciplina Compiladores na Universidade Federal do ABC sob orientação da Profa. Mirtha Lina Fernández Venero</span>
-</h1>
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#orgheadline1">1. Introdução</a></li>
-<li><a href="#orgheadline2">2. Objetivos</a></li>
-<li><a href="#orgheadline3">3. Justificativa</a></li>
-<li><a href="#orgheadline4">4. Metodologia de Projeto</a></li>
-<li><a href="#orgheadline5">5. Conclusão</a></li>
-<li><a href="#orgheadline6">6. Referências Bibliográficas</a></li>
-</ul>
-</div>
-</div>
+<div id="content" class="container">
+<div class="row"><div class="col-md-9"><h1 class="title">Projeto de Compiladores</h1>
 
-<div id="outline-container-orgheadline1" class="outline-2">
-<h2 id="orgheadline1"><span class="section-number-2">1</span> Introdução</h2>
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introdução</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 <b>negrito</b>
 <i>itálico</i>
-<a href="https://google.com/">google</a>
+<a href="https://google.com">google</a>
+<a href="#sec-1">link</a>
+imagem:
+<img src="./media/Screenshot 2016-04-25 17.54.18.png" class="img-responsive" alt="Screenshot 2016-04-25 17.54.18.png">
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Objetivos</h2>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Justificativa</h2>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Funcionamento</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Produção de cadeia vazia</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+O cálculo dos conjuntos FIRST e FOLLOW exigem em diversos momentos saber se
+um determinado não terminal produz &epsilon;. Por exemplo, considere a sequência
+de símbolos <i>ABC</i>. Queremos calcular FIRST(ABC). Sabemos que
+</p>
+
+<div class="center">
+<p>
+FIRST(ABC) = FIRST(A) &oplus; FIRST(BCD)
+</p>
+</div>
+
+<p>
+e o resultado desta operação é somente FIRST(A) se \(A\) não produz &epsilon; ou
+FIRST(A) - &epsilon; se &epsilon; &isin; FIRST(A). Então é conveniente saber de
+antemão quais símbolos produzem &epsilon;.
 </p>
 
 <p>
-imagem:
-<img src="./media/Screenshot 2016-04-25 17.54.18.png" alt="Screenshot 2016-04-25 17.54.18.png" />
+Para tanto, usa-se o método <code>buildAllNonTerminalsThatProduceEps</code> na classe
+<code>Grammar</code>. O algoritmo utilizado é simples: primeiro, verifica-se todos os não
+terminais que produzem diretamente &epsilon;, isto é, aqueles que têm uma regra
+que produz &epsilon; sem etapas intermediárias, como em \(A \rightarrow \epsilon\).
+</p>
+
+<p>
+Em seguida, todas as regras são percorridas, e se todos os símbolos da parte
+direita de uma regra produzem &epsilon;, então adicionamos o produtor dessa regra
+à lista de não terminais que produzem &epsilon;. Todas as regras são percorridas
+novamente até que nenhum símbolo novo tenha sido adicionado à lista de símbolos
+que produzem &epsilon;. Em outras palavras, até que o ponto fixo seja atingido.
+</p>
+
+<p>
+Por exemplo, considere a seguinte gramática:
+</p>
+
+<div class="center">
+<p>
+A &rarr; BC <br >
+B &rarr; &epsilon; <br >
+C &rarr; &epsilon;
+</p>
+</div>
+
+<p>
+A tabela a seguir mostra o resultado desse algoritmo aplicado à gramática
+anterior em cada iteração.
+</p>
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+
+<colgroup>
+<col  class="left">
+
+<col  class="left">
+
+<col  class="left">
+
+<col  class="left">
+</colgroup>
+<tbody>
+<tr>
+<td class="left">Produz &epsilon;?</td>
+<td class="left">A</td>
+<td class="left">B</td>
+<td class="left">C</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 1</td>
+<td class="left">não</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 2</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 3</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Na iteração 3, o conjunto de elementos que produzem &epsilon; não mudou, e assim
+o algoritmo termina.
+</p>
+
+<p>
+O código é apresentado a seguir.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">buildAllNonTerminalsThatProduceEps</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+  <span style="color: #7CB8BB;">Set</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">nonTerminalsThatGenerateEps</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashSet</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;()</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">rules that directly generate eps</span>
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Rule</span> <span style="color: #DFAF8F;">rule</span> : rules.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #93E0E3;">(</span>rule.producesEmptyString<span style="color: #9FC59F;">()</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
+        nonTerminalsThatGenerateEps.add<span style="color: #9FC59F;">(</span>nonTerminal<span style="color: #9FC59F;">)</span>;
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">iterates until fp is found</span>
+  <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">newNonTerminalThatGeneratesEpsHasBeenFound</span> = <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>newNonTerminalThatGeneratesEpsHasBeenFound<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    newNonTerminalThatGeneratesEpsHasBeenFound = <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">setSizeBeforeIteration</span> = nonTerminalsThatGenerateEps.size<span style="color: #D0BF8F;">()</span>;
+
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #93E0E3;">(</span><span style="color: #7CB8BB;">Rule</span> <span style="color: #DFAF8F;">rule</span> : rules.get<span style="color: #9FC59F;">(</span>nonTerminal<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
+        <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">verifies if all symbols from rule produce eps</span>
+        <span style="color: #7CB8BB;">List</span><span style="color: #9FC59F;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #9FC59F;">&gt;</span> <span style="color: #DFAF8F;">production</span> = rule.getProduction<span style="color: #9FC59F;">()</span>;
+        <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">allSymbolsFromProductionProduceEps</span>;
+        allSymbolsFromProductionProduceEps = production
+            .stream<span style="color: #9FC59F;">()</span>
+            .allMatch<span style="color: #9FC59F;">(</span>symbol -&gt; nonTerminalsThatGenerateEps.contains<span style="color: #94BFF3;">(</span>symbol<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span>;
+
+        <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">if so, add it to set</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #9FC59F;">(</span>allSymbolsFromProductionProduceEps<span style="color: #9FC59F;">)</span> <span style="color: #9FC59F;">{</span>
+          nonTerminalsThatGenerateEps.add<span style="color: #94BFF3;">(</span>nonTerminal<span style="color: #94BFF3;">)</span>;
+        <span style="color: #9FC59F;">}</span>
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">verifies whether some non terminal has been added to set</span>
+    <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">setSizeAfterIteration</span> = nonTerminalsThatGenerateEps.size<span style="color: #D0BF8F;">()</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #D0BF8F;">(</span>setSizeBeforeIteration != setSizeAfterIteration<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      newNonTerminalThatGeneratesEpsHasBeenFound = <span style="color: #BFEBBF;">true</span>;
+    <span style="color: #D0BF8F;">}</span>
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">initialise Map</span>
+  <span style="color: #7CB8BB;">Map</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">producesEps</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashMap</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;()</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    producesEps.put<span style="color: #D0BF8F;">(</span>nonTerminal, nonTerminalsThatGenerateEps.contains<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">terminal</span> : terminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    producesEps.put<span style="color: #D0BF8F;">(</span>terminal, <span style="color: #BFEBBF;">false</span><span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.nonTerminalsToProducesEps = producesEps;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Representação dos conjuntos FIRST e FOLLOW</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+Uma das principais funcionalidades do programa deste trabalho é não só calcular
+os conjuntos FIRST e FOLLOW, mas fazer isso apresentando as etapas
+intermediárias, fazendo com que o usuário veja cada passo do algoritmo. Isso faz
+com que o cálculo desses conjuntos não seja o mais eficiente possível, pois
+precisamos lidar também com o <i>output</i> sem pular nenhuma etapa.
+</p>
+
+<p>
+Para isto, criamos classes <code>First</code> e <code>Follow</code>. Estas classes têm atributos que
+indicam a <i>representação</i> do conjunto dado em termos de outros conjuntos.
+</p>
+
+<p>
+Por exemplo, considere os seguintes atributos da classe <code>Follow</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">firstSets</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">firstSetsWithoutEps</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">followSets</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">terminals</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">hasEOF</span>;
+</pre>
+</div>
+
+<p>
+Suponha que um objeto dessa classe tenha as seguintes atribuições (aqui em
+notação de teoria dos conjuntos):
+</p>
+
+<div class="center">
+<p>
+firstSets = {A} <br >
+firstSetsWithoutEps = {B, C} <br >
+followSets = {D} <br >
+terminals = {a, b} <br >
+hasEOF = true <br >
+</p>
+</div>
+
+<p>
+Então esse conjunto seria
+</p>
+
+<div class="center">
+<p>
+FIRST(A) &cup; (FIRST(B) - &epsilon;) &cup; (FIRST(C) - &epsilon;) &cup; FOLLOW(D)
+&cup; {a} &cup; {b} &cup; {$}
+</p>
+</div>
+
+<p>
+Ambas as classes têm o método <code>toString</code> sobrescrito para exibir essa
+representação como mostrado acima e um método <code>getAllElements</code> que coleta
+todos os elementos vindos da união dos conjuntos.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgheadline2" class="outline-2">
-<h2 id="orgheadline2"><span class="section-number-2">2</span> Objetivos</h2>
+<div id="outline-container-sec-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Cálculo dos conjuntos FIRST e FOLLOW</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+De maneira semelhante à computação de todos os não terminais que geram &epsilon;,
+o cálculo dos conjuntos FIRST e FOLLOW consiste, em essência, em iterar até
+encontrar um ponto fixo.
+</p>
+
+<p>
+Note que a aplicação direta da definição de FIRST e FOLLOW não funciona, pois
+ela falharia no caso de definições recursivas que são dependentes entre
+si. Por exemplo, considere o caso em que FIRST(A) = FIRST(B) e FIRST(B) =
+FIRST(A). Para calcular FIRST(A), calcula-se FIRST(B). Mas FIRST(B) é FIRST(A),
+o que resulta num <i>loop</i> infinito. Em vez disso, começamos com todos os
+conjuntos FIRST setados para &empty;, e a cada iteração atualizamos todos os
+conjuntos até atingir um ponto fixo. 
+</p>
+
+<p>
+O código a seguir mostra a implementação desse algoritmo para o cálculo dos
+conjuntos FIRST.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">buildAllFirstSets</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Initialize set</span>
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">omitido</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Get description of each first set</span>
+  <span style="color: #7CB8BB;">Map</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">First</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">firstSetDescriptions</span> = buildAllFirstSetDescriptions<span style="color: #BFEBBF;">()</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Iterate until fixed point is found</span>
+  <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">someFirstSetHasChanged</span> = <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>someFirstSetHasChanged<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    <span style="color: #7CB8BB;">StringBuilder</span> <span style="color: #DFAF8F;">iterationSb</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">StringBuilder</span><span style="color: #D0BF8F;">()</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span><span style="color: #CC9393;">"New iteration (building first sets)\n"</span><span style="color: #D0BF8F;">)</span>;
+    someFirstSetHasChanged = <span style="color: #BFEBBF;">false</span>;
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Copy elements from old first sets to new first sets</span>
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">omitido</span>
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Updates, possibly getting new elements</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span>: nonTerminals<span style="color: #D0BF8F;">){</span>
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Updating First(%s)\n"</span>, nonTerminal<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">First</span> <span style="color: #DFAF8F;">firstDescription</span> = firstSetDescriptions.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"First(%s) = %s\n"</span>, nonTerminal, firstDescription<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsBefore</span> = firstSetsBeforeIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
+      firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.addAll<span style="color: #93E0E3;">(</span>firstDescription.getAllElements<span style="color: #9FC59F;">(</span>firstSetsBeforeIteration<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Adding elements: %s\n"</span>, firstDescription.getAllElements<span style="color: #94BFF3;">(</span>firstSetsBeforeIteration<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsAfter</span> = firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #93E0E3;">(</span>numElementsBefore != numElementsAfter<span style="color: #93E0E3;">){</span>
+        someFirstSetHasChanged = <span style="color: #BFEBBF;">true</span>;
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets before iteration: %s\n"</span>, firstSetsBeforeIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets after iteration: %s\n\n"</span>, firstSetsAfterIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+
+    firstSetsBeforeIteration = firstSetsAfterIteration;
+  <span style="color: #BFEBBF;">}</span>
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.firstSets = firstSetsBeforeIteration;
+<span style="color: #DCDCCC;">}</span>
+</pre>
 </div>
-<div id="outline-container-orgheadline3" class="outline-2">
-<h2 id="orgheadline3"><span class="section-number-2">3</span> Justificativa</h2>
-</div>
-<div id="outline-container-orgheadline4" class="outline-2">
-<h2 id="orgheadline4"><span class="section-number-2">4</span> Metodologia de Projeto</h2>
-</div>
-<div id="outline-container-orgheadline5" class="outline-2">
-<h2 id="orgheadline5"><span class="section-number-2">5</span> Conclusão</h2>
-</div>
-<div id="outline-container-orgheadline6" class="outline-2">
-<h2 id="orgheadline6"><span class="section-number-2">6</span> Referências Bibliográficas</h2>
+
+<p>
+O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
+</p>
 </div>
 </div>
-<div id="postamble" class="status">
-<p class="author">Author: André Peric Tavares, Giulio Parva Denardi</p>
-<p class="date">Created: 2016-04-25 Mon 20:11</p>
-<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+
+<div id="outline-container-sec-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> <span class="todo TODO">TODO</span> LL</h3>
 </div>
+
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5"><span class="section-number-3">4.5</span> SLR</h3>
+<div class="outline-text-3" id="text-4-5">
+</div><div id="outline-container-sec-4-5-1" class="outline-4">
+<h4 id="sec-4-5-1"><span class="section-number-4">4.5.1</span> Regras</h4>
+<div class="outline-text-4" id="text-4-5-1">
+<p>
+Usamos a classe <code>RuleWithDot</code> para representar os itens dos estados.
+Um objeto dessa classe têm listas de símbolos para representar o que vem antes e
+depois do ponto. Por exemplo, a regra A &rarr; BC.DE teria BC em
+<code>symbolsBeforeDot</code> e DE em <code>symbolsAfterDot</code>.
+</p>
+
+
+<figure>
+<p><img src="./media/ruleWithDot.png" class="img-responsive" alt="ruleWithDot.png">
+</p>
+</figure>
+
+<p>
+O método <code>generateRuleWithShiftedDot</code> serve para gerar um novo objeto do tipo
+<code>RuleWithDot</code> com o ponto deslocado para a direita. Usando o exemplo anterior, o
+objeto gerado a partir de A &rarr; BC.DE representaria A &rarr; BCD.E.
+Note que o objeto retornado é um novo. Não há efeitos colaterais.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-4-5-2" class="outline-4">
+<h4 id="sec-4-5-2"><span class="section-number-4">4.5.2</span> Ações</h4>
+<div class="outline-text-4" id="text-4-5-2">
+<p>
+Ações no contexto da tabela SLR são representadas por objetos.
+</p>
+
+<p>
+Além de ter um tipo específico, uma Action contém atributos para indicar sua
+posição na tabela, a saber, <code>lineToStoreActionInTable</code> e <code>columnToStoreActionInTable</code>.
+</p>
+
+<p>
+Assim, a partir de uma lista de todos os objetos do tipo <code>Action</code> gerados é
+possível construir a tabela SLR.
+</p>
+
+
+<figure>
+<p><img src="./media/actions.png" class="img-responsive" alt="actions.png">
+</p>
+</figure>
+
+<p>
+As ações <code>Shift</code> e <code>Goto</code> têm o método <code>getGotoStateNumber</code>, cujo resultado é
+armazenado em <code>gotoOrShiftStateNumber</code>.
+</p>
+
+<p>
+Esse atributo armazena o número do estado que deve ser usado após executar a
+ação. Por exemplo, para um objeto <code>Shift</code> que representa a ação <i>shift 8</i>, esse
+número é 8. Note que esse número pode indicar um estado que já existe ou um
+novo.
+</p>
+
+<p>
+Além disso, todas as ações têm um atributo <code>nextItemSets</code> que possui uma lista
+de todos os estados descobertos após essa ação. Se a ação é  <code>Accept</code> ou
+<code>Reduce</code>, essa lista é exatamente a mesma de antes. Por outro lado, no
+caso de <code>Shift</code> e <code>Goto</code>, calcula-se goto(q, a), em que <i>q</i> é o estado sendo
+analisado e <i>a</i> é o primeiro símbolo após o ponto, e se o resultado de goto(q,
+a) não estiver na lista de estados conhecida até então, um novo estado é
+adicionado a ela. Se o resultado de goto(q, a) já estiver na lista de estados,
+então esta permanece a mesma.
+</p>
+
+<p>
+O código abaixo ilustra esse processo no caso do <code>ActionWithNextState</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">ActionWithNextState</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span>, <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span>, <span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span>, <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStates</span>, <span style="color: #7CB8BB;">SLR</span> <span style="color: #DFAF8F;">slr</span><span style="color: #DCDCCC;">)</span> <span style="color: #DCDCCC;">{</span>
+  <span style="color: #F0DFAF; font-weight: bold;">super</span><span style="color: #BFEBBF;">(</span>currentStateNumber, ruleWithDot, allStates<span style="color: #BFEBBF;">)</span>;
+  <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">newItemSets</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;()</span>;
+  newItemSets.addAll<span style="color: #BFEBBF;">(</span>allStates<span style="color: #BFEBBF;">)</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Sets next state number and the new list of states.</span>
+  <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">nextState</span> = slr.gotoSet<span style="color: #BFEBBF;">(</span>state, ruleWithDot.firstSymbolAfterDot<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.gotoOrShiftStateNumber = slr.getStateNumber<span style="color: #BFEBBF;">(</span>nextState, allStates<span style="color: #BFEBBF;">)</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>gotoOrShiftStateNumber == allStates.size<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    newItemSets.add<span style="color: #D0BF8F;">(</span>nextState<span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+  setNextItemSets<span style="color: #BFEBBF;">(</span>newItemSets<span style="color: #BFEBBF;">)</span>;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+Note que <code>newItemSets</code> é uma <i>nova</i> lista de estados. Assim, não há efeitos
+colaterais envolvidos.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-4-5-3" class="outline-4">
+<h4 id="sec-4-5-3"><span class="section-number-4">4.5.3</span> Algoritmo</h4>
+<div class="outline-text-4" id="text-4-5-3">
+<p>
+Ainda à maneira do 
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Conclusão</h2>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Adendo - notas sobre algumas decisões de <i>design</i></h2>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Referências Bibliográficas</h2>
+</div>
+</div><div class="col-md-3"><nav id="table-of-contents">
+<div id="text-table-of-contents" class="bs-docs-sidebar">
+<ul class="nav">
+<li><a href="#sec-1">1. Introdução</a></li>
+<li><a href="#sec-2">2. Objetivos</a></li>
+<li><a href="#sec-3">3. Justificativa</a></li>
+<li><a href="#sec-4">4. Funcionamento</a>
+<ul class="nav">
+<li><a href="#sec-4-1">4.1. Produção de cadeia vazia</a></li>
+<li><a href="#sec-4-2">4.2. Representação dos conjuntos FIRST e FOLLOW</a></li>
+<li><a href="#sec-4-3">4.3. Cálculo dos conjuntos FIRST e FOLLOW</a></li>
+<li><a href="#sec-4-4">4.4. <span class="todo TODO">TODO</span> LL</a></li>
+<li><a href="#sec-4-5">4.5. SLR</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Conclusão</a></li>
+<li><a href="#sec-6">6. Adendo - notas sobre algumas decisões de design</a></li>
+<li><a href="#sec-7">7. Referências Bibliográficas</a></li>
+</ul>
+</div>
+</nav>
+</div></div></div>
+<footer id="postamble" class="">
+<div><p class="author">Author: André Peric Tavares, Giulio Parva Denardi</p>
+<p class="date">Created: 2016-05-01 Sun 17:42</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.3.3)</p>
+</div>
+</footer>
 </body>
 </html>
