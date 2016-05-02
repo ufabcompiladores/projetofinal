@@ -41,17 +41,17 @@ public final class First {
 		if (string.substring(string.length() - 3, string.length()).equals(" ∪ ")) {
 			string.delete(string.length() - 3, string.length());
 		}
-		string.append(" }");
+		string.append("}");
 		return string.toString();
 	}
 	
 	public Set<Symbol> getAllElements(Map<Symbol, Set<Symbol>> currentFirstSets, Grammar grammar){
 		Set<Symbol> elements = new HashSet<Symbol>();	
 		StringBuilder stringb = new StringBuilder();
-		stringb.append(String.format("First set description: %s \n", this));
+//		stringb.append(String.format("First set description: %s \n", this));
 
 		for (Symbol sym : firstSets){
-			stringb.append(String.format("First(%s) = %s \n", sym, currentFirstSets.get(sym)));
+			stringb.append(String.format("First(%s) = %s\n", sym, currentFirstSets.get(sym)));
 			elements.addAll(currentFirstSets.get(sym));
 		}
 		for (Symbol sym : firstSetsWithoutEps){
@@ -59,7 +59,7 @@ public final class First {
 			Grammar.addAllElementsFromSetExceptEmptyString(currentFirstSets.get(sym), elements);
 		}
 		if (hasEps) {
-			stringb.append("{ε}");
+			stringb.append("Adding {ε}\n");
 			elements.add(new Symbol(Symbol.SymbolType.EMPTYSTRING, ""));
 		}
 

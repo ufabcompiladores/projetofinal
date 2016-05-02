@@ -30,7 +30,6 @@ public final class Follow {
 	public String toString() {
 		StringBuilder string = new StringBuilder();
 		string.append("{");
-		// TODO: nao printar ultimo ∪
 		for (Symbol sym : firstSets){
 			string.append(String.format("First(%s) ∪ ", sym));
 		}
@@ -46,7 +45,7 @@ public final class Follow {
 		if (hasEOF){
 			string.append("{$}");
 		}
-		// TODO: if end is " union ", then delete it
+		// if end is " ∪ ", then delete it
 		if (string.substring(string.length() - 3, string.length()).equals(" ∪ ")) {
 			string.delete(string.length() - 3, string.length());
 		}
@@ -110,7 +109,7 @@ public final class Follow {
 		}
 
 		if (hasEOF){
-			stringb.append("{$}");
+			stringb.append("Adding {$}\n");
 			elements.add(Symbol.createEOFSymbol());
 		}
 

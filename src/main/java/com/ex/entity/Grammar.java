@@ -83,6 +83,9 @@ public final class Grammar {
 	public final void printOutput() {
 		System.out.println("READING GRAMMAR");
 		System.out.println(outputString.get("readingGrammar").stream().reduce("" , (a, b) -> a + b));
+		
+		System.out.println("GRAMMAR");
+		System.out.println(this);
 
 		System.out.println("BUILDING FIRST SETS DESCRIPTIONS");
 		System.out.println(outputString.get("firstSetDescriptions").stream().reduce("" , (a, b) -> a + b));
@@ -371,7 +374,7 @@ public final class Grammar {
 			firstSetsBeforeIteration.get(terminal).add(terminal);
 		}
 		
-		out.add("After initialization: " + firstSetsBeforeIteration);
+		out.add(String.format("After initialization: %s\n" , firstSetsBeforeIteration));
 
 		// Get description of each first set
 		Map<Symbol, First> firstSetDescriptions = buildAllFirstSetDescriptions();
@@ -439,7 +442,7 @@ public final class Grammar {
 		boolean hasEps = false;
 
 		List<String> out = this.outputString.get("firstSetDescriptions");
-		out.add(String.format("Building set description for %s:\n", sym));
+		out.add(String.format("Building set description for First(%s):\n", sym));
 
 		if (sym.isTerminal()) {
 			firstSets.add(sym);
@@ -500,7 +503,7 @@ public final class Grammar {
 
 	private Follow buildFollowDescription(Symbol sym){
 		Follow followSet = new Follow(sym.equals(startSymbol));
-		this.outputString.get("followSetDescriptions").add(String.format("Building Follow set description for %s:\n", sym));
+		this.outputString.get("followSetDescriptions").add(String.format("\nBuilding Follow set description for %s:\n", sym));
 
 		for (Symbol nonTerminal : nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)){
@@ -558,11 +561,12 @@ public final class Grammar {
 							followDescSb.append(String.format("Symbol is the last from this production - adding Follow(%s) to Follow(%s)\n", rule.getProducer(), sym));
 							followSet.getFollowSets().add(rule.getProducer());
 						}
-						followDescSb.append(String.format("Result:%s \n", followSet));
+						followDescSb.append(String.format("Partial description: %s \n", followSet));
 						this.outputString.get("followSetDescriptions").add(followDescSb.toString());
 					}
 					i++;	
 				}
+// new
 			}
 		}
 		return followSet;
