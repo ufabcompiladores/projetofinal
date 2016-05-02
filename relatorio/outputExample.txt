@@ -1,0 +1,351 @@
+READING GRAMMAR
+Add rule: S -> a S b S 
+Producer text: S
+Right side text production:  a S b S 
+
+Add rule:  S -> a
+Producer text: S
+Right side text production:  a
+
+
+BUILDING FIRST SETS DESCRIPTIONS
+Building set description for S:
+Analysing rule (0) S ->  a  S  b  S 
+Adding First(a) to Firsts(S)
+Analysing rule (1) S ->  a 
+Adding First(a) to Firsts(S)
+Final description: First(S) = {First(a) }
+
+Building set description for a:
+Symbol a is terminal - adding {a} to First(a)
+Building set description for b:
+Symbol b is terminal - adding {b} to First(b)
+
+BUILDING FIRST SETS
+New iteration (building first sets)
+Updating First(S)
+First(S) = {First(a) }
+Adding elements: []
+All elements form first sets before iteration: {S=[], a=[], b=[]}
+All elements form first sets after iteration: {S=[], a=[], b=[]}
+
+Final result: {S=[], a=[], b=[]}
+
+
+BUILDING FOLLOW SETS DESCRIPTIONS
+Building Follow set description for S:
+
+Found symbol S in rule (0) S ->  a  S  b  S  at position 1:
+Symbol on right side: b
+Next symbol b is terminal - adding {b} to Follow(S):
+Result:{{b} ∪ {$}} 
+
+Found symbol S in rule (0) S ->  a  S  b  S  at position 3:
+Symbol is the last from this production - adding Follow(S) to Follow(S)
+Result:{Follow(S) ∪ {b} ∪ {$}} 
+
+BUILDING FOLLOW SETS
+New iteration (building all follow sets)
+Updating Follow(S)
+Follow(S) = {Follow(S) ∪ {b} ∪ {$}}
+Follow(S)  = []
+Adding {b} 
+{$}All added elements: [$, b] 
+
+All elements form follow sets before iteration: {S=[]}
+All elements form follow sets after iteration: {S=[$, b]}
+
+New iteration (building all follow sets)
+Updating Follow(S)
+Follow(S) = {Follow(S) ∪ {b} ∪ {$}}
+Follow(S)  = [$, b]
+Adding {b} 
+{$}All added elements: [$, b] 
+
+All elements form follow sets before iteration: {S=[$, b]}
+All elements form follow sets after iteration: {S=[$, b]}
+
+Final result: {S=[$, b]}
+
+
+
+Start Symbol: newS 
+Grammar rules: 
+(2) S ->  a  
+(1) S ->  a  S  b  S  
+(0) newS ->  S  
+
+Grammar with dots: {S=[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]], newS=[(0) newS -> [ε] . [S, $]]}
+
+
+
+==============================
+Building all states.
+Adding first state set:
+closure({[(0) newS -> [ε] . [S, $]]}) = 
+  New iteration
+  Set before iteration: [(0) newS -> [ε] . [S, $]]
+  Set after iteration: [(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]
+  Set after iteration: [(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]
+  --
+  Final: [(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]
+******* New iteration (building all state sets) *******
+Analysing state 0: {[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]}
+~~Analysing rule~~
+Analysing rule: (1) S -> [ε] . [a, S, b, S]
+Will create Shift action
+-------------
+goto({[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 0 
+ Columns: [a]
+
+~~Analysing rule~~
+Analysing rule: (2) S -> [ε] . [a]
+Will create Shift action
+-------------
+goto({[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 0 
+ Columns: [a]
+
+~~Analysing rule~~
+Analysing rule: (0) newS -> [ε] . [S, $]
+Will create Goto action
+-------------
+goto({[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]}, S) = 
+closure({[(0) newS -> [S] . [$]]}) = 
+  New iteration
+  Set before iteration: [(0) newS -> [S] . [$]]
+  Set after iteration: [(0) newS -> [S] . [$]]
+  --
+  Final: [(0) newS -> [S] . [$]]
+
+Creating action: 
+ <Goto 2>
+Action position:
+ Line: 0 
+ Columns: [S]
+
+******* New iteration (building all state sets) *******
+Analysing state 1: {[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}
+~~Analysing rule~~
+Analysing rule: (1) S -> [a] . [S, b, S]
+Will create Goto action
+-------------
+goto({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, S) = 
+closure({[(1) S -> [a, S] . [b, S]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a, S] . [b, S]]
+  Set after iteration: [(1) S -> [a, S] . [b, S]]
+  --
+  Final: [(1) S -> [a, S] . [b, S]]
+
+Creating action: 
+ <Goto 3>
+Action position:
+ Line: 1 
+ Columns: [S]
+
+~~Analysing rule~~
+Analysing rule: (2) S -> [a] . [ε]
+Will create Reduce action
+
+Creating action: 
+ <Reduce 2>
+Action position:
+ Line: 1 
+ Columns: [$, b]
+
+~~Analysing rule~~
+Analysing rule: (1) S -> [ε] . [a, S, b, S]
+Will create Shift action
+-------------
+goto({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 1 
+ Columns: [a]
+
+~~Analysing rule~~
+Analysing rule: (2) S -> [ε] . [a]
+Will create Shift action
+-------------
+goto({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 1 
+ Columns: [a]
+
+Analysing state 2: {[(0) newS -> [S] . [$]]}
+~~Analysing rule~~
+Analysing rule: (0) newS -> [S] . [$]
+Will create Accept action
+
+Creating action: 
+ <Accept>
+Action position:
+ Line: 2 
+ Columns: [$]
+
+******* New iteration (building all state sets) *******
+Analysing state 3: {[(1) S -> [a, S] . [b, S]]}
+~~Analysing rule~~
+Analysing rule: (1) S -> [a, S] . [b, S]
+Will create Shift action
+-------------
+goto({[(1) S -> [a, S] . [b, S]]}, b) = 
+closure({[(1) S -> [a, S, b] . [S]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a, S, b] . [S]]
+  Set after iteration: [(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 4
+
+Action position:
+ Line: 3 
+ Columns: [b]
+
+******* New iteration (building all state sets) *******
+Analysing state 4: {[(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}
+~~Analysing rule~~
+Analysing rule: (1) S -> [a, S, b] . [S]
+Will create Goto action
+-------------
+goto({[(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, S) = 
+closure({[(1) S -> [a, S, b, S] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a, S, b, S] . [ε]]
+  Set after iteration: [(1) S -> [a, S, b, S] . [ε]]
+  --
+  Final: [(1) S -> [a, S, b, S] . [ε]]
+
+Creating action: 
+ <Goto 5>
+Action position:
+ Line: 4 
+ Columns: [S]
+
+~~Analysing rule~~
+Analysing rule: (1) S -> [ε] . [a, S, b, S]
+Will create Shift action
+-------------
+goto({[(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 4 
+ Columns: [a]
+
+~~Analysing rule~~
+Analysing rule: (2) S -> [ε] . [a]
+Will create Shift action
+-------------
+goto({[(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, a) = 
+closure({[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]}) = 
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  New iteration
+  Set before iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  Set after iteration: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+  --
+  Final: [(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]
+
+Creating action: 
+ Shift 1
+
+Action position:
+ Line: 4 
+ Columns: [a]
+
+******* New iteration (building all state sets) *******
+Analysing state 5: {[(1) S -> [a, S, b, S] . [ε]]}
+~~Analysing rule~~
+Analysing rule: (1) S -> [a, S, b, S] . [ε]
+Will create Reduce action
+
+Creating action: 
+ <Reduce 1>
+Action position:
+ Line: 5 
+ Columns: [$, b]
+
+All state sets found: [{[(1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a], (0) newS -> [ε] . [S, $]]}, {[(1) S -> [a] . [S, b, S], (2) S -> [a] . [ε], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, {[(0) newS -> [S] . [$]]}, {[(1) S -> [a, S] . [b, S]]}, {[(1) S -> [a, S, b] . [S], (1) S -> [ε] . [a, S, b, S], (2) S -> [ε] . [a]]}, {[(1) S -> [a, S, b, S] . [ε]]}]

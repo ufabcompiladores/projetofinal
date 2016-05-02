@@ -695,8 +695,8 @@ public final class Grammar {
 		// last
 		//		Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
 		// falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
-		//		Grammar g = new Grammar("S -> a S b S \n S -> a");
-		Grammar g = new Grammar("A -> B C \n B -> \n C -> ");
+				Grammar g = new Grammar("S -> a S b S \n S -> a");
+//		Grammar g = new Grammar("A -> B C \n B -> \n C -> ");
 
 		SLR slr = new SLR(g);
 	}

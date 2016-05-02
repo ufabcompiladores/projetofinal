@@ -109,7 +109,6 @@ public final class Follow {
 			elements.add(sym);
 		}
 
-		// TODO: check if it's correct
 		if (hasEOF){
 			stringb.append("{$}");
 			elements.add(Symbol.createEOFSymbol());
