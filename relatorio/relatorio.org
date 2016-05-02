@@ -53,7 +53,7 @@ FIRST(ABC) = FIRST(A) \oplus FIRST(BCD)
 #+END_CENTER
 
 e o resultado desta operação é somente FIRST(A) se $A$ não produz \epsilon ou
-FIRST(A) - \epsilon se \epsilon \in FIRST(A). Então é conveniente saber de
+FIRST(A) - \epsilon \cup FIRST(BCD) se \epsilon \in FIRST(A). Então é conveniente saber de
 antemão quais símbolos produzem \epsilon.
 
 Para tanto, usa-se o método ~buildAllNonTerminalsThatProduceEps~ na classe
@@ -248,7 +248,6 @@ O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 ** TODO LL
 
 ** SLR
-
 *** Regras
 Usamos a classe ~RuleWithDot~ para representar os itens dos estados.
 Um objeto dessa classe têm listas de símbolos para representar o que vem antes e
@@ -384,6 +383,10 @@ melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o
   computações importantes nos algoritmos, tornando futuros /refactorings/ mais seguros.
 - Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
   quando isso tornar o código mais simples.
+* Documentação
+A documentação em Javadoc está disponível em ~sources/doc~. Foram feitos
+/document comments/ para os métodos não triviais.
+
 * Conclusão
 * Adendo - notas sobre algumas decisões de /design/ 
 ** Objetos em estados inconsistentes
@@ -533,3 +536,4 @@ mesmo se todas as condições do ~equals~ fossem satisfeitas.
 Este princípio está descrito em Effectie Java- Item 9: Always override hashCode when you override equals.
 
 * Referências Bibliográficas
+Compilers: Principles, Techniques, & Tools Addison-Wesley series in computer science, 2a edição, Pearson/Addison Wesley, 2007.
