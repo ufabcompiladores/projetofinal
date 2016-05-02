@@ -366,8 +366,12 @@ public final class Grammar {
 			firstSetsBeforeIteration.put(nonTerminal, new HashSet<Symbol>());
 		}
 		for (Symbol terminal: terminals){
+//			firstSetsBeforeIteration.put(terminal, new HashSet<Symbol>());
 			firstSetsBeforeIteration.put(terminal, new HashSet<Symbol>());
+			firstSetsBeforeIteration.get(terminal).add(terminal);
 		}
+		
+		out.add("After initialization: " + firstSetsBeforeIteration);
 
 		// Get description of each first set
 		Map<Symbol, First> firstSetDescriptions = buildAllFirstSetDescriptions();
@@ -392,20 +396,20 @@ public final class Grammar {
 
 			// Updates, possibly getting new elements
 			for (Symbol nonTerminal: nonTerminals){
-				iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
+				out.add(String.format("Updating First(%s)\n", nonTerminal));
 				First firstDescription = firstSetDescriptions.get(nonTerminal);
-				iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
+				out.add(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
 				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
-				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
-				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
+				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration, this));
+//				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration, this)));
 				int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
 				if (numElementsBefore != numElementsAfter){
 					someFirstSetHasChanged = true;
 				}
 			}
 
-			iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
-			iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+			out.add(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
+			out.add(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
 			out.add(iterationSb.toString());
 
 			firstSetsBeforeIteration = firstSetsAfterIteration;
@@ -693,9 +697,9 @@ public final class Grammar {
 	public static void main(String[] args) throws Exception {
 		//		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		// last
-		//		Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
-		// falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
-				Grammar g = new Grammar("S -> a S b S \n S -> a");
+				Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
+//		 falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
+//				Grammar g = new Grammar("S -> a S b S \n S -> a");
 //		Grammar g = new Grammar("A -> B C \n B -> \n C -> ");
 
 		SLR slr = new SLR(g);

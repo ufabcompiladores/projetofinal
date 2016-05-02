@@ -45,7 +45,7 @@ public final class First {
 		return string.toString();
 	}
 	
-	public Set<Symbol> getAllElements(Map<Symbol, Set<Symbol>> currentFirstSets){
+	public Set<Symbol> getAllElements(Map<Symbol, Set<Symbol>> currentFirstSets, Grammar grammar){
 		Set<Symbol> elements = new HashSet<Symbol>();	
 		StringBuilder stringb = new StringBuilder();
 		stringb.append(String.format("First set description: %s \n", this));
@@ -62,6 +62,9 @@ public final class First {
 			stringb.append("{ε}");
 			elements.add(new Symbol(Symbol.SymbolType.EMPTYSTRING, ""));
 		}
+
+		stringb.append(String.format("All added elements: %s \n\n", elements));
+		grammar.outputString.get("first").add(stringb.toString());
 		return elements;
 	}
 	

@@ -22,14 +22,27 @@ Building set description for b:
 Symbol b is terminal - adding {b} to First(b)
 
 BUILDING FIRST SETS
+After initialization: {S=[], a=[a], b=[b]}Updating First(S)
+First(S) = {First(a) }
+First set description: {First(a) } 
+First(a) = [a] 
+All added elements: [a] 
+
+All elements form first sets before iteration: {S=[], a=[a], b=[b]}
+All elements form first sets after iteration: {S=[a], a=[a], b=[b]}
+
 New iteration (building first sets)
 Updating First(S)
 First(S) = {First(a) }
-Adding elements: []
-All elements form first sets before iteration: {S=[], a=[], b=[]}
-All elements form first sets after iteration: {S=[], a=[], b=[]}
+First set description: {First(a) } 
+First(a) = [a] 
+All added elements: [a] 
 
-Final result: {S=[], a=[], b=[]}
+All elements form first sets before iteration: {S=[a], a=[a], b=[b]}
+All elements form first sets after iteration: {S=[a], a=[a], b=[b]}
+
+New iteration (building first sets)
+Final result: {S=[a], a=[a], b=[b]}
 
 
 BUILDING FOLLOW SETS DESCRIPTIONS

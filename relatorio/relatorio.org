@@ -422,7 +422,7 @@ Exemplo de código que segue esse princípio:
 	}
 #+END_SRC
 
-** Minimização de acessibilidade
+** Minimização de visibilidade
 Classes que não serão estentidas devem ser declaradas como ~final~. O mesmo vale
 para métodos que não devem ser sobrescritos.
 
