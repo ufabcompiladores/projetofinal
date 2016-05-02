@@ -39,6 +39,7 @@ public final class SLR {
 	 * Initialises all states and gets all actions for the SLR table.
 	 */
 	private final void buildAllItemSets() {
+		this.allActions = new ArrayList<Action>();
 		System.out.println("\n\n\n==============================");
 		System.out.println("Building all states.");
 
