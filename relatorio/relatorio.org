@@ -15,7 +15,33 @@ imagem:
 [[./media/Screenshot 2016-04-25 17.54.18.png]]
 
 * Objetivos
+O objetivo é criar um programa que, dada uma gramática de entrada,
+produza e apresente passo-a-passo o cálculo dos conjuntos FIRST e FOLLOW e da
+construção das tabelas LL e LR.
 * Justificativa
+Existem diversas ferramentas que geram as tabelas, mas geralmente os passos são
+omitidos ou o código é muito complexo. Neste projeto, tentamos ao mesmo tempo
+apresentar na saída do programa cada etapa do processo e manter o código
+legível e simples, mesmo quando isso significar ser menos eficiente. Deste modo,
+o programa beneficia aqueles que estão estudando os conceitos teóricos e também
+é de fácil entendimento àqueles que desejam estendê-lo.
+
+Além disso, justificamos várias decisões do ponto de vista de Engenharia de
+Software em [[Adendo - notas sobre algumas decisões de /design/]], apresentando na
+prática como várias boas práticas de programação podem ser aplicadas.
+
+* Metodologia
+Decidimos utilizar a linguagem Java para a implementação, especialmente pelo
+fato de ser estática (o que previne muitos /bugs/ na fase de compilação),
+orientada a objetos (fazendo com que seja possível abstrair muitos conceitos em
+classes, tornando o código organizado e simples de entender) e popular.
+
+O código do projeto está disponível na pasta ~sources~. Além disso, a versão
+mais atual pode ser encontrada em https://github.com/ufabcompiladores/projetofinal.
+
+Utilizamos o Spring Framework (https://spring.io/). Assim, o /front end/ é
+/web/, podendo ser acessado de qualquer navegador.
+
 * Funcionamento
 ** Produção de cadeia vazia
 O cálculo dos conjuntos FIRST e FOLLOW exigem em diversos momentos saber se
@@ -286,7 +312,224 @@ Note que ~newItemSets~ é uma /nova/ lista de estados. Assim, não há efeitos
 colaterais envolvidos.
 
 *** Algoritmo
-Ainda à maneira do 
+Ainda à maneira do cálculo dos conjuntos anteriores, o algoritmo consiste em adicionar
+novos estados à lista de estados até encontrar um ponto fixo. No entanto, a
+implementação é um pouco mais complicada, pois o conjunto de estados que estamos
+iterando é alterado durante a iteração.
+
+#+BEGIN_SRC java
+	private final void buildAllItemSets() {
+		System.out.println("\n\n\n==============================");
+		System.out.println("Building all states.");
+
+		// adding first state
+		System.out.println("Adding first state set:");
+		List<State> allStatesBeforeIteration = new ArrayList<State>();
+		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+		State firstState = closure(new State(firstRuleSet));
+		allStatesBeforeIteration.add(firstState);
+
+		ActionFactory actionFactory = new ActionFactory();
+
+		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
+		boolean setOfAllStatesHasChanged = true;
+		while (setOfAllStatesHasChanged) {
+			System.out.println("******* New iteration (building all state sets) *******");
+			setOfAllStatesHasChanged = false;
+			List<State> allStatesAfterIteration = new ArrayList<State>();
+			allStatesAfterIteration.addAll(allStatesBeforeIteration);
+
+			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+				State state = allStatesAfterIteration.get(currentStateNumber);
+				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
+				for (RuleWithDot ruleWithDot : state.getRules()) {
+					System.out.println("~~Analysing rule~~");
+					System.out.format("Analysing rule: %s\n", ruleWithDot);
+					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+					this.allActions.add(act);
+					System.out.format("\nCreating action: \n %s\n", act);
+					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+					allStatesAfterIteration = act.getNextItemSets();
+				}
+				indexOfLastStateInWhichAllRulesWereAnalysed++;
+			}
+
+			if (allStatesAfterIteration.size() != allStatesBeforeIteration.size()) {
+				setOfAllStatesHasChanged = true;
+			}
+
+			allStatesBeforeIteration = allStatesAfterIteration;
+		}
+		System.out.format("All state sets found: %s", allStatesBeforeIteration);
+		this.allStates =  allStatesBeforeIteration;
+	}
+#+END_SRC
+
+O código itera do último estado completamente analisado (isto é, cujas
+regras já tiveram as ações correspondentes criadas) até o último estado conhecido.
+Para cada item de cada estado é criada uma ação. Um objeto da classe
+~ActionFactory~ decide qual é o tipo de ação a ser criada analisando qual é o
+símbolo após o ponto. Após a criação da ação, esta tem seu método
+~getNextItemSets~ executados, que retorna a nova lista de estados (possivelmente com
+um novo estado, se a ação criada for um Shift ou Goto).
+
+* Próximos passos
+A construção deste programa mostrou-se bastante trabalhosa, e à medida em que o
+desenvolvimento avançou, foi possível detectar alguns pontos que ainda podem
+melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o código. 
+- Simplificar o método ~buildAllItemSets~. É possível usar um ~while~ em vez de
+  ~foreach~, de tal forma que não é necessário fazer a distinção entre conjunto
+  de estados antigo e novo.
+- É fortemente recomendada a inclusão de ~unit tests~ para métodos que envolvem
+  computações importantes nos algoritmos, tornando futuros /refactorings/ mais seguros.
+- Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
+  quando isso tornar o código mais simples.
 * Conclusão
 * Adendo - notas sobre algumas decisões de /design/ 
+** Objetos em estados inconsistentes
+É desejável que um objeto tenha um estado consitente imediatamente após sua
+criação. Em termos prático, isso significa usar seu construtor para setar todos
+os atributos necessários. O contrário disso (e, portanto, não recomendado) é não
+inserir nada no construtor e depois colocar valores nos atributos através de /setters/. 
+Essa prática torna o código menos seguro, pois enquanto todos os atributos não
+estão setados, o objeto está num estado inconsistente. Nesse contexto, acessar um
+atributo não inicializado retornaria =null=.
+
+Exemplo de código que segue esse princípio:
+
+#+BEGIN_SRC java
+	public Grammar(String inputGrammar) throws Exception {
+		initialiseOutputMap();
+
+		this.numberOfRules = 0;
+		this.rules = new HashMap<Symbol, Set<Rule>>();
+		this.terminals = new HashSet<Symbol>();
+		this.nonTerminals = new HashSet<Symbol>();
+
+		isValidGrammar(inputGrammar);
+
+		this.startSymbol = addStartSymbol(inputGrammar);
+		addNonTerminals(inputGrammar);
+		addTerminals(inputGrammar);
+		readAllRules(inputGrammar);
+		buildAllNonTerminalsThatProduceEps();
+		buildAllFirstSets();
+		buildAllFollowSets();
+		printOutput();
+	}
+#+END_SRC
+
+** Minimização de acessibilidade
+Classes que não serão estentidas devem ser declaradas como ~final~. O mesmo vale
+para métodos que não devem ser sobrescritos.
+
+#+BEGIN_SRC java
+// exemplo
+public final class Rule {
+#+END_SRC
+
+Os atributos e métodos devem ter a /menor/ visibilidade possível. Em
+geral, isso significa usar ~private~ sempre que possível.
+
+Além disso, é recomendável minimizar o uso de /acessors/. /getters/ e /setters/
+devem ser adicionados apenas quando necessário. Em vez deles, é preferível criar
+métodos que, acessando a informação interna do objeto, retorne o que foi pedido.
+Isto está em acordo com o princípio "Tell, Don't Ask". A aplicação desse
+princípio mostrou-se difícil para o projeto, pois a interação entre objetos nos
+algoritmos depende essencialmente de seus atributos.
+
+#+BEGIN_SRC java
+// extraído da classe RuleWithDot
+
+// não há acessor para o atributo symbolsAfterDot,
+// pois em momento algum há necessidade de saber isso.
+// No entanto, outras classes podem precisar do símbolo após o ponto.
+// Elas devem usar o método abaixo.
+// O incorreto seria criar um getter para symbolsAfterDot e fazer com
+// que as demais classes o usassem, seguidos de get(0).
+// Isso violaria o encapsulamento da classe RuleWithDot.
+	public Symbol firstSymbolAfterDot() {
+		return symbolsAfterDot.get(0);
+	}
+#+END_SRC
+
+Este princípio está descrito em Effective Java - Item 13: Minimize the accessibility of classes and members.
+
+** Minimização de mutabilidade
+Algumas classes representam entidades imutáveis. Por exemplos, uma classe =Coordenada=
+que tem um par de inteiros como atributos e que representa uma coordenada deve
+ser imutável. Criar um /setter/ para esta classe seria absurdo, pois o mesmo
+objeto poderia representar uma infinidade de coordenadas diferentes.
+
+Além disso, mutabilidade pode tornar o código complexo e de difícil compreensão.
+
+Identificamos classes que representam entidades imutáveis e nos certificamos que
+seus objetos de fato não podem jamais ser alterados. A classe ~Symbol~ ilustra
+isso bem.
+
+#+BEGIN_SRC java
+// classe é marcada como final
+ public final class Symbol {
+
+// atributos são privados
+	private SymbolType type;
+	private String literalRepresentation;
+
+// não há setters
+	public Symbol(String literalRepresentation) throws Exception {
+		super();
+		this.literalRepresentation = literalRepresentation;
+		this.type = getType(literalRepresentation);
+	}
+
+
+#+END_SRC
+Este princípio está descrito em Effective Java - Item15: Minimize mutability.
+
+** Sobrescrever ~hashCode~ e ~equals~
+Em diversos momentos utilizamos ~equals~. Por exemplo, em ~SLR~, quando 
+o conjunto goto de uma ação é calculado, verificamos se o conjunto é igual a algum
+estado que já está represente na lista de estados. Para tanto, ~equals~ é usado
+para comparar objetos da classe ~State~.
+
+Isso só é possível de ser feito de forma correta porque ~hasCode~ também foi
+sobrescrito. Isso acontece porque ao checar a igualdade de objetos, antes de
+de fato executar o código sobrescrito em ~equals~, verifica se os códigos /hash/
+dos dois objetos são iguais. Se não são, então a comparação resulta em ~false~,
+mesmo se todas as condições do ~equals~ fossem satisfeitas.
+
+#+BEGIN_SRC java
+// extraído da classe Symbol
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Symbol other = (Symbol) obj;
+		if (literalRepresentation == null) {
+			if (other.literalRepresentation != null)
+				return false;
+		} else if (!literalRepresentation.equals(other.literalRepresentation))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
+
+#+END_SRC
+
+Este princípio está descrito em Effectie Java- Item 9: Always override hashCode when you override equals.
+
 * Referências Bibliográficas

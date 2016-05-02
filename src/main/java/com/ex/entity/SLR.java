@@ -11,11 +11,12 @@ import java.util.Set;
 import javax.persistence.Entity;
 
 @Entity
-public class SLR {
+public final class SLR {
 
 	private Grammar grammar;
 	private List<State> allStates;
 	private Map<Symbol, Set<RuleWithDot>> grammarWithDots;
+	private List<Action> allActions;
 
 	public SLR(Grammar grammar) throws Exception {
 		super();
@@ -37,7 +38,7 @@ public class SLR {
 	/**
 	 * Initialises all states and gets all actions for the SLR table.
 	 */
-	private void buildAllItemSets() {
+	private final void buildAllItemSets() {
 		System.out.println("\n\n\n==============================");
 		System.out.println("Building all states.");
 
@@ -65,6 +66,7 @@ public class SLR {
 					System.out.println("~~Analysing rule~~");
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
 					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+					this.allActions.add(act);
 					System.out.format("\nCreating action: \n %s\n", act);
 					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
 					allStatesAfterIteration = act.getNextItemSets();
@@ -106,20 +108,6 @@ public class SLR {
 		System.out.println("Grammar with dots: " + grammarWithDots);
 		return grammarWithDots;
 	}
-
-	// TODO: make this a test
-	public void testShifts() {
-		for (Symbol nonTerminal : grammar.getNonTerminals()){
-			for (RuleWithDot rule : this.grammarWithDots.get(nonTerminal)){
-				System.out.println("before: " + rule); 
-				RuleWithDot after1 = RuleWithDot.generateRuleWithShiftedDot(rule);
-				System.out.println("after" + after1);
-				System.out.println("after" + RuleWithDot.generateRuleWithShiftedDot(after1));
-				System.out.println("-----------");
-			}
-		}
-	}
-
 
 	/**
 	 * Executes Goto on the given state for the given symbol.

@@ -3,7 +3,7 @@ package com.ex.entity;
 import java.util.Set;
 
 /**
- * Represents a symbol used in the grammar.
+ * Represents a symbol in the grammar.
  * @author andre0991
  *
  */

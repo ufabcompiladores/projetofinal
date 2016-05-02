@@ -1,6 +1,6 @@
 package com.ex.entity;
 
-public class Tuple {
+public final class Tuple {
 
 	private Symbol leftSymbol;
 	private Symbol upSymbol;

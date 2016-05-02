@@ -8,7 +8,7 @@ import java.util.Set;
  * @author andre0991
  *
  */
-public class Follow {
+public final class Follow {
 	private Set<Symbol> firstSets;
 	private Set<Symbol> firstSetsWithoutEps;
 	private Set<Symbol> followSets;

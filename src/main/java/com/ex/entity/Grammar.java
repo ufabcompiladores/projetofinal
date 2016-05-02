@@ -32,9 +32,6 @@ public final class Grammar {
 
 	public Grammar(String inputGrammar) throws Exception {
 		initialiseOutputMap();
-		System.out.println("Input Grammar");	
-		System.out.println("=============");	
-		System.out.println(inputGrammar + "\n");
 
 		this.numberOfRules = 0;
 		this.rules = new HashMap<Symbol, Set<Rule>>();
@@ -53,10 +50,27 @@ public final class Grammar {
 		printOutput();
 	}
 
+	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
+			int numberOfRules) {
+		super();
+		initialiseOutputMap();
+		this.rules = rules;
+		this.terminals = terminals;
+		this.nonTerminals = nonTerminals;
+		this.startSymbol = startSymbol;
+		this.numberOfRules = numberOfRules;
+
+
+		buildAllNonTerminalsThatProduceEps();
+
+		buildAllFirstSets();
+		buildAllFollowSets();
+	}
+
 
 
 	// TODO: continuar
-	private void initialiseOutputMap() {
+	private final void initialiseOutputMap() {
 		outputString = new HashMap<String, List<String>>();
 		outputString.put("readingGrammar", new ArrayList<String>());
 		outputString.put("first", new ArrayList<String>());
@@ -64,9 +78,9 @@ public final class Grammar {
 		outputString.put("firstSetDescriptions", new ArrayList<String>());
 		outputString.put("follow", new ArrayList<String>());
 	}
-	
-	
-	public void printOutput() {
+
+
+	public final void printOutput() {
 		System.out.println("READING GRAMMAR");
 		System.out.println(outputString.get("readingGrammar").stream().reduce("" , (a, b) -> a + b));
 
@@ -83,22 +97,7 @@ public final class Grammar {
 		System.out.println(outputString.get("follow").stream().reduce("" , (a, b) -> a + b));
 	}
 
-	public Grammar(Map<Symbol, Set<Rule>> rules, Set<Symbol> terminals, Set<Symbol> nonTerminals, Symbol startSymbol,
-		int numberOfRules) {
-		super();
-		initialiseOutputMap();
-		this.rules = rules;
-		this.terminals = terminals;
-		this.nonTerminals = nonTerminals;
-		this.startSymbol = startSymbol;
-		this.numberOfRules = numberOfRules;
-		
-		
-		buildAllNonTerminalsThatProduceEps();
 
-		buildAllFirstSets();
-		buildAllFollowSets();
-	}
 
 	public Symbol getStartSymbol() {
 		return startSymbol;
@@ -349,8 +348,8 @@ public final class Grammar {
 	public Set<Symbol> first(Symbol sym){
 		return this.firstSets.get(sym);
 	}
-	
-	
+
+
 	/**
 	 * Computa o conjunto First de cada símbolo.
 	 * Isto é feito da mesma maneira usual na literatura,
@@ -360,7 +359,7 @@ public final class Grammar {
 	 */
 	public final void buildAllFirstSets() {
 		List<String> out = this.outputString.get("first");
-		
+
 		// Initialize set
 		Map<Symbol, Set<Symbol>> firstSetsBeforeIteration = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -429,12 +428,12 @@ public final class Grammar {
 		}
 		return firstSetsDescriptions;
 	}
-	
+
 	private First buildFirstDescription(Symbol sym) {
 		Set<Symbol> firstSets = new HashSet<Symbol>();
 		Set<Symbol> firstSetsWithoutEps = new HashSet<Symbol>();
 		boolean hasEps = false;
-		
+
 		List<String> out = this.outputString.get("firstSetDescriptions");
 		out.add(String.format("Building set description for %s:\n", sym));
 
@@ -450,7 +449,7 @@ public final class Grammar {
 			List<Symbol> production = rule.getProduction();
 			int i = 0;
 			Symbol currentSymbol = production.get(i);
-			
+
 			// if it produces eps directly
 			if (currentSymbol.isEmptyString()) {
 				out.add(String.format("Rule produces eps directly. Adding {ε} to First(%s)\n", sym));
@@ -498,7 +497,7 @@ public final class Grammar {
 	private Follow buildFollowDescription(Symbol sym){
 		Follow followSet = new Follow(sym.equals(startSymbol));
 		this.outputString.get("followSetDescriptions").add(String.format("Building Follow set description for %s:\n", sym));
-		
+
 		for (Symbol nonTerminal : nonTerminals){
 			for (Rule rule : rules.get(nonTerminal)){
 				int i = 0;
@@ -574,7 +573,7 @@ public final class Grammar {
 	private final void buildAllFollowSets(){
 		List<String> out = this.outputString.get("follow");
 		// TODO: make this function more similar to buildAllFirstSets (minimize side effects).
-		
+
 		// Initialize field
 		Map<Symbol, Set<Symbol>> followSetsField = new HashMap<Symbol, Set<Symbol>>();
 		for (Symbol nonTerminal: nonTerminals){
@@ -621,7 +620,7 @@ public final class Grammar {
 	private boolean producesEps(Symbol symbol) {
 		return this.nonTerminalsToProducesEps.get(symbol);
 	}
-	
+
 	private final void buildAllNonTerminalsThatProduceEps() {
 		Set<Symbol> nonTerminalsThatGenerateEps = new HashSet<Symbol>();
 
@@ -633,7 +632,7 @@ public final class Grammar {
 				}
 			}
 		}
-		
+
 		// iterates until fp is found
 		boolean newNonTerminalThatGeneratesEpsHasBeenFound = true;
 		while (newNonTerminalThatGeneratesEpsHasBeenFound) {
@@ -662,7 +661,7 @@ public final class Grammar {
 				newNonTerminalThatGeneratesEpsHasBeenFound = true;
 			}
 		}
-		
+
 		// initialise Map
 		Map<Symbol, Boolean> producesEps = new HashMap<Symbol, Boolean>();
 		for (Symbol nonTerminal : nonTerminals) {
@@ -671,7 +670,7 @@ public final class Grammar {
 		for (Symbol terminal : terminals) {
 			producesEps.put(terminal, false);
 		}
-		
+
 		this.nonTerminalsToProducesEps = producesEps;
 	}
 
@@ -694,9 +693,9 @@ public final class Grammar {
 	public static void main(String[] args) throws Exception {
 		//		Grammar g = new Grammar("A -> B e C B B B d B \nB -> b | A | \n C -> C a | f");
 		// last
-//		Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
+		//		Grammar g = new Grammar("S -> c A B D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
 		// falta First(D) e {a} Grammar g = new Grammar("S -> c A B  D a\nA -> c B | B\n B -> b c B | \n A -> A f\n D -> d | ");
-//		Grammar g = new Grammar("S -> a S b S \n S -> a");
+		//		Grammar g = new Grammar("S -> a S b S \n S -> a");
 		Grammar g = new Grammar("A -> B C \n B -> \n C -> ");
 
 		SLR slr = new SLR(g);

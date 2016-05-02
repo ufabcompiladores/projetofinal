@@ -8,7 +8,7 @@ import java.util.Set;
  * @author andre0991
  *
  */
-public class State {
+public final class State {
 	Set<RuleWithDot> rules;
 
 
