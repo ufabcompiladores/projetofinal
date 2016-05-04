@@ -141,7 +141,8 @@ O código é apresentado a seguir.
 		// initialise Map
 		Map<Symbol, Boolean> producesEps = new HashMap<Symbol, Boolean>();
 		for (Symbol nonTerminal : nonTerminals) {
-			producesEps.put(nonTerminal, nonTerminalsThatGenerateEps.contains(nonTerminal));
+			producesEps.put(nonTerminal, 
+      nonTerminalsThatGenerateEps.contains(nonTerminal));
 		}
 		for (Symbol terminal : terminals) {
 			producesEps.put(terminal, false);
@@ -232,18 +233,23 @@ conjuntos FIRST.
 			for (Symbol nonTerminal: nonTerminals){
 				iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
 				First firstDescription = firstSetDescriptions.get(nonTerminal);
-				iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
+				iterationSb.append(String.format
+          ("First(%s) = %s\n", nonTerminal, firstDescription));
 				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
-				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
-				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
+				firstSetsAfterIteration.get(nonTerminal).addAll
+          (firstDescription.getAllElements(firstSetsBeforeIteration));
+				iterationSb.append(String.format("Adding elements: %s\n", 
+          firstDescription.getAllElements(firstSetsBeforeIteration)));
 				int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
 				if (numElementsBefore != numElementsAfter){
 					someFirstSetHasChanged = true;
 				}
 			}
 
-			iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
-			iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+			iterationSb.append(String.format("All elements form
+        first sets before iteration: %s\n", firstSetsBeforeIteration));
+			iterationSb.append(String.format("All elements form
+        first sets after iteration: %s\n\n", firstSetsAfterIteration));
 
 			firstSetsBeforeIteration = firstSetsAfterIteration;
 		}
@@ -299,7 +305,8 @@ então esta permanece a mesma.
 O código abaixo ilustra esse processo no caso do ~ActionWithNextState~.
 
 #+BEGIN_SRC java
-	public ActionWithNextState(int currentStateNumber, State state, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
+	public ActionWithNextState(int currentStateNumber, State state, 
+      RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
 		super(currentStateNumber, ruleWithDot, allStates);
 		List<State> newItemSets = new ArrayList<State>();
 		newItemSets.addAll(allStates);
@@ -331,7 +338,8 @@ iterando é alterado durante a iteração.
 		// adding first state
 		System.out.println("Adding first state set:");
 		List<State> allStatesBeforeIteration = new ArrayList<State>();
-		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+		Set<RuleWithDot> firstRuleSet = grammarWithDots.get
+      (grammar.getStartSymbol());
 		State firstState = closure(new State(firstRuleSet));
 		allStatesBeforeIteration.add(firstState);
 
@@ -340,21 +348,26 @@ iterando é alterado durante a iteração.
 		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
 		boolean setOfAllStatesHasChanged = true;
 		while (setOfAllStatesHasChanged) {
-			System.out.println("******* New iteration (building all state sets) *******");
+			System.out.println("******* New iteration 
+        (building all state sets) *******");
 			setOfAllStatesHasChanged = false;
 			List<State> allStatesAfterIteration = new ArrayList<State>();
 			allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
-			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+			for (int currentStateNumber = 
+           indexOfLastStateInWhichAllRulesWereAnalysed + 1; 
+           currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
 				State state = allStatesAfterIteration.get(currentStateNumber);
 				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
 				for (RuleWithDot ruleWithDot : state.getRules()) {
 					System.out.println("~~Analysing rule~~");
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
-					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+					Action act = actionFactory.getAction
+            (currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
 					this.allActions.add(act);
 					System.out.format("\nCreating action: \n %s\n", act);
-					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", 
+            act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
 					allStatesAfterIteration = act.getNextItemSets();
 				}
 				indexOfLastStateInWhichAllRulesWereAnalysed++;
@@ -514,7 +527,8 @@ mesmo se todas as condições do ~equals~ fossem satisfeitas.
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
+		result = prime * result + 
+       ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}

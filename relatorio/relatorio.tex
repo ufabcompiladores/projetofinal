@@ -1,4 +1,4 @@
-% Created 2016-05-01 Sun 21:54
+% Created 2016-05-04 Wed 18:36
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -34,12 +34,20 @@
 
 \section{Introdução}
 \label{sec:orgheadline1}
-\textbf{negrito}
-\emph{itálico}
-\href{https://google.com}{google}
-\hyperref[sec:orgheadline1]{link}
-imagem:
-\includegraphics[width=.9\linewidth]{./media/Screenshot 2016-04-25 17.54.18.png}
+O estudo de compiladores permite entender o processo de transformação de um
+texto de entrada escrito em determinada linguagem de programação para outra. O
+objetivo deste processo usualmente é adquirir o código executável correspondente
+à entrada. Isto permite com que programas sejam escritos em altos níveis de
+abstração, o que facilita o trabalho do programador.
+
+A compilação de um texto que descreve um programa envolve diversos passos:
+análise léxica, \emph{parsing}, análise sintática, análise semântica, entre outros.
+
+Este trabalho concentra-se na fase de \emph{parsing}. Desenvolvemos uma ferramenta
+que, dada uma gramática de entrada, gera as tabelas LR e LL usadas pelo
+\emph{parser}. Um \emph{LL parser}  é chamado de \emph{top-down} e analisa o texto da esquerda
+para a direita, usando sempre a derivação mais à esquerda. Um \emph{LR parser} é dito
+\emph{bottom-up} e 
 
 \section{Objetivos}
 \label{sec:orgheadline2}
@@ -85,7 +93,7 @@ FIRST(ABC) = FIRST(A) \(\oplus\) FIRST(BCD)
 \end{center}
 
 e o resultado desta operação é somente FIRST(A) se \(A\) não produz \(\epsilon\) ou
-FIRST(A) - \(\epsilon\) se \(\epsilon\) \(\in\) FIRST(A). Então é conveniente saber de
+FIRST(A) - \(\epsilon\) \(\cup\) FIRST(BCD) se \(\epsilon\) \(\in\) FIRST(A). Então é conveniente saber de
 antemão quais símbolos produzem \(\epsilon\).
 
 Para tanto, usa-se o método \texttt{buildAllNonTerminalsThatProduceEps} na classe
@@ -169,7 +177,8 @@ private final void buildAllNonTerminalsThatProduceEps() {
   // initialise Map
   Map<Symbol, Boolean> producesEps = new HashMap<Symbol, Boolean>();
   for (Symbol nonTerminal : nonTerminals) {
-    producesEps.put(nonTerminal, nonTerminalsThatGenerateEps.contains(nonTerminal));
+    producesEps.put(nonTerminal, 
+    nonTerminalsThatGenerateEps.contains(nonTerminal));
   }
   for (Symbol terminal : terminals) {
     producesEps.put(terminal, false);
@@ -262,18 +271,23 @@ public final void buildAllFirstSets() {
     for (Symbol nonTerminal: nonTerminals){
       iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
       First firstDescription = firstSetDescriptions.get(nonTerminal);
-      iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
+      iterationSb.append(String.format
+        ("First(%s) = %s\n", nonTerminal, firstDescription));
       int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
-      firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
-      iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
+      firstSetsAfterIteration.get(nonTerminal).addAll
+        (firstDescription.getAllElements(firstSetsBeforeIteration));
+      iterationSb.append(String.format("Adding elements: %s\n", 
+        firstDescription.getAllElements(firstSetsBeforeIteration)));
       int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
       if (numElementsBefore != numElementsAfter){
         someFirstSetHasChanged = true;
       }
     }
 
-    iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
-    iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+    iterationSb.append(String.format("All elements form
+      first sets before iteration: %s\n", firstSetsBeforeIteration));
+    iterationSb.append(String.format("All elements form
+      first sets after iteration: %s\n\n", firstSetsAfterIteration));
 
     firstSetsBeforeIteration = firstSetsAfterIteration;
   }
@@ -285,10 +299,8 @@ O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 
 \subsection{{\bfseries\sffamily TODO} LL}
 \label{sec:orgheadline9}
-
 \subsection{SLR}
 \label{sec:orgheadline13}
-
 \subsubsection{Regras}
 \label{sec:orgheadline10}
 Usamos a classe \texttt{RuleWithDot} para representar os itens dos estados.
@@ -335,7 +347,8 @@ então esta permanece a mesma.
 O código abaixo ilustra esse processo no caso do \texttt{ActionWithNextState}.
 
 \begin{verbatim}
-public ActionWithNextState(int currentStateNumber, State state, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
+public ActionWithNextState(int currentStateNumber, State state, 
+    RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
   super(currentStateNumber, ruleWithDot, allStates);
   List<State> newItemSets = new ArrayList<State>();
   newItemSets.addAll(allStates);
@@ -368,7 +381,8 @@ private final void buildAllItemSets() {
   // adding first state
   System.out.println("Adding first state set:");
   List<State> allStatesBeforeIteration = new ArrayList<State>();
-  Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+  Set<RuleWithDot> firstRuleSet = grammarWithDots.get
+    (grammar.getStartSymbol());
   State firstState = closure(new State(firstRuleSet));
   allStatesBeforeIteration.add(firstState);
 
@@ -377,21 +391,26 @@ private final void buildAllItemSets() {
   int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
   boolean setOfAllStatesHasChanged = true;
   while (setOfAllStatesHasChanged) {
-    System.out.println("******* New iteration (building all state sets) *******");
+    System.out.println("******* New iteration 
+      (building all state sets) *******");
     setOfAllStatesHasChanged = false;
     List<State> allStatesAfterIteration = new ArrayList<State>();
     allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
-    for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+    for (int currentStateNumber = 
+         indexOfLastStateInWhichAllRulesWereAnalysed + 1; 
+         currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
       State state = allStatesAfterIteration.get(currentStateNumber);
       System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
       for (RuleWithDot ruleWithDot : state.getRules()) {
         System.out.println("~~Analysing rule~~");
         System.out.format("Analysing rule: %s\n", ruleWithDot);
-        Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+        Action act = actionFactory.getAction
+          (currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
         this.allActions.add(act);
         System.out.format("\nCreating action: \n %s\n", act);
-        System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+        System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", 
+          act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
         allStatesAfterIteration = act.getNextItemSets();
       }
       indexOfLastStateInWhichAllRulesWereAnalysed++;
@@ -430,12 +449,17 @@ computações importantes nos algoritmos, tornando futuros \emph{refactorings} m
 \item Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
 quando isso tornar o código mais simples.
 \end{itemize}
-\section{Conclusão}
+\section{Documentação}
 \label{sec:orgheadline16}
+A documentação em Javadoc está disponível em \texttt{sources/doc}. Foram feitos
+\emph{document comments} para os métodos não triviais.
+
+\section{Conclusão}
+\label{sec:orgheadline17}
 \section{Adendo - notas sobre algumas decisões de \emph{design}}
 \label{sec:orgheadline3}
 \subsection{Objetos em estados inconsistentes}
-\label{sec:orgheadline17}
+\label{sec:orgheadline18}
 É desejável que um objeto tenha um estado consitente imediatamente após sua
 criação. Em termos prático, isso significa usar seu construtor para setar todos
 os atributos necessários. O contrário disso (e, portanto, não recomendado) é não
@@ -468,8 +492,8 @@ public Grammar(String inputGrammar) throws Exception {
 }
 \end{verbatim}
 
-\subsection{Minimização de acessibilidade}
-\label{sec:orgheadline18}
+\subsection{Minimização de visibilidade}
+\label{sec:orgheadline19}
 Classes que não serão estentidas devem ser declaradas como \texttt{final}. O mesmo vale
 para métodos que não devem ser sobrescritos.
 
@@ -506,7 +530,7 @@ algoritmos depende essencialmente de seus atributos.
 Este princípio está descrito em Effective Java - Item 13: Minimize the accessibility of classes and members.
 
 \subsection{Minimização de mutabilidade}
-\label{sec:orgheadline19}
+\label{sec:orgheadline20}
 Algumas classes representam entidades imutáveis. Por exemplos, uma classe \texttt{Coordenada}
 que tem um par de inteiros como atributos e que representa uma coordenada deve
 ser imutável. Criar um \emph{setter} para esta classe seria absurdo, pois o mesmo
@@ -536,7 +560,7 @@ isso bem.
 Este princípio está descrito em Effective Java - Item15: Minimize mutability.
 
 \subsection{Sobrescrever \texttt{hashCode} e \texttt{equals}}
-\label{sec:orgheadline20}
+\label{sec:orgheadline21}
 Em diversos momentos utilizamos \texttt{equals}. Por exemplo, em \texttt{SLR}, quando 
 o conjunto goto de uma ação é calculado, verificamos se o conjunto é igual a algum
 estado que já está represente na lista de estados. Para tanto, \texttt{equals} é usado
@@ -554,7 +578,8 @@ mesmo se todas as condições do \texttt{equals} fossem satisfeitas.
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
+    result = prime * result + 
+       ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     return result;
   }
@@ -582,5 +607,6 @@ mesmo se todas as condições do \texttt{equals} fossem satisfeitas.
 Este princípio está descrito em Effectie Java- Item 9: Always override hashCode when you override equals.
 
 \section{Referências Bibliográficas}
-\label{sec:orgheadline21}
+\label{sec:orgheadline22}
+Compilers: Principles, Techniques, \& Tools Addison-Wesley series in computer science, 2a edição, Pearson/Addison Wesley, 2007.
 \end{document}

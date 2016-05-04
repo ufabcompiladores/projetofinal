@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <title>Projeto de Compiladores</title>
-<!-- 2016-05-04 Wed 18:00 -->
+<!-- 2016-05-04 Wed 18:36 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Org-mode">
 <meta name="author" content="André Peric Tavares, Giulio Parva Denardi">
@@ -192,12 +192,24 @@ $(function() {
 <h2 id="sec-1"><span class="section-number-2">1</span> Introdução</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-<b>negrito</b>
-<i>itálico</i>
-<a href="https://google.com">google</a>
-<a href="#sec-1">link</a>
-imagem:
-<img src="./media/Screenshot 2016-04-25 17.54.18.png" class="img-responsive" alt="Screenshot 2016-04-25 17.54.18.png">
+O estudo de compiladores permite entender o processo de transformação de um
+texto de entrada escrito em determinada linguagem de programação para outra. O
+objetivo deste processo usualmente é adquirir o código executável correspondente
+à entrada. Isto permite com que programas sejam escritos em altos níveis de
+abstração, o que facilita o trabalho do programador.
+</p>
+
+<p>
+A compilação de um texto que descreve um programa envolve diversos passos:
+análise léxica, <i>parsing</i>, análise sintática, análise semântica, entre outros.
+</p>
+
+<p>
+Este trabalho concentra-se na fase de <i>parsing</i>. Desenvolvemos uma ferramenta
+que, dada uma gramática de entrada, gera as tabelas LR e LL usadas pelo
+<i>parser</i>. Um <i>LL parser</i>  é chamado de <i>top-down</i> e analisa o texto da esquerda
+para a direita, usando sempre a derivação mais à esquerda. Um <i>LR parser</i> é dito
+<i>bottom-up</i> e 
 </p>
 </div>
 </div>
@@ -408,7 +420,8 @@ O código é apresentado a seguir.
   <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">initialise Map</span>
   <span style="color: #7CB8BB;">Map</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">producesEps</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashMap</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;()</span>;
   <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
-    producesEps.put<span style="color: #D0BF8F;">(</span>nonTerminal, nonTerminalsThatGenerateEps.contains<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+    producesEps.put<span style="color: #D0BF8F;">(</span>nonTerminal, 
+    nonTerminalsThatGenerateEps.contains<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
   <span style="color: #BFEBBF;">}</span>
   <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">terminal</span> : terminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
     producesEps.put<span style="color: #D0BF8F;">(</span>terminal, <span style="color: #BFEBBF;">false</span><span style="color: #D0BF8F;">)</span>;
@@ -533,18 +546,23 @@ conjuntos FIRST.
     <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span>: nonTerminals<span style="color: #D0BF8F;">){</span>
       iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Updating First(%s)\n"</span>, nonTerminal<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
       <span style="color: #7CB8BB;">First</span> <span style="color: #DFAF8F;">firstDescription</span> = firstSetDescriptions.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>;
-      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"First(%s) = %s\n"</span>, nonTerminal, firstDescription<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format
+        <span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"First(%s) = %s\n"</span>, nonTerminal, firstDescription<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
       <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsBefore</span> = firstSetsBeforeIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
-      firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.addAll<span style="color: #93E0E3;">(</span>firstDescription.getAllElements<span style="color: #9FC59F;">(</span>firstSetsBeforeIteration<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
-      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Adding elements: %s\n"</span>, firstDescription.getAllElements<span style="color: #94BFF3;">(</span>firstSetsBeforeIteration<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.addAll
+        <span style="color: #93E0E3;">(</span>firstDescription.getAllElements<span style="color: #9FC59F;">(</span>firstSetsBeforeIteration<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Adding elements: %s\n"</span>, 
+        firstDescription.getAllElements<span style="color: #94BFF3;">(</span>firstSetsBeforeIteration<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
       <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsAfter</span> = firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
       <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #93E0E3;">(</span>numElementsBefore != numElementsAfter<span style="color: #93E0E3;">){</span>
         someFirstSetHasChanged = <span style="color: #BFEBBF;">true</span>;
       <span style="color: #93E0E3;">}</span>
     <span style="color: #D0BF8F;">}</span>
 
-    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets before iteration: %s\n"</span>, firstSetsBeforeIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
-    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets after iteration: %s\n\n"</span>, firstSetsAfterIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #D0BF8F; font-weight: bold;">"</span><span style="color: #CC9393;">All elements form</span>
+<span style="color: #CC9393;">      first sets before iteration: %s\n"</span>, firstSetsBeforeIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #D0BF8F; font-weight: bold;">"</span><span style="color: #CC9393;">All elements form</span>
+<span style="color: #CC9393;">      first sets after iteration: %s\n\n"</span>, firstSetsAfterIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
 
     firstSetsBeforeIteration = firstSetsAfterIteration;
   <span style="color: #BFEBBF;">}</span>
@@ -562,7 +580,6 @@ O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 <div id="outline-container-sec-5-4" class="outline-3">
 <h3 id="sec-5-4"><span class="section-number-3">5.4</span> <span class="todo TODO">TODO</span> LL</h3>
 </div>
-
 <div id="outline-container-sec-5-5" class="outline-3">
 <h3 id="sec-5-5"><span class="section-number-3">5.5</span> SLR</h3>
 <div class="outline-text-3" id="text-5-5">
@@ -643,7 +660,8 @@ O código abaixo ilustra esse processo no caso do <code>ActionWithNextState</cod
 
 <div class="org-src-container">
 
-<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">ActionWithNextState</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span>, <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span>, <span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span>, <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStates</span>, <span style="color: #7CB8BB;">SLR</span> <span style="color: #DFAF8F;">slr</span><span style="color: #DCDCCC;">)</span> <span style="color: #DCDCCC;">{</span>
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">ActionWithNextState</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span>, <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span>, 
+    <span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span>, <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStates</span>, <span style="color: #7CB8BB;">SLR</span> <span style="color: #DFAF8F;">slr</span><span style="color: #DCDCCC;">)</span> <span style="color: #DCDCCC;">{</span>
   <span style="color: #F0DFAF; font-weight: bold;">super</span><span style="color: #BFEBBF;">(</span>currentStateNumber, ruleWithDot, allStates<span style="color: #BFEBBF;">)</span>;
   <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">newItemSets</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;()</span>;
   newItemSets.addAll<span style="color: #BFEBBF;">(</span>allStates<span style="color: #BFEBBF;">)</span>;
@@ -685,7 +703,8 @@ iterando é alterado durante a iteração.
   <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">adding first state</span>
   System.out.println<span style="color: #BFEBBF;">(</span><span style="color: #CC9393;">"Adding first state set:"</span><span style="color: #BFEBBF;">)</span>;
   <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStatesBeforeIteration</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;()</span>;
-  <span style="color: #7CB8BB;">Set</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">RuleWithDot</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">firstRuleSet</span> = grammarWithDots.get<span style="color: #BFEBBF;">(</span>grammar.getStartSymbol<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #7CB8BB;">Set</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">RuleWithDot</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">firstRuleSet</span> = grammarWithDots.get
+    <span style="color: #BFEBBF;">(</span>grammar.getStartSymbol<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
   <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">firstState</span> = closure<span style="color: #BFEBBF;">(</span><span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">(</span>firstRuleSet<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>;
   allStatesBeforeIteration.add<span style="color: #BFEBBF;">(</span>firstState<span style="color: #BFEBBF;">)</span>;
 
@@ -694,21 +713,26 @@ iterando é alterado durante a iteração.
   <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">indexOfLastStateInWhichAllRulesWereAnalysed</span> = -<span style="color: #BFEBBF;">1</span>;
   <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">setOfAllStatesHasChanged</span> = <span style="color: #BFEBBF;">true</span>;
   <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>setOfAllStatesHasChanged<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
-    System.out.println<span style="color: #D0BF8F;">(</span><span style="color: #CC9393;">"******* New iteration (building all state sets) *******"</span><span style="color: #D0BF8F;">)</span>;
+    System.out.println<span style="color: #D0BF8F;">(</span><span style="color: #D0BF8F; font-weight: bold;">"</span><span style="color: #CC9393;">******* New iteration </span>
+<span style="color: #CC9393;">      (building all state sets) *******"</span><span style="color: #D0BF8F;">)</span>;
     setOfAllStatesHasChanged = <span style="color: #BFEBBF;">false</span>;
     <span style="color: #7CB8BB;">List</span><span style="color: #D0BF8F;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">&gt;</span> <span style="color: #DFAF8F;">allStatesAfterIteration</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #D0BF8F;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">&gt;()</span>;
     allStatesAfterIteration.addAll<span style="color: #D0BF8F;">(</span>allStatesBeforeIteration<span style="color: #D0BF8F;">)</span>;
 
-    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span> = indexOfLastStateInWhichAllRulesWereAnalysed + <span style="color: #BFEBBF;">1</span>; currentStateNumber &lt; allStatesBeforeIteration.<span style="color: #7CB8BB;">size</span><span style="color: #93E0E3;">()</span>; currentStateNumber++<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span> = 
+         indexOfLastStateInWhichAllRulesWereAnalysed + <span style="color: #BFEBBF;">1</span>; 
+         currentStateNumber &lt; allStatesBeforeIteration.<span style="color: #7CB8BB;">size</span><span style="color: #93E0E3;">()</span>; currentStateNumber++<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
       <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span> = allStatesAfterIteration.get<span style="color: #93E0E3;">(</span>currentStateNumber<span style="color: #93E0E3;">)</span>;
       System.out.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"Analysing state %s: %s\n"</span>, currentStateNumber, state<span style="color: #93E0E3;">)</span>;
       <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #93E0E3;">(</span><span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span> : state.getRules<span style="color: #9FC59F;">()</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
         System.out.println<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"~~Analysing rule~~"</span><span style="color: #9FC59F;">)</span>;
         System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Analysing rule: %s\n"</span>, ruleWithDot<span style="color: #9FC59F;">)</span>;
-        <span style="color: #7CB8BB;">Action</span> <span style="color: #DFAF8F;">act</span> = actionFactory.getAction<span style="color: #9FC59F;">(</span>currentStateNumber, state, ruleWithDot, allStatesAfterIteration, <span style="color: #F0DFAF; font-weight: bold;">this</span><span style="color: #9FC59F;">)</span>;
+        <span style="color: #7CB8BB;">Action</span> <span style="color: #DFAF8F;">act</span> = actionFactory.getAction
+          <span style="color: #9FC59F;">(</span>currentStateNumber, state, ruleWithDot, allStatesAfterIteration, <span style="color: #F0DFAF; font-weight: bold;">this</span><span style="color: #9FC59F;">)</span>;
         <span style="color: #F0DFAF; font-weight: bold;">this</span>.allActions.add<span style="color: #9FC59F;">(</span>act<span style="color: #9FC59F;">)</span>;
         System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"\nCreating action: \n %s\n"</span>, act<span style="color: #9FC59F;">)</span>;
-        System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Action position:\n Line: %s \n Columns: %s\n\n"</span>, act.getLineToStoreActionInTable<span style="color: #94BFF3;">()</span>, act.getColumnToStoreActionInTable<span style="color: #94BFF3;">()</span><span style="color: #9FC59F;">)</span>;
+        System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Action position:\n Line: %s \n Columns: %s\n\n"</span>, 
+          act.getLineToStoreActionInTable<span style="color: #94BFF3;">()</span>, act.getColumnToStoreActionInTable<span style="color: #94BFF3;">()</span><span style="color: #9FC59F;">)</span>;
         allStatesAfterIteration = act.getNextItemSets<span style="color: #9FC59F;">()</span>;
       <span style="color: #93E0E3;">}</span>
       indexOfLastStateInWhichAllRulesWereAnalysed++;
@@ -941,7 +965,8 @@ mesmo se todas as condições do <code>equals</code> fossem satisfeitas.
   <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #7CB8BB;">int</span> <span style="color: #93E0E3;">hashCode</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
     <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">prime</span> = <span style="color: #BFEBBF;">31</span>;
     <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">result</span> = <span style="color: #BFEBBF;">1</span>;
-    result = prime * result + <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>literalRepresentation == <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span> ? <span style="color: #BFEBBF;">0</span> : literalRepresentation.hashCode<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+    result = prime * result + 
+       <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>literalRepresentation == <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span> ? <span style="color: #BFEBBF;">0</span> : literalRepresentation.hashCode<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
     result = prime * result + <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>type == <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span> ? <span style="color: #BFEBBF;">0</span> : type.hashCode<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
     <span style="color: #F0DFAF; font-weight: bold;">return</span> result;
   <span style="color: #DCDCCC;">}</span>
@@ -1016,7 +1041,7 @@ Compilers: Principles, Techniques, &amp; Tools Addison-Wesley series in computer
 </div></div></div>
 <footer id="postamble" class="">
 <div><p class="author">Author: André Peric Tavares, Giulio Parva Denardi</p>
-<p class="date">Created: 2016-05-04 Wed 18:00</p>
+<p class="date">Created: 2016-05-04 Wed 18:36</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.3.3)</p>
 </div>
 </footer>
