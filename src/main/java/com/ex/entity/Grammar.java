@@ -109,8 +109,8 @@ public final class Grammar {
 	/**
 	 * Returns a grammar that is identical to this, except that is has a new start symbol
 	 * that produces the old start symbol.
-	 * For example, if the old grammar is "S -> A,  A -> B", then the new grammar is
-	 * "newS -> S, S -> A, A -> B"
+	 * For example, if the old grammar is "S &gt; A,  A &gt; B", then the new grammar is
+	 * "newS &gt; S, S &gt; A, A &gt; B"
 	 * @return
 	 * @throws Exception
 	 */
@@ -358,7 +358,6 @@ public final class Grammar {
 	 * Isto é feito da mesma maneira usual na literatura,
 	 * em que se usa uma tabela que é atualizada até
 	 * encontrar um ponto fixo.
-	 * @return Um Map de Symbol para o first set desse Symbol.
 	 */
 	public final void buildAllFirstSets() {
 		List<String> out = this.outputString.get("first");

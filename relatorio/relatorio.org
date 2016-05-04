@@ -7,12 +7,20 @@
 #+SUBTITLE: Trabalho para a disciplina Compiladores na Universidade Federal do ABC sob orientação da Profa. Mirtha Lina Fernández Venero 
 
 * Introdução
-*negrito*
-/itálico/
-[[https://google.com][google]]
-[[Introdução][link]]
-imagem:
-[[./media/Screenshot 2016-04-25 17.54.18.png]]
+O estudo de compiladores permite entender o processo de transformação de um
+texto de entrada escrito em determinada linguagem de programação para outra. O
+objetivo deste processo usualmente é adquirir o código executável correspondente
+à entrada. Isto permite com que programas sejam escritos em altos níveis de
+abstração, o que facilita o trabalho do programador.
+
+A compilação de um texto que descreve um programa envolve diversos passos:
+análise léxica, /parsing/, análise sintática, análise semântica, entre outros.
+
+Este trabalho concentra-se na fase de /parsing/. Desenvolvemos uma ferramenta
+que, dada uma gramática de entrada, gera as tabelas LR e LL usadas pelo
+/parser/. Um /LL parser/  é chamado de /top-down/ e analisa o texto da esquerda
+para a direita, usando sempre a derivação mais à esquerda. Um /LR parser/ é dito
+/bottom-up/ e 
 
 * Objetivos
 O objetivo é criar um programa que, dada uma gramática de entrada,
@@ -246,7 +254,6 @@ conjuntos FIRST.
 O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 
 ** TODO LL
-
 ** SLR
 *** Regras
 Usamos a classe ~RuleWithDot~ para representar os itens dos estados.
