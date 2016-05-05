@@ -1,6 +1,6 @@
 package com.ex.entity;
 
-public class Tuple {
+public final class Tuple {
 
 	private Symbol leftSymbol;
 	private Symbol upSymbol;
@@ -62,7 +62,5 @@ public class Tuple {
 		return  String.format("Tupla: [%s, %s]", this.leftSymbol, this.upSymbol);
 	}
 
-	public static void main(String[] args) {
-		System.out.println(new Tuple(Symbol.DefaultSymbols.EMPTY.getSymbol(), Symbol.DefaultSymbols.FINAL.getSymbol()));
-	}
+	
 }

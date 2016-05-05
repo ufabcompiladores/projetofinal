@@ -2,7 +2,13 @@ package com.ex.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Follow {
+/**
+ * TODO: extend this description.
+ * Represents a follow set.
+ * @author andre0991
+ *
+ */
+public final class Follow {
 	private Set<Symbol> firstSets;
 	private Set<Symbol> firstSetsWithoutEps;
 	private Set<Symbol> followSets;
@@ -23,8 +29,7 @@ public class Follow {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		string.append(" = {");
-		// TODO: nao printar ultimo ∪
+		string.append("{");
 		for (Symbol sym : firstSets){
 			string.append(String.format("First(%s) ∪ ", sym));
 		}
@@ -40,7 +45,11 @@ public class Follow {
 		if (hasEOF){
 			string.append("{$}");
 		}
-		string.append(" }");
+		// if end is " ∪ ", then delete it
+		if (string.substring(string.length() - 3, string.length()).equals(" ∪ ")) {
+			string.delete(string.length() - 3, string.length());
+		}
+		string.append("}");
 		return string.toString();
 	}
 
@@ -71,10 +80,16 @@ public class Follow {
 
 
 	
-	public Set<Symbol> update(Grammar grammar){
+	/**
+	 * Compute the set of all symbols according to the description of this follow set.
+	 * For example, if the follow object represents "First(A) union Follow(B)", then
+	 * First(A) union Follow(B) will be computed.
+	 * @param grammar
+	 * @return
+	 */
+	public Set<Symbol> getAllElements(Grammar grammar){
 		Set<Symbol> elements = new HashSet<Symbol>();	
 		StringBuilder stringb = new StringBuilder();
-		stringb.append(String.format("Follow set description: %s \n", this));
 
 		for (Symbol sym : firstSets){
 			stringb.append(String.format("First(%s) = %s \n", sym, grammar.first(sym)));
@@ -82,7 +97,7 @@ public class Follow {
 		}
 		for (Symbol sym : firstSetsWithoutEps){
 			stringb.append(String.format("First(%s) - {ε} = %s - {ε}\n", sym, grammar.first(sym)));
-			grammar.addAllElementsFromSetExceptEmptyString(grammar.first(sym), elements);
+			Grammar.addAllElementsFromSetExceptEmptyString(grammar.first(sym), elements);
 		}
 		for (Symbol sym : followSets){
 			stringb.append(String.format("Follow(%s)  = %s\n", sym, grammar.follow(sym)));
@@ -93,14 +108,13 @@ public class Follow {
 			elements.add(sym);
 		}
 
-		// TODO: check if it's correct
 		if (hasEOF){
-			stringb.append("{$}");
+			stringb.append("Adding {$}\n");
 			elements.add(Symbol.createEOFSymbol());
 		}
 
-		stringb.append(String.format("\n Elements: %s \n", elements));
-		System.out.println(stringb.toString());
+		stringb.append(String.format("All added elements: %s \n\n", elements));
+		grammar.outputString.get("follow").add(stringb.toString());
 		return elements;
 	}
 	

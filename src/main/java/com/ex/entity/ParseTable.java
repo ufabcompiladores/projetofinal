@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ParseTable {
+public final class ParseTable {
 	
 	/**
 	 * Essa estrutura de dado significa o seguinte:

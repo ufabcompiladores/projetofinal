@@ -1,5 +1,6 @@
 package com.ex.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +13,9 @@ import com.ex.service.LLService;
 @Controller
 @RequestMapping(value="/grammar")
 public class GrammarController {
+	
+	@Autowired
+	LLService llService;
 	
 	@RequestMapping(value="/create/text", method=RequestMethod.POST)
 	public ModelAndView createTextGrammar (ModelAndView mv,
@@ -45,7 +49,7 @@ public class GrammarController {
 		
 		//TODO Ver como fazer isso
 		Grammar grammar = (Grammar) mv.getModel().get("grammar");
-		LLService service = new LLService(grammar);
+		llService.setGrammar(grammar);
 
 		try {
 			switch (option) {
@@ -56,7 +60,7 @@ public class GrammarController {
 				mv.addObject("follows", grammar.getFollowSets());
 				break;
 			case ("ll"):
-				mv.addObject("LLTable", service.buildParseTable());
+				mv.addObject("LLTable", llService.buildParseTable());
 				break;
 			case ("slr"):
 				//TODO

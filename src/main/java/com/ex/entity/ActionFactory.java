@@ -19,7 +19,7 @@ public final class ActionFactory {
 	 * @param slr
 	 * @return An Accept, Shift, Goto or Reduce object.
 	 */
-	public Action getAction(int currentStateNumber, Set<RuleWithDot> state, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> allStates, SLR slr) {
+	public Action getAction(int currentStateNumber, State state, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
 		Symbol symbolAfterDot = ruleWithDot.firstSymbolAfterDot();
 		if (symbolAfterDot.isEmptyString()) {
 			System.out.println("Will create Reduce action");

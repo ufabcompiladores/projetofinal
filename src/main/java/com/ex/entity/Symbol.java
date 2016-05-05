@@ -2,6 +2,11 @@ package com.ex.entity;
 
 import java.util.Set;
 
+/**
+ * Represents a symbol in the grammar.
+ * @author andre0991
+ *
+ */
 public final class Symbol {
 
 	public static final String TERMINAL_REGEX = "^[a-z][A-Za-z0-9]*";
@@ -47,6 +52,7 @@ public final class Symbol {
 		super();
 		this.type = type;
 		this.literalRepresentation = literalRepresentation;
+		//TODO: throw exception if type is EOF or empty string
 	}
 
 	public Symbol(String literalRepresentation) throws Exception {
@@ -136,6 +142,14 @@ public final class Symbol {
 		return new Symbol(SymbolType.EMPTYSTRING, EMPTY_STRING_LITERAL_REPRESENTATION);
 	}
 
+	/**
+	 * Creates a new symbol that is identical to the given symbol, except that
+	 * its literal representation is prefixed by the string "new".
+	 * @param sym
+	 * @param existingNonTerminalsInGrammar
+	 * @return
+	 * @throws Exception If a symbol with the new literal representation already existis.
+	 */
 	public static Symbol newVersionOfGivenSymbol(Symbol sym, Set<Symbol> existingNonTerminalsInGrammar) throws Exception {
 		String oldLiteralRepresentation = sym.literalRepresentation;
 		String newLiteralRepresentation = "new" + oldLiteralRepresentation;

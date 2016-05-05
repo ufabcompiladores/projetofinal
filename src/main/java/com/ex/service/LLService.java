@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ex.entity.Grammar;
@@ -15,11 +16,7 @@ import com.ex.entity.Tuple;
 @Service("LL")
 public class LLService {
 	
-	private final Grammar grammar;
-	
-	public LLService(Grammar grammar) {
-		this.grammar = grammar;
-	}
+	private Grammar grammar;
 	
 	/**
 	 * Constrói a tabela do parse do grammar do serviço.
@@ -91,14 +88,9 @@ public class LLService {
 		
 		return true;
 	}
-	
-	public static void main(String[] args) throws Exception {
-		Grammar grammar = new Grammar("A -> B e C B B B d \nB -> b | \n C -> a | f");
-//		Grammar grammar = new Grammar("A -> b | c B\nB -> A | ");
-		
-		LLService service = new LLService(grammar);
-		
-		System.out.println(service.buildParseTable());
-		
+
+	public void setGrammar(Grammar grammar2) {
+		this.grammar = grammar2;
 	}
+	
 }

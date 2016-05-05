@@ -34,9 +34,24 @@
    (LaTeX-add-labels
     "sec:orgheadline1"
     "sec:orgheadline2"
-    "sec:orgheadline3"
     "sec:orgheadline4"
     "sec:orgheadline5"
-    "sec:orgheadline6"))
+    "sec:orgheadline14"
+    "sec:orgheadline6"
+    "sec:orgheadline7"
+    "sec:orgheadline8"
+    "sec:orgheadline9"
+    "sec:orgheadline13"
+    "sec:orgheadline10"
+    "sec:orgheadline11"
+    "sec:orgheadline12"
+    "sec:orgheadline15"
+    "sec:orgheadline16"
+    "sec:orgheadline3"
+    "sec:orgheadline17"
+    "sec:orgheadline18"
+    "sec:orgheadline19"
+    "sec:orgheadline20"
+    "sec:orgheadline21"))
  :latex)
 

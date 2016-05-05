@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <title>Projeto de Compiladores</title>
-<!-- 2016-04-25 Mon 17:55 -->
+<!-- 2016-05-02 Mon 09:32 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Org-mode">
 <meta name="author" content="André Peric Tavares, Giulio Parva Denardi">
@@ -182,6 +182,7 @@ $(function() {
     $('.bs-docs-sidebar').affix();
 });
 </script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content" class="container">
@@ -194,9 +195,7 @@ $(function() {
 <b>negrito</b>
 <i>itálico</i>
 <a href="https://google.com">google</a>
-</p>
-
-<p>
+<a href="#sec-1">link</a>
 imagem:
 <img src="./media/Screenshot 2016-04-25 17.54.18.png" class="img-responsive" alt="Screenshot 2016-04-25 17.54.18.png">
 </p>
@@ -205,18 +204,768 @@ imagem:
 
 <div id="outline-container-sec-2" class="outline-2">
 <h2 id="sec-2"><span class="section-number-2">2</span> Objetivos</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+O objetivo é criar um programa que, dada uma gramática de entrada,
+produza e apresente passo-a-passo o cálculo dos conjuntos FIRST e FOLLOW e da
+construção das tabelas LL e LR.
+</p>
+</div>
 </div>
 <div id="outline-container-sec-3" class="outline-2">
 <h2 id="sec-3"><span class="section-number-2">3</span> Justificativa</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Existem diversas ferramentas que geram as tabelas, mas geralmente os passos são
+omitidos ou o código é muito complexo. Neste projeto, tentamos ao mesmo tempo
+apresentar na saída do programa cada etapa do processo e manter o código
+legível e simples, mesmo quando isso significar ser menos eficiente. Deste modo,
+o programa beneficia aqueles que estão estudando os conceitos teóricos e também
+é de fácil entendimento àqueles que desejam estendê-lo.
+</p>
+
+<p>
+Além disso, justificamos várias decisões do ponto de vista de Engenharia de
+Software em <a href="#sec-8">Adendo - notas sobre algumas decisões de <i>design</i></a>, apresentando na
+prática como várias boas práticas de programação podem ser aplicadas.
+</p>
 </div>
+</div>
+
 <div id="outline-container-sec-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Metodologia de Projeto</h2>
+<h2 id="sec-4"><span class="section-number-2">4</span> Metodologia</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Decidimos utilizar a linguagem Java para a implementação, especialmente pelo
+fato de ser estática (o que previne muitos <i>bugs</i> na fase de compilação),
+orientada a objetos (fazendo com que seja possível abstrair muitos conceitos em
+classes, tornando o código organizado e simples de entender) e popular.
+</p>
+
+<p>
+O código do projeto está disponível na pasta <code>sources</code>. Além disso, a versão
+mais atual pode ser encontrada em <a href="https://github.com/ufabcompiladores/projetofinal">https://github.com/ufabcompiladores/projetofinal</a>.
+</p>
+
+<p>
+Utilizamos o Spring Framework (<a href="https://spring.io/">https://spring.io/</a>). Assim, o <i>front end</i> é
+<i>web</i>, podendo ser acessado de qualquer navegador.
+</p>
 </div>
+</div>
+
 <div id="outline-container-sec-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Conclusão</h2>
+<h2 id="sec-5"><span class="section-number-2">5</span> Funcionamento</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Produção de cadeia vazia</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+O cálculo dos conjuntos FIRST e FOLLOW exigem em diversos momentos saber se
+um determinado não terminal produz &epsilon;. Por exemplo, considere a sequência
+de símbolos <i>ABC</i>. Queremos calcular FIRST(ABC). Sabemos que
+</p>
+
+<div class="center">
+<p>
+FIRST(ABC) = FIRST(A) &oplus; FIRST(BCD)
+</p>
 </div>
+
+<p>
+e o resultado desta operação é somente FIRST(A) se \(A\) não produz &epsilon; ou
+FIRST(A) - &epsilon; &cup; FIRST(BCD) se &epsilon; &isin; FIRST(A). Então é conveniente saber de
+antemão quais símbolos produzem &epsilon;.
+</p>
+
+<p>
+Para tanto, usa-se o método <code>buildAllNonTerminalsThatProduceEps</code> na classe
+<code>Grammar</code>. O algoritmo utilizado é simples: primeiro, verifica-se todos os não
+terminais que produzem diretamente &epsilon;, isto é, aqueles que têm uma regra
+que produz &epsilon; sem etapas intermediárias, como em \(A \rightarrow \epsilon\).
+</p>
+
+<p>
+Em seguida, todas as regras são percorridas, e se todos os símbolos da parte
+direita de uma regra produzem &epsilon;, então adicionamos o produtor dessa regra
+à lista de não terminais que produzem &epsilon;. Todas as regras são percorridas
+novamente até que nenhum símbolo novo tenha sido adicionado à lista de símbolos
+que produzem &epsilon;. Em outras palavras, até que o ponto fixo seja atingido.
+</p>
+
+<p>
+Por exemplo, considere a seguinte gramática:
+</p>
+
+<div class="center">
+<p>
+A &rarr; BC <br >
+B &rarr; &epsilon; <br >
+C &rarr; &epsilon;
+</p>
+</div>
+
+<p>
+A tabela a seguir mostra o resultado desse algoritmo aplicado à gramática
+anterior em cada iteração.
+</p>
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+
+<colgroup>
+<col  class="left">
+
+<col  class="left">
+
+<col  class="left">
+
+<col  class="left">
+</colgroup>
+<tbody>
+<tr>
+<td class="left">Produz &epsilon;?</td>
+<td class="left">A</td>
+<td class="left">B</td>
+<td class="left">C</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 1</td>
+<td class="left">não</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 2</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+
+<tr>
+<td class="left">Iteração 3</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+<td class="left">sim</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Na iteração 3, o conjunto de elementos que produzem &epsilon; não mudou, e assim
+o algoritmo termina.
+</p>
+
+<p>
+O código é apresentado a seguir.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">buildAllNonTerminalsThatProduceEps</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+  <span style="color: #7CB8BB;">Set</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">nonTerminalsThatGenerateEps</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashSet</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;()</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">rules that directly generate eps</span>
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Rule</span> <span style="color: #DFAF8F;">rule</span> : rules.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #93E0E3;">(</span>rule.producesEmptyString<span style="color: #9FC59F;">()</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
+        nonTerminalsThatGenerateEps.add<span style="color: #9FC59F;">(</span>nonTerminal<span style="color: #9FC59F;">)</span>;
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">iterates until fp is found</span>
+  <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">newNonTerminalThatGeneratesEpsHasBeenFound</span> = <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>newNonTerminalThatGeneratesEpsHasBeenFound<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    newNonTerminalThatGeneratesEpsHasBeenFound = <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">setSizeBeforeIteration</span> = nonTerminalsThatGenerateEps.size<span style="color: #D0BF8F;">()</span>;
+
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #93E0E3;">(</span><span style="color: #7CB8BB;">Rule</span> <span style="color: #DFAF8F;">rule</span> : rules.get<span style="color: #9FC59F;">(</span>nonTerminal<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
+        <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">verifies if all symbols from rule produce eps</span>
+        <span style="color: #7CB8BB;">List</span><span style="color: #9FC59F;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #9FC59F;">&gt;</span> <span style="color: #DFAF8F;">production</span> = rule.getProduction<span style="color: #9FC59F;">()</span>;
+        <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">allSymbolsFromProductionProduceEps</span>;
+        allSymbolsFromProductionProduceEps = production
+            .stream<span style="color: #9FC59F;">()</span>
+            .allMatch<span style="color: #9FC59F;">(</span>symbol -&gt; nonTerminalsThatGenerateEps.contains<span style="color: #94BFF3;">(</span>symbol<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span>;
+
+        <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">if so, add it to set</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #9FC59F;">(</span>allSymbolsFromProductionProduceEps<span style="color: #9FC59F;">)</span> <span style="color: #9FC59F;">{</span>
+          nonTerminalsThatGenerateEps.add<span style="color: #94BFF3;">(</span>nonTerminal<span style="color: #94BFF3;">)</span>;
+        <span style="color: #9FC59F;">}</span>
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">verifies whether some non terminal has been added to set</span>
+    <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">setSizeAfterIteration</span> = nonTerminalsThatGenerateEps.size<span style="color: #D0BF8F;">()</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #D0BF8F;">(</span>setSizeBeforeIteration != setSizeAfterIteration<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      newNonTerminalThatGeneratesEpsHasBeenFound = <span style="color: #BFEBBF;">true</span>;
+    <span style="color: #D0BF8F;">}</span>
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">initialise Map</span>
+  <span style="color: #7CB8BB;">Map</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">producesEps</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashMap</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Boolean</span><span style="color: #BFEBBF;">&gt;()</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span> : nonTerminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    producesEps.put<span style="color: #D0BF8F;">(</span>nonTerminal, nonTerminalsThatGenerateEps.contains<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">terminal</span> : terminals<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    producesEps.put<span style="color: #D0BF8F;">(</span>terminal, <span style="color: #BFEBBF;">false</span><span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.nonTerminalsToProducesEps = producesEps;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Representação dos conjuntos FIRST e FOLLOW</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Uma das principais funcionalidades do programa deste trabalho é não só calcular
+os conjuntos FIRST e FOLLOW, mas fazer isso apresentando as etapas
+intermediárias, fazendo com que o usuário veja cada passo do algoritmo. Isso faz
+com que o cálculo desses conjuntos não seja o mais eficiente possível, pois
+precisamos lidar também com o <i>output</i> sem pular nenhuma etapa.
+</p>
+
+<p>
+Para isto, criamos classes <code>First</code> e <code>Follow</code>. Estas classes têm atributos que
+indicam a <i>representação</i> do conjunto dado em termos de outros conjuntos.
+</p>
+
+<p>
+Por exemplo, considere os seguintes atributos da classe <code>Follow</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">firstSets</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">firstSetsWithoutEps</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">followSets</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">Set</span><span style="color: #DCDCCC;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #DCDCCC;">&gt;</span> <span style="color: #DFAF8F;">terminals</span>;
+<span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">hasEOF</span>;
+</pre>
+</div>
+
+<p>
+Suponha que um objeto dessa classe tenha as seguintes atribuições (aqui em
+notação de teoria dos conjuntos):
+</p>
+
+<div class="center">
+<p>
+firstSets = {A} <br >
+firstSetsWithoutEps = {B, C} <br >
+followSets = {D} <br >
+terminals = {a, b} <br >
+hasEOF = true <br >
+</p>
+</div>
+
+<p>
+Então esse conjunto seria
+</p>
+
+<div class="center">
+<p>
+FIRST(A) &cup; (FIRST(B) - &epsilon;) &cup; (FIRST(C) - &epsilon;) &cup; FOLLOW(D)
+&cup; {a} &cup; {b} &cup; {$}
+</p>
+</div>
+
+<p>
+Ambas as classes têm o método <code>toString</code> sobrescrito para exibir essa
+representação como mostrado acima e um método <code>getAllElements</code> que coleta
+todos os elementos vindos da união dos conjuntos.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Cálculo dos conjuntos FIRST e FOLLOW</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+De maneira semelhante à computação de todos os não terminais que geram &epsilon;,
+o cálculo dos conjuntos FIRST e FOLLOW consiste, em essência, em iterar até
+encontrar um ponto fixo.
+</p>
+
+<p>
+Note que a aplicação direta da definição de FIRST e FOLLOW não funciona, pois
+ela falharia no caso de definições recursivas que são dependentes entre
+si. Por exemplo, considere o caso em que FIRST(A) = FIRST(B) e FIRST(B) =
+FIRST(A). Para calcular FIRST(A), calcula-se FIRST(B). Mas FIRST(B) é FIRST(A),
+o que resulta num <i>loop</i> infinito. Em vez disso, começamos com todos os
+conjuntos FIRST setados para &empty;, e a cada iteração atualizamos todos os
+conjuntos até atingir um ponto fixo. 
+</p>
+
+<p>
+O código a seguir mostra a implementação desse algoritmo para o cálculo dos
+conjuntos FIRST.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">buildAllFirstSets</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Initialize set</span>
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">omitido</span>
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Get description of each first set</span>
+  <span style="color: #7CB8BB;">Map</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">First</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">firstSetDescriptions</span> = buildAllFirstSetDescriptions<span style="color: #BFEBBF;">()</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Iterate until fixed point is found</span>
+  <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">someFirstSetHasChanged</span> = <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>someFirstSetHasChanged<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    <span style="color: #7CB8BB;">StringBuilder</span> <span style="color: #DFAF8F;">iterationSb</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">StringBuilder</span><span style="color: #D0BF8F;">()</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span><span style="color: #CC9393;">"New iteration (building first sets)\n"</span><span style="color: #D0BF8F;">)</span>;
+    someFirstSetHasChanged = <span style="color: #BFEBBF;">false</span>;
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Copy elements from old first sets to new first sets</span>
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">omitido</span>
+
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Updates, possibly getting new elements</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">nonTerminal</span>: nonTerminals<span style="color: #D0BF8F;">){</span>
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Updating First(%s)\n"</span>, nonTerminal<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">First</span> <span style="color: #DFAF8F;">firstDescription</span> = firstSetDescriptions.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"First(%s) = %s\n"</span>, nonTerminal, firstDescription<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsBefore</span> = firstSetsBeforeIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
+      firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.addAll<span style="color: #93E0E3;">(</span>firstDescription.getAllElements<span style="color: #9FC59F;">(</span>firstSetsBeforeIteration<span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      iterationSb.append<span style="color: #93E0E3;">(</span>String.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Adding elements: %s\n"</span>, firstDescription.getAllElements<span style="color: #94BFF3;">(</span>firstSetsBeforeIteration<span style="color: #94BFF3;">)</span><span style="color: #9FC59F;">)</span><span style="color: #93E0E3;">)</span>;
+      <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">numElementsAfter</span> = firstSetsAfterIteration.get<span style="color: #93E0E3;">(</span>nonTerminal<span style="color: #93E0E3;">)</span>.size<span style="color: #93E0E3;">()</span>;
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #93E0E3;">(</span>numElementsBefore != numElementsAfter<span style="color: #93E0E3;">){</span>
+        someFirstSetHasChanged = <span style="color: #BFEBBF;">true</span>;
+      <span style="color: #93E0E3;">}</span>
+    <span style="color: #D0BF8F;">}</span>
+
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets before iteration: %s\n"</span>, firstSetsBeforeIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+    iterationSb.append<span style="color: #D0BF8F;">(</span>String.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"All elements form first sets after iteration: %s\n\n"</span>, firstSetsAfterIteration<span style="color: #93E0E3;">)</span><span style="color: #D0BF8F;">)</span>;
+
+    firstSetsBeforeIteration = firstSetsAfterIteration;
+  <span style="color: #BFEBBF;">}</span>
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.firstSets = firstSetsBeforeIteration;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> <span class="todo TODO">TODO</span> LL</h3>
+</div>
+
+<div id="outline-container-sec-5-5" class="outline-3">
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> SLR</h3>
+<div class="outline-text-3" id="text-5-5">
+</div><div id="outline-container-sec-5-5-1" class="outline-4">
+<h4 id="sec-5-5-1"><span class="section-number-4">5.5.1</span> Regras</h4>
+<div class="outline-text-4" id="text-5-5-1">
+<p>
+Usamos a classe <code>RuleWithDot</code> para representar os itens dos estados.
+Um objeto dessa classe têm listas de símbolos para representar o que vem antes e
+depois do ponto. Por exemplo, a regra A &rarr; BC.DE teria BC em
+<code>symbolsBeforeDot</code> e DE em <code>symbolsAfterDot</code>.
+</p>
+
+
+<figure>
+<p><img src="./media/ruleWithDot.png" class="img-responsive" alt="ruleWithDot.png">
+</p>
+</figure>
+
+<p>
+O método <code>generateRuleWithShiftedDot</code> serve para gerar um novo objeto do tipo
+<code>RuleWithDot</code> com o ponto deslocado para a direita. Usando o exemplo anterior, o
+objeto gerado a partir de A &rarr; BC.DE representaria A &rarr; BCD.E.
+Note que o objeto retornado é um novo. Não há efeitos colaterais.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-5-2" class="outline-4">
+<h4 id="sec-5-5-2"><span class="section-number-4">5.5.2</span> Ações</h4>
+<div class="outline-text-4" id="text-5-5-2">
+<p>
+Ações no contexto da tabela SLR são representadas por classes.
+</p>
+
+<p>
+Além de ter um tipo específico, uma <code>Action</code> contém atributos para indicar sua
+posição na tabela, a saber, <code>lineToStoreActionInTable</code> e <code>columnToStoreActionInTable</code>.
+</p>
+
+<p>
+Assim, a partir de uma lista de todos os objetos do tipo <code>Action</code> gerados é
+possível construir a tabela SLR.
+</p>
+
+
+<figure>
+<p><img src="./media/actions.png" class="img-responsive" alt="actions.png">
+</p>
+</figure>
+
+<p>
+As ações <code>Shift</code> e <code>Goto</code> têm o método <code>getGotoStateNumber</code>, cujo resultado é
+armazenado em <code>gotoOrShiftStateNumber</code>.
+</p>
+
+<p>
+Esse atributo armazena o número do estado que deve ser usado após executar a
+ação. Por exemplo, para um objeto <code>Shift</code> que representa a ação <i>shift 8</i>, esse
+número é 8. Note que esse número pode indicar um estado que já existe ou um
+novo.
+</p>
+
+<p>
+Além disso, todas as ações têm um atributo <code>nextItemSets</code> que possui uma lista
+de todos os estados descobertos após essa ação. Se a ação é  <code>Accept</code> ou
+<code>Reduce</code>, essa lista é exatamente a mesma de antes. Por outro lado, no
+caso de <code>Shift</code> e <code>Goto</code>, calcula-se goto(q, a), em que <i>q</i> é o estado sendo
+analisado e <i>a</i> é o primeiro símbolo após o ponto, e se o resultado de goto(q,
+a) não estiver na lista de estados conhecida até então, um novo estado é
+adicionado a ela. Se o resultado de goto(q, a) já estiver na lista de estados,
+então esta permanece a mesma.
+</p>
+
+<p>
+O código abaixo ilustra esse processo no caso do <code>ActionWithNextState</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">ActionWithNextState</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span>, <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span>, <span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span>, <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStates</span>, <span style="color: #7CB8BB;">SLR</span> <span style="color: #DFAF8F;">slr</span><span style="color: #DCDCCC;">)</span> <span style="color: #DCDCCC;">{</span>
+  <span style="color: #F0DFAF; font-weight: bold;">super</span><span style="color: #BFEBBF;">(</span>currentStateNumber, ruleWithDot, allStates<span style="color: #BFEBBF;">)</span>;
+  <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">newItemSets</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;()</span>;
+  newItemSets.addAll<span style="color: #BFEBBF;">(</span>allStates<span style="color: #BFEBBF;">)</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Sets next state number and the new list of states.</span>
+  <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">nextState</span> = slr.gotoSet<span style="color: #BFEBBF;">(</span>state, ruleWithDot.firstSymbolAfterDot<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.gotoOrShiftStateNumber = slr.getStateNumber<span style="color: #BFEBBF;">(</span>nextState, allStates<span style="color: #BFEBBF;">)</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>gotoOrShiftStateNumber == allStates.size<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    newItemSets.add<span style="color: #D0BF8F;">(</span>nextState<span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+  setNextItemSets<span style="color: #BFEBBF;">(</span>newItemSets<span style="color: #BFEBBF;">)</span>;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+Note que <code>newItemSets</code> é uma <i>nova</i> lista de estados. Assim, não há efeitos
+colaterais envolvidos.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-5-3" class="outline-4">
+<h4 id="sec-5-5-3"><span class="section-number-4">5.5.3</span> Algoritmo</h4>
+<div class="outline-text-4" id="text-5-5-3">
+<p>
+Ainda à maneira do cálculo dos conjuntos anteriores, o algoritmo consiste em adicionar
+novos estados à lista de estados até encontrar um ponto fixo. No entanto, a
+implementação é um pouco mais complicada, pois o conjunto de estados que estamos
+iterando é alterado durante a iteração.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">buildAllItemSets</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+  System.out.println<span style="color: #BFEBBF;">(</span><span style="color: #CC9393;">"\n\n\n=============================="</span><span style="color: #BFEBBF;">)</span>;
+  System.out.println<span style="color: #BFEBBF;">(</span><span style="color: #CC9393;">"Building all states."</span><span style="color: #BFEBBF;">)</span>;
+
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">adding first state</span>
+  System.out.println<span style="color: #BFEBBF;">(</span><span style="color: #CC9393;">"Adding first state set:"</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #7CB8BB;">List</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">allStatesBeforeIteration</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #BFEBBF;">&gt;()</span>;
+  <span style="color: #7CB8BB;">Set</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">RuleWithDot</span><span style="color: #BFEBBF;">&gt;</span> <span style="color: #DFAF8F;">firstRuleSet</span> = grammarWithDots.get<span style="color: #BFEBBF;">(</span>grammar.getStartSymbol<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">firstState</span> = closure<span style="color: #BFEBBF;">(</span><span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">(</span>firstRuleSet<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>;
+  allStatesBeforeIteration.add<span style="color: #BFEBBF;">(</span>firstState<span style="color: #BFEBBF;">)</span>;
+
+  <span style="color: #7CB8BB;">ActionFactory</span> <span style="color: #DFAF8F;">actionFactory</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ActionFactory</span><span style="color: #BFEBBF;">()</span>;
+
+  <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">indexOfLastStateInWhichAllRulesWereAnalysed</span> = -<span style="color: #BFEBBF;">1</span>;
+  <span style="color: #7CB8BB;">boolean</span> <span style="color: #DFAF8F;">setOfAllStatesHasChanged</span> = <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #BFEBBF;">(</span>setOfAllStatesHasChanged<span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+    System.out.println<span style="color: #D0BF8F;">(</span><span style="color: #CC9393;">"******* New iteration (building all state sets) *******"</span><span style="color: #D0BF8F;">)</span>;
+    setOfAllStatesHasChanged = <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #7CB8BB;">List</span><span style="color: #D0BF8F;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">&gt;</span> <span style="color: #DFAF8F;">allStatesAfterIteration</span> = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">ArrayList</span><span style="color: #D0BF8F;">&lt;</span><span style="color: #7CB8BB;">State</span><span style="color: #D0BF8F;">&gt;()</span>;
+    allStatesAfterIteration.addAll<span style="color: #D0BF8F;">(</span>allStatesBeforeIteration<span style="color: #D0BF8F;">)</span>;
+
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #D0BF8F;">(</span><span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">currentStateNumber</span> = indexOfLastStateInWhichAllRulesWereAnalysed + <span style="color: #BFEBBF;">1</span>; currentStateNumber &lt; allStatesBeforeIteration.<span style="color: #7CB8BB;">size</span><span style="color: #93E0E3;">()</span>; currentStateNumber++<span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      <span style="color: #7CB8BB;">State</span> <span style="color: #DFAF8F;">state</span> = allStatesAfterIteration.get<span style="color: #93E0E3;">(</span>currentStateNumber<span style="color: #93E0E3;">)</span>;
+      System.out.format<span style="color: #93E0E3;">(</span><span style="color: #CC9393;">"Analysing state %s: %s\n"</span>, currentStateNumber, state<span style="color: #93E0E3;">)</span>;
+      <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #93E0E3;">(</span><span style="color: #7CB8BB;">RuleWithDot</span> <span style="color: #DFAF8F;">ruleWithDot</span> : state.getRules<span style="color: #9FC59F;">()</span><span style="color: #93E0E3;">)</span> <span style="color: #93E0E3;">{</span>
+        System.out.println<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"~~Analysing rule~~"</span><span style="color: #9FC59F;">)</span>;
+        System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Analysing rule: %s\n"</span>, ruleWithDot<span style="color: #9FC59F;">)</span>;
+        <span style="color: #7CB8BB;">Action</span> <span style="color: #DFAF8F;">act</span> = actionFactory.getAction<span style="color: #9FC59F;">(</span>currentStateNumber, state, ruleWithDot, allStatesAfterIteration, <span style="color: #F0DFAF; font-weight: bold;">this</span><span style="color: #9FC59F;">)</span>;
+        <span style="color: #F0DFAF; font-weight: bold;">this</span>.allActions.add<span style="color: #9FC59F;">(</span>act<span style="color: #9FC59F;">)</span>;
+        System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"\nCreating action: \n %s\n"</span>, act<span style="color: #9FC59F;">)</span>;
+        System.out.format<span style="color: #9FC59F;">(</span><span style="color: #CC9393;">"Action position:\n Line: %s \n Columns: %s\n\n"</span>, act.getLineToStoreActionInTable<span style="color: #94BFF3;">()</span>, act.getColumnToStoreActionInTable<span style="color: #94BFF3;">()</span><span style="color: #9FC59F;">)</span>;
+        allStatesAfterIteration = act.getNextItemSets<span style="color: #9FC59F;">()</span>;
+      <span style="color: #93E0E3;">}</span>
+      indexOfLastStateInWhichAllRulesWereAnalysed++;
+    <span style="color: #D0BF8F;">}</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #D0BF8F;">(</span>allStatesAfterIteration.size<span style="color: #93E0E3;">()</span> != allStatesBeforeIteration.size<span style="color: #93E0E3;">()</span><span style="color: #D0BF8F;">)</span> <span style="color: #D0BF8F;">{</span>
+      setOfAllStatesHasChanged = <span style="color: #BFEBBF;">true</span>;
+    <span style="color: #D0BF8F;">}</span>
+
+    allStatesBeforeIteration = allStatesAfterIteration;
+  <span style="color: #BFEBBF;">}</span>
+  System.out.format<span style="color: #BFEBBF;">(</span><span style="color: #CC9393;">"All state sets found: %s"</span>, allStatesBeforeIteration<span style="color: #BFEBBF;">)</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.allStates =  allStatesBeforeIteration;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+O código itera do último estado completamente analisado (isto é, cujas
+regras já tiveram as ações correspondentes criadas) até o último estado conhecido.
+Para cada item de cada estado é criada uma ação. Um objeto da classe
+<code>ActionFactory</code> decide qual é o tipo de ação a ser criada analisando qual é o
+símbolo após o ponto. Após a criação da ação, esta tem seu método
+<code>getNextItemSets</code> executados, que retorna a nova lista de estados (possivelmente com
+um novo estado, se a ação criada for um Shift ou Goto).
+</p>
+</div>
+</div>
+</div>
+</div>
+
 <div id="outline-container-sec-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> Referências Bibliográficas</h2>
+<h2 id="sec-6"><span class="section-number-2">6</span> Próximos passos</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+A construção deste programa mostrou-se bastante trabalhosa, e à medida em que o
+desenvolvimento avançou, foi possível detectar alguns pontos que ainda podem
+melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o código. 
+</p>
+<ul class="org-ul">
+<li>Simplificar o método <code>buildAllItemSets</code>. É possível usar um <code>while</code> em vez de
+<code>foreach</code>, de tal forma que não é necessário fazer a distinção entre conjunto
+de estados antigo e novo.
+</li>
+<li>É fortemente recomendada a inclusão de <code>unit tests</code> para métodos que envolvem
+computações importantes nos algoritmos, tornando futuros <i>refactorings</i> mais seguros.
+</li>
+<li>Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
+quando isso tornar o código mais simples.
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Conclusão</h2>
+</div>
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Adendo - notas sobre algumas decisões de <i>design</i></h2>
+<div class="outline-text-2" id="text-8">
+</div><div id="outline-container-sec-8-1" class="outline-3">
+<h3 id="sec-8-1"><span class="section-number-3">8.1</span> Objetos em estados inconsistentes</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+É desejável que um objeto tenha um estado consitente imediatamente após sua
+criação. Em termos prático, isso significa usar seu construtor para setar todos
+os atributos necessários. O contrário disso (e, portanto, não recomendado) é não
+inserir nada no construtor e depois colocar valores nos atributos através de <i>setters</i>. 
+Essa prática torna o código menos seguro, pois enquanto todos os atributos não
+estão setados, o objeto está num estado inconsistente. Nesse contexto, acessar um
+atributo não inicializado retornaria <code>null</code>.
+</p>
+
+<p>
+Exemplo de código que segue esse princípio:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">Grammar</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">String</span> <span style="color: #DFAF8F;">inputGrammar</span><span style="color: #DCDCCC;">)</span> <span style="color: #F0DFAF; font-weight: bold;">throws</span> <span style="color: #7CB8BB;">Exception</span> <span style="color: #DCDCCC;">{</span>
+  initialiseOutputMap<span style="color: #BFEBBF;">()</span>;
+
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.numberOfRules = <span style="color: #BFEBBF;">0</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.rules = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashMap</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span>, <span style="color: #7CB8BB;">Set</span><span style="color: #D0BF8F;">&lt;</span><span style="color: #7CB8BB;">Rule</span><span style="color: #D0BF8F;">&gt;</span><span style="color: #BFEBBF;">&gt;()</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.terminals = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashSet</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;()</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.nonTerminals = <span style="color: #F0DFAF; font-weight: bold;">new</span> <span style="color: #7CB8BB;">HashSet</span><span style="color: #BFEBBF;">&lt;</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">&gt;()</span>;
+
+  isValidGrammar<span style="color: #BFEBBF;">(</span>inputGrammar<span style="color: #BFEBBF;">)</span>;
+
+  <span style="color: #F0DFAF; font-weight: bold;">this</span>.startSymbol = addStartSymbol<span style="color: #BFEBBF;">(</span>inputGrammar<span style="color: #BFEBBF;">)</span>;
+  addNonTerminals<span style="color: #BFEBBF;">(</span>inputGrammar<span style="color: #BFEBBF;">)</span>;
+  addTerminals<span style="color: #BFEBBF;">(</span>inputGrammar<span style="color: #BFEBBF;">)</span>;
+  readAllRules<span style="color: #BFEBBF;">(</span>inputGrammar<span style="color: #BFEBBF;">)</span>;
+  buildAllNonTerminalsThatProduceEps<span style="color: #BFEBBF;">()</span>;
+  buildAllFirstSets<span style="color: #BFEBBF;">()</span>;
+  buildAllFollowSets<span style="color: #BFEBBF;">()</span>;
+  printOutput<span style="color: #BFEBBF;">()</span>;
+<span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-8-2" class="outline-3">
+<h3 id="sec-8-2"><span class="section-number-3">8.2</span> Minimização de acessibilidade</h3>
+<div class="outline-text-3" id="text-8-2">
+<p>
+Classes que não serão estentidas devem ser declaradas como <code>final</code>. O mesmo vale
+para métodos que não devem ser sobrescritos.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">exemplo</span>
+<span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7CB8BB;">Rule</span> <span style="color: #DCDCCC;">{</span>
+</pre>
+</div>
+
+<p>
+Os atributos e métodos devem ter a <i>menor</i> visibilidade possível. Em
+geral, isso significa usar <code>private</code> sempre que possível.
+</p>
+
+<p>
+Além disso, é recomendável minimizar o uso de <i>acessors</i>. <i>getters</i> e <i>setters</i>
+devem ser adicionados apenas quando necessário. Em vez deles, é preferível criar
+métodos que, acessando a informação interna do objeto, retorne o que foi pedido.
+Isto está em acordo com o princípio "Tell, Don't Ask". A aplicação desse
+princípio mostrou-se difícil para o projeto, pois a interação entre objetos nos
+algoritmos depende essencialmente de seus atributos.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">extra&#237;do da classe RuleWithDot</span>
+
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">n&#227;o h&#225; acessor para o atributo symbolsAfterDot,</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">pois em momento algum h&#225; necessidade de saber isso.</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">No entanto, outras classes podem precisar do s&#237;mbolo ap&#243;s o ponto.</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Elas devem usar o m&#233;todo abaixo.</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">O incorreto seria criar um getter para symbolsAfterDot e fazer com</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">que as demais classes o usassem, seguidos de get(0).</span>
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">Isso violaria o encapsulamento da classe RuleWithDot.</span>
+  <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #7CB8BB;">Symbol</span> <span style="color: #93E0E3;">firstSymbolAfterDot</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> symbolsAfterDot.get<span style="color: #BFEBBF;">(</span><span style="color: #BFEBBF;">0</span><span style="color: #BFEBBF;">)</span>;
+  <span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+Este princípio está descrito em Effective Java - Item 13: Minimize the accessibility of classes and members.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-8-3" class="outline-3">
+<h3 id="sec-8-3"><span class="section-number-3">8.3</span> Minimização de mutabilidade</h3>
+<div class="outline-text-3" id="text-8-3">
+<p>
+Algumas classes representam entidades imutáveis. Por exemplos, uma classe <code>Coordenada</code>
+que tem um par de inteiros como atributos e que representa uma coordenada deve
+ser imutável. Criar um <i>setter</i> para esta classe seria absurdo, pois o mesmo
+objeto poderia representar uma infinidade de coordenadas diferentes.
+</p>
+
+<p>
+Além disso, mutabilidade pode tornar o código complexo e de difícil compreensão.
+</p>
+
+<p>
+Identificamos classes que representam entidades imutáveis e nos certificamos que
+seus objetos de fato não podem jamais ser alterados. A classe <code>Symbol</code> ilustra
+isso bem.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">classe &#233; marcada como final</span>
+ <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7CB8BB;">Symbol</span> <span style="color: #DCDCCC;">{</span>
+
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">atributos s&#227;o privados</span>
+  <span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">SymbolType</span> <span style="color: #DFAF8F;">type</span>;
+  <span style="color: #F0DFAF; font-weight: bold;">private</span> <span style="color: #7CB8BB;">String</span> <span style="color: #DFAF8F;">literalRepresentation</span>;
+
+<span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">n&#227;o h&#225; setters</span>
+  <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #93E0E3;">Symbol</span><span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">String</span> <span style="color: #DFAF8F;">literalRepresentation</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">throws</span> <span style="color: #7CB8BB;">Exception</span> <span style="color: #BFEBBF;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">super</span><span style="color: #D0BF8F;">()</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">this</span>.literalRepresentation = literalRepresentation;
+    <span style="color: #F0DFAF; font-weight: bold;">this</span>.type = getType<span style="color: #D0BF8F;">(</span>literalRepresentation<span style="color: #D0BF8F;">)</span>;
+  <span style="color: #BFEBBF;">}</span>
+</pre>
+</div>
+<p>
+Este princípio está descrito em Effective Java - Item15: Minimize mutability.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-8-4" class="outline-3">
+<h3 id="sec-8-4"><span class="section-number-3">8.4</span> Sobrescrever <code>hashCode</code> e <code>equals</code></h3>
+<div class="outline-text-3" id="text-8-4">
+<p>
+Em diversos momentos utilizamos <code>equals</code>. Por exemplo, em <code>SLR</code>, quando 
+o conjunto goto de uma ação é calculado, verificamos se o conjunto é igual a algum
+estado que já está represente na lista de estados. Para tanto, <code>equals</code> é usado
+para comparar objetos da classe <code>State</code>.
+</p>
+
+<p>
+Isso só é possível de ser feito de forma correta porque <code>hasCode</code> também foi
+sobrescrito. Isso acontece porque ao checar a igualdade de objetos, antes de
+de fato executar o código sobrescrito em <code>equals</code>, verifica se os códigos <i>hash</i>
+dos dois objetos são iguais. Se não são, então a comparação resulta em <code>false</code>,
+mesmo se todas as condições do <code>equals</code> fossem satisfeitas.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">extra&#237;do da classe Symbol</span>
+  <span style="color: #BFEBBF;">@Override</span>
+  <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #7CB8BB;">int</span> <span style="color: #93E0E3;">hashCode</span><span style="color: #DCDCCC;">()</span> <span style="color: #DCDCCC;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">final</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">prime</span> = <span style="color: #BFEBBF;">31</span>;
+    <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">result</span> = <span style="color: #BFEBBF;">1</span>;
+    result = prime * result + <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>literalRepresentation == <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span> ? <span style="color: #BFEBBF;">0</span> : literalRepresentation.hashCode<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+    result = prime * result + <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>type == <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span> ? <span style="color: #BFEBBF;">0</span> : type.hashCode<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> result;
+  <span style="color: #DCDCCC;">}</span>
+
+  <span style="color: #BFEBBF;">@Override</span>
+  <span style="color: #F0DFAF; font-weight: bold;">public</span> <span style="color: #7CB8BB;">boolean</span> <span style="color: #93E0E3;">equals</span><span style="color: #DCDCCC;">(</span><span style="color: #7CB8BB;">Object</span> <span style="color: #DFAF8F;">obj</span><span style="color: #DCDCCC;">)</span> <span style="color: #DCDCCC;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span><span style="color: #F0DFAF; font-weight: bold;">this</span> == obj<span style="color: #BFEBBF;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">true</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>obj == <span style="color: #BFEBBF;">null</span><span style="color: #BFEBBF;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>getClass<span style="color: #D0BF8F;">()</span> != obj.getClass<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #7CB8BB;">Symbol</span> <span style="color: #DFAF8F;">other</span> = <span style="color: #BFEBBF;">(</span><span style="color: #7CB8BB;">Symbol</span><span style="color: #BFEBBF;">)</span> obj;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>literalRepresentation == <span style="color: #BFEBBF;">null</span><span style="color: #BFEBBF;">)</span> <span style="color: #BFEBBF;">{</span>
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #D0BF8F;">(</span>other.literalRepresentation != <span style="color: #BFEBBF;">null</span><span style="color: #D0BF8F;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #BFEBBF;">}</span> <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span><span style="color: #F0DFAF; font-weight: bold;">!</span>literalRepresentation.equals<span style="color: #D0BF8F;">(</span>other.literalRepresentation<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>type != other.type<span style="color: #BFEBBF;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">true</span>;
+  <span style="color: #DCDCCC;">}</span>
+</pre>
+</div>
+
+<p>
+Este princípio está descrito em Effectie Java- Item 9: Always override hashCode when you override equals.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-9" class="outline-2">
+<h2 id="sec-9"><span class="section-number-2">9</span> Referências Bibliográficas</h2>
 </div>
 </div><div class="col-md-3"><nav id="table-of-contents">
 <div id="text-table-of-contents" class="bs-docs-sidebar">
@@ -224,16 +973,34 @@ imagem:
 <li><a href="#sec-1">1. Introdução</a></li>
 <li><a href="#sec-2">2. Objetivos</a></li>
 <li><a href="#sec-3">3. Justificativa</a></li>
-<li><a href="#sec-4">4. Metodologia de Projeto</a></li>
-<li><a href="#sec-5">5. Conclusão</a></li>
-<li><a href="#sec-6">6. Referências Bibliográficas</a></li>
+<li><a href="#sec-4">4. Metodologia</a></li>
+<li><a href="#sec-5">5. Funcionamento</a>
+<ul class="nav">
+<li><a href="#sec-5-1">5.1. Produção de cadeia vazia</a></li>
+<li><a href="#sec-5-2">5.2. Representação dos conjuntos FIRST e FOLLOW</a></li>
+<li><a href="#sec-5-3">5.3. Cálculo dos conjuntos FIRST e FOLLOW</a></li>
+<li><a href="#sec-5-4">5.4. <span class="todo TODO">TODO</span> LL</a></li>
+<li><a href="#sec-5-5">5.5. SLR</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6. Próximos passos</a></li>
+<li><a href="#sec-7">7. Conclusão</a></li>
+<li><a href="#sec-8">8. Adendo - notas sobre algumas decisões de design</a>
+<ul class="nav">
+<li><a href="#sec-8-1">8.1. Objetos em estados inconsistentes</a></li>
+<li><a href="#sec-8-2">8.2. Minimização de acessibilidade</a></li>
+<li><a href="#sec-8-3">8.3. Minimização de mutabilidade</a></li>
+<li><a href="#sec-8-4">8.4. Sobrescrever hashCode e equals</a></li>
+</ul>
+</li>
+<li><a href="#sec-9">9. Referências Bibliográficas</a></li>
 </ul>
 </div>
 </nav>
 </div></div></div>
 <footer id="postamble" class="">
 <div><p class="author">Author: André Peric Tavares, Giulio Parva Denardi</p>
-<p class="date">Created: 2016-04-25 Mon 17:55</p>
+<p class="date">Created: 2016-05-02 Mon 09:32</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.3.3)</p>
 </div>
 </footer>

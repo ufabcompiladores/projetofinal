@@ -6,8 +6,8 @@ import java.util.Set;
 
 public final class Accept extends Action {
 
-	public Accept(int currentStateNumber, RuleWithDot ruleWithDot, List<Set<RuleWithDot>> itemSets) {
-		super(currentStateNumber, ruleWithDot, itemSets);
+	public Accept(int currentStateNumber, RuleWithDot ruleWithDot, List<State> allStates) {
+		super(currentStateNumber, ruleWithDot, allStates);
 
 		Set<Symbol> columnsToStoreActionInTable = new HashSet<Symbol>();
 		columnsToStoreActionInTable.add(Symbol.createEOFSymbol());

@@ -11,9 +11,6 @@ public final class RuleWithDot {
 	private List<Symbol> symbolsAfterDot;
 	private int number;
 	
-	public int getNumber() {
-		return number;
-	}
 
 	private RuleWithDot(){
 		this.symbolsBeforeDot = new ArrayList<Symbol>();
@@ -38,6 +35,14 @@ public final class RuleWithDot {
 		this.symbolsBeforeDot = symbolsBeforeDot;
 		this.symbolsAfterDot = symbolsAfterDot;
 		this.number = number;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+	
+	public Symbol getProducer() {
+		return this.producer;
 	}
 
 	@Override
@@ -97,6 +102,12 @@ public final class RuleWithDot {
 		return symbolsAfterDot.get(0);
 	}
 	
+	/**
+	 * Creates a new rule whose dot is shifted one position to right.
+	 * For example, if the given rule is "A -> B . C", the resulting rule is "A -> B C ." 
+	 * @param ruleWithDot
+	 * @return
+	 */
 	public static RuleWithDot generateRuleWithShiftedDot(RuleWithDot ruleWithDot) {
 		// we can't shift dot because there's nothing after it
 		if (!ruleWithDot.hasNonEmptySymbolAfterDot()) {
@@ -122,8 +133,5 @@ public final class RuleWithDot {
 		return new RuleWithDot(ruleWithDot.producer, newSymbolsBeforeDot, newSymbolsAfterDot, ruleWithDot.number);
 	}
 
-	public Symbol getProducer() {
-		return this.producer;
-	}
 	
 }
