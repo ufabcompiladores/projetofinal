@@ -6,26 +6,21 @@
 #+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="media/style.css" />
 #+SUBTITLE: Trabalho para a disciplina Compiladores na Universidade Federal do ABC sob orientação da Profa. Mirtha Lina Fernández Venero 
 
-* *Introdução*
-Este projeto foi criado para possibilitar aos interessados no estudo de compiladores,
-possibilitando uma forma prática e simples de conseguir gerar gramáticas a partir de 
-regras e gerar as principais funções estudadas em compiladores:
-- Função First,
-- Função Follow,
-- Geração de tabela LL(1),
-- Função Goto,
-- Função Closure,
-- Geração de tabela SLR.
+* Introdução
+O estudo de compiladores permite entender o processo de transformação de um
+texto de entrada escrito em determinada linguagem de programação para outra. O
+objetivo deste processo usualmente é adquirir o código executável correspondente
+à entrada. Isto permite com que programas sejam escritos em altos níveis de
+abstração, o que facilita o trabalho do programador.
 
-Este projeto possui código aberto e existe interesse em continuá-lo, expandindo-o
-para outras partes do estudo de compiladores.
+A compilação de um texto que descreve um programa envolve diversos passos:
+análise léxica, /parsing/, análise sintática, análise semântica, entre outros.
 
-*negrito*
-/itálico/
-[[https://google.com][google]]
-[[Introdução][link]]
-imagem:
-[[./media/Screenshot 2016-04-25 17.54.18.png]]
+Este trabalho concentra-se na fase de /parsing/. Desenvolvemos uma ferramenta
+que, dada uma gramática de entrada, gera as tabelas LR e LL usadas pelo
+/parser/. Um /LL parser/  é chamado de /top-down/ e analisa o texto da esquerda
+para a direita, usando sempre a derivação mais à esquerda. Um /LR parser/ é dito
+/bottom-up/ e 
 
 * Objetivos
 O objetivo é criar um programa que, dada uma gramática de entrada,
@@ -49,7 +44,7 @@ fato de ser estática (o que previne muitos /bugs/ na fase de compilação),
 orientada a objetos (fazendo com que seja possível abstrair muitos conceitos em
 classes, tornando o código organizado e simples de entender) e popular.
 
-O código do projeto está disponível na pasta ~sources~. Além disso, a versão
+O código do projeto está disponível na pasta ~projetofinal~. Além disso, a versão
 mais atual pode ser encontrada em https://github.com/ufabcompiladores/projetofinal.
 
 Utilizamos o Spring Framework (https://spring.io/). Assim, o /front end/ é
@@ -146,7 +141,8 @@ O código é apresentado a seguir.
 		// initialise Map
 		Map<Symbol, Boolean> producesEps = new HashMap<Symbol, Boolean>();
 		for (Symbol nonTerminal : nonTerminals) {
-			producesEps.put(nonTerminal, nonTerminalsThatGenerateEps.contains(nonTerminal));
+			producesEps.put(nonTerminal, 
+      nonTerminalsThatGenerateEps.contains(nonTerminal));
 		}
 		for (Symbol terminal : terminals) {
 			producesEps.put(terminal, false);
@@ -237,18 +233,23 @@ conjuntos FIRST.
 			for (Symbol nonTerminal: nonTerminals){
 				iterationSb.append(String.format("Updating First(%s)\n", nonTerminal));
 				First firstDescription = firstSetDescriptions.get(nonTerminal);
-				iterationSb.append(String.format("First(%s) = %s\n", nonTerminal, firstDescription));
+				iterationSb.append(String.format
+          ("First(%s) = %s\n", nonTerminal, firstDescription));
 				int numElementsBefore = firstSetsBeforeIteration.get(nonTerminal).size();
-				firstSetsAfterIteration.get(nonTerminal).addAll(firstDescription.getAllElements(firstSetsBeforeIteration));
-				iterationSb.append(String.format("Adding elements: %s\n", firstDescription.getAllElements(firstSetsBeforeIteration)));
+				firstSetsAfterIteration.get(nonTerminal).addAll
+          (firstDescription.getAllElements(firstSetsBeforeIteration));
+				iterationSb.append(String.format("Adding elements: %s\n", 
+          firstDescription.getAllElements(firstSetsBeforeIteration)));
 				int numElementsAfter = firstSetsAfterIteration.get(nonTerminal).size();
 				if (numElementsBefore != numElementsAfter){
 					someFirstSetHasChanged = true;
 				}
 			}
 
-			iterationSb.append(String.format("All elements form first sets before iteration: %s\n", firstSetsBeforeIteration));
-			iterationSb.append(String.format("All elements form first sets after iteration: %s\n\n", firstSetsAfterIteration));
+			iterationSb.append(String.format("All elements form
+        first sets before iteration: %s\n", firstSetsBeforeIteration));
+			iterationSb.append(String.format("All elements form
+        first sets after iteration: %s\n\n", firstSetsAfterIteration));
 
 			firstSetsBeforeIteration = firstSetsAfterIteration;
 		}
@@ -259,7 +260,6 @@ conjuntos FIRST.
 O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 
 ** TODO LL
-
 ** SLR
 *** Regras
 Usamos a classe ~RuleWithDot~ para representar os itens dos estados.
@@ -305,7 +305,8 @@ então esta permanece a mesma.
 O código abaixo ilustra esse processo no caso do ~ActionWithNextState~.
 
 #+BEGIN_SRC java
-	public ActionWithNextState(int currentStateNumber, State state, RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
+	public ActionWithNextState(int currentStateNumber, State state, 
+      RuleWithDot ruleWithDot, List<State> allStates, SLR slr) {
 		super(currentStateNumber, ruleWithDot, allStates);
 		List<State> newItemSets = new ArrayList<State>();
 		newItemSets.addAll(allStates);
@@ -337,7 +338,8 @@ iterando é alterado durante a iteração.
 		// adding first state
 		System.out.println("Adding first state set:");
 		List<State> allStatesBeforeIteration = new ArrayList<State>();
-		Set<RuleWithDot> firstRuleSet = grammarWithDots.get(grammar.getStartSymbol());
+		Set<RuleWithDot> firstRuleSet = grammarWithDots.get
+      (grammar.getStartSymbol());
 		State firstState = closure(new State(firstRuleSet));
 		allStatesBeforeIteration.add(firstState);
 
@@ -346,21 +348,26 @@ iterando é alterado durante a iteração.
 		int indexOfLastStateInWhichAllRulesWereAnalysed = -1;
 		boolean setOfAllStatesHasChanged = true;
 		while (setOfAllStatesHasChanged) {
-			System.out.println("******* New iteration (building all state sets) *******");
+			System.out.println("******* New iteration 
+        (building all state sets) *******");
 			setOfAllStatesHasChanged = false;
 			List<State> allStatesAfterIteration = new ArrayList<State>();
 			allStatesAfterIteration.addAll(allStatesBeforeIteration);
 
-			for (int currentStateNumber = indexOfLastStateInWhichAllRulesWereAnalysed + 1; currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
+			for (int currentStateNumber = 
+           indexOfLastStateInWhichAllRulesWereAnalysed + 1; 
+           currentStateNumber < allStatesBeforeIteration.size(); currentStateNumber++) {
 				State state = allStatesAfterIteration.get(currentStateNumber);
 				System.out.format("Analysing state %s: %s\n", currentStateNumber, state);
 				for (RuleWithDot ruleWithDot : state.getRules()) {
 					System.out.println("~~Analysing rule~~");
 					System.out.format("Analysing rule: %s\n", ruleWithDot);
-					Action act = actionFactory.getAction(currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
+					Action act = actionFactory.getAction
+            (currentStateNumber, state, ruleWithDot, allStatesAfterIteration, this);
 					this.allActions.add(act);
 					System.out.format("\nCreating action: \n %s\n", act);
-					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
+					System.out.format("Action position:\n Line: %s \n Columns: %s\n\n", 
+            act.getLineToStoreActionInTable(), act.getColumnToStoreActionInTable());
 					allStatesAfterIteration = act.getNextItemSets();
 				}
 				indexOfLastStateInWhichAllRulesWereAnalysed++;
@@ -397,10 +404,12 @@ melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o
 - Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
   quando isso tornar o código mais simples.
 * Documentação
-A documentação em Javadoc está disponível em ~sources/doc~. Foram feitos
+A documentação em Javadoc está disponível em ~projetofinal/doc~. Foram feitos
 /document comments/ para os métodos não triviais.
+* Exemplo de saída
+Um exemplo de saída do programa está disponível no arquivo ~outputExample.txt~.
 
-* Conclusão
+* TODO Conclusão
 * Adendo - notas sobre algumas decisões de /design/ 
 ** Objetos em estados inconsistentes
 É desejável que um objeto tenha um estado consitente imediatamente após sua
@@ -520,7 +529,8 @@ mesmo se todas as condições do ~equals~ fossem satisfeitas.
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
+		result = prime * result + 
+       ((literalRepresentation == null) ? 0 : literalRepresentation.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -550,3 +560,9 @@ Este princípio está descrito em Effectie Java- Item 9: Always override hashCod
 
 * Referências Bibliográficas
 Compilers: Principles, Techniques, & Tools Addison-Wesley series in computer science, 2a edição, Pearson/Addison Wesley, 2007.
+
+* Apêndice I - importando projeto
+O projeto pode ser importado no /Eclipse for Java EE develops/  (disponível em
+https://eclipse.org/downloads/) através no menu ~File -> Import -> Maven ->
+Existing Maven Projects~.
+É essencial que a versão usada do Eclipse inclua suporte a projetos ~Maven~.
