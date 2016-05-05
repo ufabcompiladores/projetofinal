@@ -259,7 +259,51 @@ conjuntos FIRST.
 
 O cálculo dos conjuntos FOLLOW é bastante semelhante, e por isso é omitido.
 
-** TODO LL
+** LL
+Utilizamos a classe LLService para representar as alterações que realizamos
+para construir e validar uma tabela LL.
+A representação da tabela LL ocorre a partir de um mapa de Symbols e 
+um mapa de Symbols e Conjunto de regras.
+
+* Map<Symbol, Map<Symbol, Set<Rule>>> *
+
+Vamos separar esta estrutura em duas:
+Map<Symbol, (1) - Map<Symbol, (2) - Set<Rule>>>. (3)
+Os símbolos que se encontram na parte (1) do mapeamento são os símbolos
+não-terminais, que são os produtores daquela gramática.
+Já em (2), temos também símbolos, porém dentro de um mapa. Esses símbolos
+representam os símbolos não terminais da gramática, incluindo a cadeia vazia
+e excluindo o $.
+Finalmente, o conjunto de regras em (3) representa as regras que pertencem
+àquele par de símbolos.
+
+Aproximadamente dessa forma.
+Suponhamos a seguinte gramática:
+A -> a (1) | b (2)
+B -> c (3)
+Teremos um mapa aproximadamente desta forma:
+
+Mapa:
+(A, Mapa(a, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+(A, Mapa(b, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+(A, Mapa(c, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+(B, Mapa(a, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+(B, Mapa(b, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+(B, Mapa(c, *Regras que podem entrar de acordo com o algoritmo de criação da tabela*)
+
+E teríamos uma tabela dessa forma:
+-----\[a\]\[b\]\[c\]
+\[A\]\[1\]\[2\]\[ \]
+\]B\]\[ \]\[ \]\[3\].
+
+No lugar de 1, 2 e 3, colocamos as regras que representam estes números.
+
+É no método buildParseTable que instanciamos e criamos a tabela do parser.
+
+Finalmente, existe o método isLL1Grammar que verifica se aquela gramática é LL1
+ou não, que define se a gramática é LL1 além de um método que retorna verdadeiro
+se a gramática é ambígua.
+
 ** SLR
 *** Regras
 Usamos a classe ~RuleWithDot~ para representar os itens dos estados.

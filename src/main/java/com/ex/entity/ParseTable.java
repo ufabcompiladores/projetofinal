@@ -36,34 +36,13 @@ public final class ParseTable {
 		}
 	}
 	
-	/**
-	 * Confere se existem regras duplicadas para um mesmo produtor e terminal.
-	 * @return
-	 */
-	public boolean isAmbiguous () {
-		for (Symbol s : table.keySet()) {
-			if (table.get(s).values().stream().anyMatch(p -> p.size() > 1)) return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Adiciona regra a partir de uma tupla (Conjunto do produtor e o terminal [que está no first])
-	 * @param t - Tupla com o valor do produtor e terminal que entrará aquela regra.
-	 * @param r - Regra a ser inserida.
-	 */
-	public void addRule(Tuple t, Rule r) {
-		if (!t.getUpSymbol().equals(Symbol.DefaultSymbols.EMPTY.getSymbol()))
-			table.get(t.getLeftSymbol()).get(t.getUpSymbol()).add(r);
-	}
-
 	public Map<Symbol, Map<Symbol, Set<Rule>>> getTable() {
 		return table;
 	}
 	
 	/**
 	 * Printa formatada a tabela
+	 * Está no modelo antigo de representação da parse table - necessário migrar.
 	 */
 //	@Override
 //	public String toString() {

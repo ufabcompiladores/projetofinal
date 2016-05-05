@@ -2,6 +2,7 @@ package com.ex.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,7 @@ public class GrammarController {
 	
 	@RequestMapping(value="/create/text", method=RequestMethod.POST)
 	public ModelAndView createTextGrammar (ModelAndView mv,
-			@RequestParam("rules") String inputGrammar) {
+			@RequestBody String inputGrammar) {
 		try {
 			Grammar grammar = new Grammar(inputGrammar);
 			
