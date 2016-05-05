@@ -406,6 +406,8 @@ melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o
 * Documentação
 A documentação em Javadoc está disponível em ~sources/doc~. Foram feitos
 /document comments/ para os métodos não triviais.
+* Exemplo de saída
+Um exemplo de saída do programa está disponível no arquivo ~outputExample.txt~.
 
 * Conclusão
 * Adendo - notas sobre algumas decisões de /design/ 
