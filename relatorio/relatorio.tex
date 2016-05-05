@@ -1,4 +1,4 @@
-% Created 2016-05-04 Wed 18:36
+% Created 2016-05-04 Wed 21:07
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -453,13 +453,16 @@ quando isso tornar o código mais simples.
 \label{sec:orgheadline16}
 A documentação em Javadoc está disponível em \texttt{sources/doc}. Foram feitos
 \emph{document comments} para os métodos não triviais.
+\section{Exemplo de saída}
+\label{sec:orgheadline17}
+Um exemplo de saída do programa está disponível no arquivo \texttt{outputExample.txt}.
 
 \section{Conclusão}
-\label{sec:orgheadline17}
+\label{sec:orgheadline18}
 \section{Adendo - notas sobre algumas decisões de \emph{design}}
 \label{sec:orgheadline3}
 \subsection{Objetos em estados inconsistentes}
-\label{sec:orgheadline18}
+\label{sec:orgheadline19}
 É desejável que um objeto tenha um estado consitente imediatamente após sua
 criação. Em termos prático, isso significa usar seu construtor para setar todos
 os atributos necessários. O contrário disso (e, portanto, não recomendado) é não
@@ -493,7 +496,7 @@ public Grammar(String inputGrammar) throws Exception {
 \end{verbatim}
 
 \subsection{Minimização de visibilidade}
-\label{sec:orgheadline19}
+\label{sec:orgheadline20}
 Classes que não serão estentidas devem ser declaradas como \texttt{final}. O mesmo vale
 para métodos que não devem ser sobrescritos.
 
@@ -530,7 +533,7 @@ algoritmos depende essencialmente de seus atributos.
 Este princípio está descrito em Effective Java - Item 13: Minimize the accessibility of classes and members.
 
 \subsection{Minimização de mutabilidade}
-\label{sec:orgheadline20}
+\label{sec:orgheadline21}
 Algumas classes representam entidades imutáveis. Por exemplos, uma classe \texttt{Coordenada}
 que tem um par de inteiros como atributos e que representa uma coordenada deve
 ser imutável. Criar um \emph{setter} para esta classe seria absurdo, pois o mesmo
@@ -560,7 +563,7 @@ isso bem.
 Este princípio está descrito em Effective Java - Item15: Minimize mutability.
 
 \subsection{Sobrescrever \texttt{hashCode} e \texttt{equals}}
-\label{sec:orgheadline21}
+\label{sec:orgheadline22}
 Em diversos momentos utilizamos \texttt{equals}. Por exemplo, em \texttt{SLR}, quando 
 o conjunto goto de uma ação é calculado, verificamos se o conjunto é igual a algum
 estado que já está represente na lista de estados. Para tanto, \texttt{equals} é usado
@@ -607,6 +610,6 @@ mesmo se todas as condições do \texttt{equals} fossem satisfeitas.
 Este princípio está descrito em Effectie Java- Item 9: Always override hashCode when you override equals.
 
 \section{Referências Bibliográficas}
-\label{sec:orgheadline22}
+\label{sec:orgheadline23}
 Compilers: Principles, Techniques, \& Tools Addison-Wesley series in computer science, 2a edição, Pearson/Addison Wesley, 2007.
 \end{document}
