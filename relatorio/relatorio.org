@@ -44,7 +44,7 @@ fato de ser estática (o que previne muitos /bugs/ na fase de compilação),
 orientada a objetos (fazendo com que seja possível abstrair muitos conceitos em
 classes, tornando o código organizado e simples de entender) e popular.
 
-O código do projeto está disponível na pasta ~sources~. Além disso, a versão
+O código do projeto está disponível na pasta ~projetofinal~. Além disso, a versão
 mais atual pode ser encontrada em https://github.com/ufabcompiladores/projetofinal.
 
 Utilizamos o Spring Framework (https://spring.io/). Assim, o /front end/ é
@@ -404,12 +404,12 @@ melhorar. Listamos a seguir quais seriam os próximos passos para aperfeiçoar o
 - Buscar utilizar mais métodos de programação funcional introduzidos no Java 8
   quando isso tornar o código mais simples.
 * Documentação
-A documentação em Javadoc está disponível em ~sources/doc~. Foram feitos
+A documentação em Javadoc está disponível em ~projetofinal/doc~. Foram feitos
 /document comments/ para os métodos não triviais.
 * Exemplo de saída
 Um exemplo de saída do programa está disponível no arquivo ~outputExample.txt~.
 
-* Conclusão
+* TODO Conclusão
 * Adendo - notas sobre algumas decisões de /design/ 
 ** Objetos em estados inconsistentes
 É desejável que um objeto tenha um estado consitente imediatamente após sua
@@ -560,3 +560,9 @@ Este princípio está descrito em Effectie Java- Item 9: Always override hashCod
 
 * Referências Bibliográficas
 Compilers: Principles, Techniques, & Tools Addison-Wesley series in computer science, 2a edição, Pearson/Addison Wesley, 2007.
+
+* Apêndice I - importando projeto
+O projeto pode ser importado no /Eclipse for Java EE develops/  (disponível em
+https://eclipse.org/downloads/) através no menu ~File -> Import -> Maven ->
+Existing Maven Projects~.
+É essencial que a versão usada do Eclipse inclua suporte a projetos ~Maven~.

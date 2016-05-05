@@ -54,6 +54,7 @@
     "sec:orgheadline20"
     "sec:orgheadline21"
     "sec:orgheadline22"
-    "sec:orgheadline23"))
+    "sec:orgheadline23"
+    "sec:orgheadline24"))
  :latex)
 
