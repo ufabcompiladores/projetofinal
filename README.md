@@ -1,3 +1,2 @@
-# projetofinal
+# LL and LR table generator
 
-test
